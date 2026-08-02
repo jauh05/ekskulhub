@@ -23,9 +23,9 @@
                 <a href="{{ route('teacher.attendances.index') }}" class="bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2 border border-outline-variant justify-center text-center">
                     <span class="material-symbols-outlined text-[20px]">arrow_back</span> Tutup Halaman (Biarkan Berjalan)
                 </a>
-                <form action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
+                <form id="endSessionForm" action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20 justify-center text-center" onclick="return confirm('Apakah Anda yakin ingin mengakhiri sesi presensi ini? Siswa tidak akan bisa scan QR lagi.')">
+                    <button type="button" @click="showEndSessionModal = true" class="w-full bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20 justify-center text-center">
                         <span class="material-symbols-outlined text-[20px]">stop_circle</span> Akhiri Sesi
                     </button>
                 </form>
@@ -196,6 +196,36 @@
             </div>
         </div>
 
+        <!-- End Session Modal -->
+        <div x-show="showEndSessionModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showEndSessionModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showEndSessionModal = false" aria-hidden="true"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div x-show="showEndSessionModal" x-transition.scale.origin.bottom class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-outline-variant">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-error/10 sm:mx-0 sm:h-10 sm:w-10">
+                                <span class="material-symbols-outlined text-error">stop_circle</span>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <h3 class="text-title-lg font-bold text-on-surface" id="modal-title">Akhiri Sesi Presensi</h3>
+                                <div class="mt-2">
+                                    <p class="text-body-md text-secondary">
+                                        Apakah Anda yakin ingin mengakhiri sesi presensi ini? <br><br>
+                                        Siswa yang belum melakukan presensi akan otomatis ditandai sebagai <strong class="text-error">Alpa</strong>. Tindakan ini tidak dapat dibatalkan.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                        <button type="button" onclick="document.getElementById('endSessionForm').submit()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-error text-base font-medium text-white hover:bg-error/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Ya, Akhiri Sesi</button>
+                        <button type="button" @click="showEndSessionModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     @push('scripts')
@@ -211,6 +241,7 @@
                 selectedAttendanceId: null,
                 showPhotoModal: false,
                 selectedPhotoUrl: null,
+                showEndSessionModal: false,
                 qrExpiresAt: null,
                 qrHash: '------',
                 timerDisplay: '00:30',
