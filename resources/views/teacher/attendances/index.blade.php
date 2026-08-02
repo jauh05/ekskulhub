@@ -264,7 +264,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-outline-variant bg-surface-container-lowest">
-                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">calendar_today</span> TANGGAL</th>
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">calendar_today</span> TANGGAL & WAKTU PRESENSI</th>
                         <th class="p-4 font-label-md text-secondary flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">person</span> NAMA SISWA</th>
                         <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">sports_martial_arts</span> EKSKUL</th>
                         <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">rule</span> STATUS</th>
@@ -275,7 +275,12 @@
                 <tbody class="divide-y divide-outline-variant">
                     @forelse($attendances as $att)
                     <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-4 font-body-md text-on-surface-variant">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->activity_date)->format('d M Y') }}</td>
+                        <td class="p-4 font-body-md text-on-surface-variant">
+                            <span class="font-bold text-on-surface">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->activity_date)->format('d M Y') }}</span>
+                            @if($att->created_at)
+                                <br><span class="text-label-sm text-secondary font-medium"><span class="material-symbols-outlined text-[14px] align-middle">schedule</span> {{ \Carbon\Carbon::parse($att->created_at)->format('H:i') }}</span>
+                            @endif
+                        </td>
                         <td class="p-4 font-body-md text-on-surface font-semibold">{{ $att->student->name ?? '-' }}</td>
                         <td class="p-4 font-body-md text-on-surface-variant">{{ $att->attendanceSession->schedule->extracurricular->name ?? '-' }}</td>
                         <td class="p-4">
