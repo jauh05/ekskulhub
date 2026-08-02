@@ -268,7 +268,7 @@
                         <th class="p-4 font-label-md text-secondary flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">person</span> NAMA SISWA</th>
                         <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">sports_martial_arts</span> EKSKUL</th>
                         <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">rule</span> STATUS</th>
-                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">photo_camera</span> FOTO/SELFIE</th>
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">photo_camera</span> FOTO/SELFIE/BUKTI IZIN</th>
                         <th class="p-4 font-label-md text-secondary">AKSI/VERIFIKASI</th>
                     </tr>
                 </thead>
@@ -293,9 +293,13 @@
                             @endif
                         </td>
                         <td class="p-4">
-                            @if($att->photo_path)
-                                <button type="button" @click="openPhoto('{{ Storage::url($att->photo_path) }}')" class="text-primary hover:underline text-label-sm flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full font-bold transition-colors hover:bg-primary hover:text-white">
-                                    <span class="material-symbols-outlined text-[16px]">image</span> Lihat Bukti
+                            @if($att->selfie_path)
+                                <button type="button" @click="openPhoto('{{ Storage::url($att->selfie_path) }}')" class="text-primary hover:underline text-label-sm flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full font-bold transition-colors hover:bg-primary hover:text-white">
+                                    <span class="material-symbols-outlined text-[16px]">image</span> Selfie
+                                </button>
+                            @elseif($att->proof_file)
+                                <button type="button" @click="openPhoto('{{ Storage::url($att->proof_file) }}')" class="text-primary hover:underline text-label-sm flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full font-bold transition-colors hover:bg-primary hover:text-white mt-1">
+                                    <span class="material-symbols-outlined text-[16px]">description</span> Bukti Izin
                                 </button>
                             @else
                                 <span class="text-outline text-label-sm">-</span>
