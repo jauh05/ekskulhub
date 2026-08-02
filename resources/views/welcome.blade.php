@@ -152,7 +152,7 @@
 <main class="w-full pt-16">
 <div class="flex flex-col w-full">
 <!-- Hero Section -->
-<section class="relative overflow-hidden bg-surface pb-xl lg:pb-32 lg:-mt-16 pt-32 lg:pt-48">
+<section class="relative overflow-hidden bg-surface pb-xl lg:pb-32 lg:-mt-16 pt-16 lg:pt-32">
 <!-- Decorative Ambient Background -->
 <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
 <div class="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[400px] h-[400px] bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -179,14 +179,14 @@
                                 Daftar Guru
                             </a>
 </div>
-<div class="pt-md">
+<div class="pt-md relative z-20">
 <a class="font-body-md text-on-surface-variant hover:text-primary flex items-center gap-1 group" href="{{ route('login.guru') }}">
                                 Anda seorang guru? <span class="font-bold underline group-hover:no-underline">Masuk sebagai Guru</span>
 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 </a>
 </div>
 </div>
-<div class="relative lg:h-[600px] flex items-center justify-center">
+<div class="relative lg:h-[600px] flex items-center justify-center mt-12 lg:mt-0">
 <div class="relative w-full max-w-[420px]">
 <!-- Main Card -->
 <div class="bg-surface-container-lowest rounded-[2.5rem] p-6 shadow-2xl border border-surface-container-high relative z-20">

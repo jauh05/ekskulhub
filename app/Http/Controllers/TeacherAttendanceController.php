@@ -13,6 +13,8 @@ class TeacherAttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        AttendanceSession::autoCloseExpiredSessions();
+        
         $teacher = Auth::user();
         $ekskuls = $teacher->taughtExtracurriculars;
         $ekskulIds = $ekskuls->pluck('id');
@@ -183,39 +185,7 @@ class TeacherAttendanceController extends Controller
         ]);
 
         if ($wasOpen && $request->status === 'closed') {
-            // Auto Alpha
-            $extracurricularId = $session->schedule->extracurricular_id;
-            
-            // Get all approved students in this extracurricular
-            $studentIds = \App\Models\ExtracurricularRegistration::where('extracurricular_id', $extracurricularId)
-                ->where('status', 'approved')
-                ->pluck('student_id');
-                
-            // Get students who already have attendance record
-            $attendedStudentIds = \App\Models\Attendance::where('attendance_session_id', $session->id)
-                ->pluck('student_id')
-                ->toArray();
-                
-            // Diff to find absent students
-            $absentStudentIds = $studentIds->diff($attendedStudentIds);
-            
-            $now = now();
-            $absentRecords = [];
-            foreach ($absentStudentIds as $id) {
-                $absentRecords[] = [
-                    'student_id' => $id,
-                    'attendance_session_id' => $session->id,
-                    'status' => 'absent',
-                    'method' => 'manual',
-                    'checked_at' => $now,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-            }
-            
-            if (count($absentRecords) > 0) {
-                \App\Models\Attendance::insert($absentRecords);
-            }
+            $session->closeWithAutoAlpha();
         }
 
         return back()->with('success', 'Data sesi berhasil diperbarui.');
@@ -345,10 +315,7 @@ class TeacherAttendanceController extends Controller
             abort(403);
         }
 
-        $session->update([
-            'status' => 'closed',
-            'closed_at' => now(),
-        ]);
+        $session->closeWithAutoAlpha();
 
         return redirect()->route('teacher.attendances.index')->with('success', 'Sesi absensi telah ditutup.');
     }

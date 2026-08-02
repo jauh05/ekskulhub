@@ -14,7 +14,8 @@
                     </h3>
                     <p class="text-body-md text-secondary mt-1">
                         Ekskul: <strong class="text-on-surface">{{ $session->schedule->extracurricular->name }}</strong> | 
-                        Jadwal: {{ \Carbon\Carbon::parse($session->schedule->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->schedule->attendance_end_at)->format('H:i') }}
+                        Jadwal: {{ \Carbon\Carbon::parse($session->schedule->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->schedule->attendance_end_at)->format('H:i') }} | 
+                        <span class="text-error font-bold"><span class="material-symbols-outlined text-[14px] align-middle">timer</span> Ditutup Otomatis Pada: {{ $session->opened_at->addHours(2)->format('H:i') }}</span>
                     </p>
                 </div>
             </div>

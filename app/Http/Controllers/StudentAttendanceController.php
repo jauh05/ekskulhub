@@ -105,6 +105,8 @@ class StudentAttendanceController extends Controller
     {
         $user = Auth::user();
         
+        AttendanceSession::autoCloseExpiredSessions();
+        
         // Ekskul diikuti (approved)
         $ekskulIds = \App\Models\ExtracurricularRegistration::where('student_id', $user->id)
             ->where('status', 'approved')
