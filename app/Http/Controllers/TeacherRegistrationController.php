@@ -15,7 +15,7 @@ class TeacherRegistrationController extends Controller
         $ekskulIds = $teacher->taughtExtracurriculars()->pluck('id');
         $ekskuls = $teacher->taughtExtracurriculars;
         
-        $query = ExtracurricularRegistration::with(['student.studentProfile', 'student.attendances', 'extracurricular.schedules'])
+        $query = ExtracurricularRegistration::with(['student.studentProfile', 'extracurricular'])
             ->whereIn('extracurricular_id', $ekskulIds)
             ->where('status', 'pending');
             
@@ -45,8 +45,7 @@ class TeacherRegistrationController extends Controller
         $registration = ExtracurricularRegistration::findOrFail($id);
         
         // Verify this registration belongs to an extracurricular taught by this teacher
-        $teacher = Auth::user();
-        if (!$teacher->taughtExtracurriculars->contains($registration->extracurricular_id)) {
+        if (!Auth::user()->taughtExtracurriculars()->where('id', $registration->extracurricular_id)->exists()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -54,6 +53,6 @@ class TeacherRegistrationController extends Controller
             'status' => $request->status
         ]);
 
-        return redirect()->route('teacher.registrations.index')->with('success', 'Status pendaftaran berhasil diperbarui.');
+        return back()->with('success', 'Status pendaftaran berhasil diperbarui.');
     }
 }

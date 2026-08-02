@@ -84,11 +84,7 @@
                             {{ $genderLabel }}
                         </td>
                         <td class="p-4 font-body-md text-on-surface-variant">
-                            @php
-                                $totalSchedules = $part->extracurricular->schedules->count();
-                                $attended = $part->student->attendances->where('status', 'present')->count();
-                            @endphp
-                            <span class="font-bold text-primary">{{ $attended }}</span> / {{ $totalSchedules }}
+                            - / -
                         </td>
                         <td class="p-4 font-body-md text-on-surface-variant">{{ $part->created_at->format('d M Y') }}</td>
                         <td class="p-4 font-body-md">
@@ -121,7 +117,7 @@
                             @endif
                             <button type="button" 
                                 onclick="openDetailModal(
-                                    '{{ $part->id }}', 
+                                '{{ $part->id }}', 
                                     '{{ addslashes($part->student->name ?? '-') }}', 
                                     '{{ addslashes($part->student->studentProfile->class_name ?? '-') }}', 
                                     '{{ addslashes($part->student->email ?? '-') }}', 
@@ -129,7 +125,7 @@
                                     '{{ $genderLabel }}', 
                                     '{{ addslashes($part->extracurricular->name ?? '-') }}', 
                                     '{{ $part->status }}',
-                                    '{{ $attended }} / {{ $totalSchedules }}'
+                                    '0 / 0'
                                 )" 
                                 class="w-8 h-8 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-colors shadow-sm" title="Detail Siswa">
                                 <span class="material-symbols-outlined text-[18px]">edit_square</span>
