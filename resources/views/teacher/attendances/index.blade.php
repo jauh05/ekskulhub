@@ -296,14 +296,14 @@
                             @endif
                         </td>
                         <td class="p-4 flex gap-2">
-                            <button @click="openDetail({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors" title="Detail">
-                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                            <button @click="openDetail({{ json_encode($att) }})" class="px-3 py-1 rounded-full bg-primary/10 text-primary flex items-center gap-1 hover:bg-primary hover:text-white transition-colors text-label-sm font-bold" title="Detail">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span> Detail
                             </button>
-                            <button @click="openEdit({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center hover:bg-[#F59E0B] hover:text-white transition-colors" title="Edit">
-                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                            <button @click="openEdit({{ json_encode($att) }})" class="px-3 py-1 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] flex items-center gap-1 hover:bg-[#F59E0B] hover:text-white transition-colors text-label-sm font-bold" title="Edit">
+                                <span class="material-symbols-outlined text-[16px]">edit</span> Edit
                             </button>
-                            <button @click="openDelete({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors" title="Hapus">
-                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            <button @click="openDelete({{ json_encode($att) }})" class="px-3 py-1 rounded-full bg-error/10 text-error flex items-center gap-1 hover:bg-error hover:text-white transition-colors text-label-sm font-bold" title="Batalkan/Hapus">
+                                <span class="material-symbols-outlined text-[16px]">cancel</span> Batalkan
                             </button>
                         </td>
                     </tr>
@@ -409,24 +409,24 @@
             </div>
         </div>
 
-        <!-- Delete Modal -->
+        <!-- Cancel Modal -->
         <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
                 <div x-show="showDeleteModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDeleteModal = false" aria-hidden="true"></div>
                 <div x-show="showDeleteModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-sm w-full relative z-10">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 text-center">
                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error/10 mb-4">
-                            <span class="material-symbols-outlined text-error text-[24px]">delete</span>
+                            <span class="material-symbols-outlined text-error text-[24px]">cancel</span>
                         </div>
-                        <h3 class="text-title-md font-bold text-on-surface mb-2">Hapus Data Presensi?</h3>
-                        <p class="text-body-md text-secondary">Apakah Anda yakin ingin menghapus data presensi untuk <span class="font-bold text-on-surface" x-text="selectedAttendance?.student?.name"></span>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <h3 class="text-title-md font-bold text-on-surface mb-2">Batalkan Data Presensi?</h3>
+                        <p class="text-body-md text-secondary">Apakah Anda yakin ingin membatalkan dan menghapus data presensi untuk <span class="font-bold text-on-surface" x-text="selectedAttendance?.student?.name"></span>? Tindakan ini tidak dapat dikembalikan.</p>
                     </div>
                     <form :action="'{{ route('teacher.attendances.destroy', 'ID_PLACEHOLDER') }}'.replace('ID_PLACEHOLDER', selectedAttendance?.id)" method="POST">
                         @csrf
                         @method('DELETE')
                         <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
-                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-error text-base font-medium text-white hover:bg-error/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Hapus</button>
-                            <button type="button" @click="showDeleteModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-error text-base font-medium text-white hover:bg-error/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Batalkan Presensi</button>
+                            <button type="button" @click="showDeleteModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Tutup</button>
                         </div>
                     </form>
                 </div>
