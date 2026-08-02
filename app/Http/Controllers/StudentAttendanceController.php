@@ -36,7 +36,13 @@ class StudentAttendanceController extends Controller
     {
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
-            'selfie' => 'nullable|image|max:5120' // max 5MB
+            'type' => 'required|in:hadir,izin',
+            'method' => 'required_if:type,hadir|in:qr,manual,selfie',
+            'reason' => 'required_if:type,izin|string|max:255',
+            'proof' => 'nullable|file|max:1024|mimes:jpg,jpeg,png,pdf',
+            'qr_code' => 'required_if:method,qr|string',
+            'session_code' => 'required_if:method,manual|string',
+            'selfie' => 'required_if:method,selfie|image|max:5120'
         ]);
 
         $user = Auth::user();
@@ -56,18 +62,40 @@ class StudentAttendanceController extends Controller
             'attendance_session_id' => $attendanceSession->id
         ]);
         
-        if ($request->hasFile('selfie')) {
-            $path = $request->file('selfie')->store('attendance_selfies', 'public');
-            $attendance->selfie_path = $path;
-            $attendance->selfie_status = 'pending';
+        if ($request->type === 'izin') {
+            $attendance->status = 'permission';
+            $attendance->method = 'manual'; // Just default to manual for izin
+            $attendance->notes = $request->reason;
+            
+            if ($request->hasFile('proof')) {
+                $path = $request->file('proof')->store('attendance_proofs', 'public');
+                $attendance->proof_file = $path;
+            }
+        } else {
+            // Type == hadir
+            if ($request->method === 'qr') {
+                if ($request->qr_code !== $attendanceSession->qr_secret_hash) {
+                    return back()->with('error', 'QR Code tidak valid atau sudah kedaluwarsa.');
+                }
+                $attendance->method = 'qr';
+            } elseif ($request->method === 'manual') {
+                if (strtoupper($request->session_code) !== strtoupper($attendanceSession->session_code)) {
+                    return back()->with('error', 'Kode sesi tidak valid.');
+                }
+                $attendance->method = 'manual';
+            } elseif ($request->method === 'selfie') {
+                $path = $request->file('selfie')->store('attendance_selfies', 'public');
+                $attendance->selfie_path = $path;
+                $attendance->selfie_status = 'pending';
+                $attendance->method = 'selfie';
+            }
+            $attendance->status = 'present';
         }
         
-        $attendance->status = 'present';
-        $attendance->method = 'selfie';
         $attendance->checked_at = now();
         $attendance->save();
 
-        return redirect()->route('student.attendances.index')->with('success', 'Berhasil melakukan absensi');
+        return redirect()->route('student.attendances.index')->with('success', 'Data presensi berhasil disimpan.');
     }
 
     public function getActiveSessions(Request $request)

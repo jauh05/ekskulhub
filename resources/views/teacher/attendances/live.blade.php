@@ -46,8 +46,8 @@
                     </div>
                     
                     <div class="mb-6">
-                        <p class="text-label-sm text-secondary">Atau gunakan Kode Presensi:</p>
-                        <p class="text-display-sm font-mono font-bold text-primary tracking-[0.2em]" x-text="qrHash">------</p>
+                        <p class="text-label-sm text-secondary">Atau gunakan Kode PIN Manual:</p>
+                        <p class="text-display-md font-mono font-bold text-primary tracking-[0.2em] bg-primary/10 px-4 py-2 rounded-xl mt-2 inline-block border border-primary/20">{{ $session->session_code }}</p>
                     </div>
                     
                     <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full">

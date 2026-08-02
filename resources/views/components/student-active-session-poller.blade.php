@@ -19,7 +19,7 @@
                 
                 <a :href="'{{ url('siswa/absensi/scan') }}?schedule_id=' + session.schedule_id" 
                    class="bg-white text-primary px-6 py-3 rounded-full text-label-lg font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-2 whitespace-nowrap group">
-                    <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">qr_code_scanner</span> Scan QR Sekarang
+                    <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">how_to_reg</span> Presensi Sekarang
                 </a>
             </div>
         </div>
