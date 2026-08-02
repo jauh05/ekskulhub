@@ -231,7 +231,9 @@
         showEditModal: false, 
         showDeleteModal: false, 
         showDetailModal: false,
+        showPhotoModal: false,
         selectedAttendance: {},
+        selectedPhotoUrl: null,
         
         openEdit(att) {
             this.selectedAttendance = att;
@@ -244,6 +246,10 @@
         openDetail(att) {
             this.selectedAttendance = att;
             this.showDetailModal = true;
+        },
+        openPhoto(url) {
+            this.selectedPhotoUrl = url;
+            this.showPhotoModal = true;
         }
     }" class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden">
         <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
@@ -288,9 +294,9 @@
                         </td>
                         <td class="p-4">
                             @if($att->photo_path)
-                                <a href="{{ Storage::url($att->photo_path) }}" target="_blank" class="text-primary hover:underline text-label-sm flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[16px]">photo_camera</span> Lihat
-                                </a>
+                                <button type="button" @click="openPhoto('{{ Storage::url($att->photo_path) }}')" class="text-primary hover:underline text-label-sm flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full font-bold transition-colors hover:bg-primary hover:text-white">
+                                    <span class="material-symbols-outlined text-[16px]">image</span> Lihat Bukti
+                                </button>
                             @else
                                 <span class="text-outline text-label-sm">-</span>
                             @endif
@@ -468,16 +474,35 @@
                             <span class="text-body-md text-secondary">Waktu Absen</span>
                             <span class="font-medium text-on-surface" x-text="selectedAttendance?.checked_at ? new Date(selectedAttendance.checked_at).toLocaleString('id-ID') : '-'"></span>
                         </div>
-                        <div class="flex flex-col gap-1 border-b border-outline-variant pb-2">
-                            <span class="text-body-md text-secondary">Catatan</span>
-                            <span class="font-medium text-on-surface" x-text="selectedAttendance?.notes || '-'"></span>
+                            <div class="flex flex-col gap-1 border-b border-outline-variant pb-2">
+                                <span class="text-body-md text-secondary">Catatan</span>
+                                <span class="font-medium text-on-surface" x-text="selectedAttendance?.notes || '-'"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+            <!-- Photo Modal -->
+            <div x-show="showPhotoModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                    <div x-show="showPhotoModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showPhotoModal = false" aria-hidden="true"></div>
+                    <div x-show="showPhotoModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-2xl w-full relative z-10">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 border-b border-outline-variant flex justify-between items-center">
+                            <h3 class="text-title-lg font-bold text-on-surface">Bukti FOTO/SELFIE/DOKUMEN</h3>
+                            <button type="button" @click="showPhotoModal = false" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div class="p-4 bg-surface-container-lowest flex justify-center items-center overflow-hidden">
+                            <img :src="selectedPhotoUrl" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm" alt="Bukti Kehadiran/Izin">
+                        </div>
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="button" @click="showPhotoModal = false" class="w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
     <!-- Modal Jalankan Presensi -->
     <div x-show="showRunModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
