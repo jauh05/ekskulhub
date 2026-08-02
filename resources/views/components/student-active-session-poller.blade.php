@@ -7,7 +7,7 @@
 
     <template x-for="session in activeSessions" :key="session.id">
         <div x-show="!session.already_attended" x-transition.opacity.duration.500ms
-             class="mb-6 relative overflow-hidden bg-primary p-6 rounded-2xl shadow-xl border border-primary-container animate-pulse">
+             class="mb-6 relative overflow-hidden bg-primary p-6 rounded-2xl shadow-xl border border-primary-container">
             <!-- Decorative Background Pattern -->
             <div class="absolute top-0 right-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/4">
                 <span class="material-symbols-outlined text-[120px]">podcasts</span>
@@ -24,7 +24,7 @@
                 </div>
                 
                 <a :href="'{{ url('siswa/absensi/scan') }}?schedule_id=' + session.schedule_id" 
-                   class="bg-white text-primary px-6 py-3 rounded-full text-label-lg font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-2 whitespace-nowrap group">
+                   class="bg-white text-primary px-6 py-3 rounded-full text-label-lg font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-2 whitespace-nowrap group animate-pulse">
                     <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">how_to_reg</span> Presensi Sekarang
                 </a>
             </div>

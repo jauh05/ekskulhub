@@ -36,6 +36,10 @@
                 <span class="material-symbols-outlined">event</span>
                 <span class="font-body-md">Jadwal Ekskul</span>
             </a>
+            <a class="flex items-center gap-3 px-4 py-3 mx-2 {{ request()->routeIs('teacher.attendances.*') ? 'bg-primary-container text-on-primary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }} rounded-lg transition-colors" href="{{ route('teacher.attendances.index') }}">
+                <span class="material-symbols-outlined">fact_check</span>
+                <span class="font-body-md">Absensi</span>
+            </a>
             <a class="flex items-center gap-3 px-4 py-3 mx-2 {{ request()->routeIs('teacher.participants.*') ? 'bg-primary-container text-on-primary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }} rounded-lg transition-colors" href="{{ route('teacher.participants.index') }}">
                 <span class="material-symbols-outlined">group</span>
                 <span class="font-body-md">Data Siswa</span>
@@ -47,11 +51,6 @@
             <a class="flex items-center gap-3 px-4 py-3 mx-2 {{ request()->routeIs('teacher.announcements.*') ? 'bg-primary-container text-on-primary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }} rounded-lg transition-colors" href="{{ route('teacher.announcements.index') }}">
                 <span class="material-symbols-outlined">campaign</span>
                 <span class="font-body-md">Pengumuman</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 mx-2 {{ request()->routeIs('teacher.attendances.*') ? 'bg-primary-container text-on-primary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }} rounded-lg transition-colors" href="{{ route('teacher.attendances.index') }}">
-                <span class="material-symbols-outlined">fact_check</span>
-                <span class="font-body-md">Absensi</span>
             </a>
             <a class="flex items-center gap-3 px-4 py-3 mx-2 {{ request()->routeIs('teacher.grading.*') ? 'bg-primary-container text-on-primary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }} rounded-lg transition-colors" href="{{ route('teacher.grading.index') }}">
                 <span class="material-symbols-outlined">grade</span>
