@@ -168,9 +168,47 @@ class TeacherAttendanceController extends Controller
             'end_time' => $request->end_time,
         ]);
 
+        $wasOpen = $session->status === 'open';
+
         $session->update([
             'status' => $request->status
         ]);
+
+        if ($wasOpen && $request->status === 'closed') {
+            // Auto Alpha
+            $extracurricularId = $session->schedule->extracurricular_id;
+            
+            // Get all approved students in this extracurricular
+            $studentIds = \App\Models\ExtracurricularRegistration::where('extracurricular_id', $extracurricularId)
+                ->where('status', 'approved')
+                ->pluck('student_id');
+                
+            // Get students who already have attendance record
+            $attendedStudentIds = \App\Models\Attendance::where('attendance_session_id', $session->id)
+                ->pluck('student_id')
+                ->toArray();
+                
+            // Diff to find absent students
+            $absentStudentIds = $studentIds->diff($attendedStudentIds);
+            
+            $now = now();
+            $absentRecords = [];
+            foreach ($absentStudentIds as $id) {
+                $absentRecords[] = [
+                    'student_id' => $id,
+                    'attendance_session_id' => $session->id,
+                    'status' => 'absent',
+                    'method' => 'manual',
+                    'checked_at' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+            
+            if (count($absentRecords) > 0) {
+                \App\Models\Attendance::insert($absentRecords);
+            }
+        }
 
         return back()->with('success', 'Data sesi berhasil diperbarui.');
     }
@@ -247,6 +285,12 @@ class TeacherAttendanceController extends Controller
     {
         if ($session->opened_by != Auth::id()) {
             abort(403);
+        }
+
+        if (empty($session->session_code)) {
+            $session->update([
+                'session_code' => strtoupper(\Illuminate\Support\Str::random(6))
+            ]);
         }
 
         $session->load('schedule.extracurricular');

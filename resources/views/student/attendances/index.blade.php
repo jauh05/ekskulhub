@@ -13,7 +13,6 @@
                         <th class="p-4 font-label-md text-secondary">TANGGAL</th>
                         <th class="p-4 font-label-md text-secondary">EKSKUL</th>
                         <th class="p-4 font-label-md text-secondary">STATUS</th>
-                        <th class="p-4 font-label-md text-secondary">VERIFIKASI GURU</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-outline-variant">
@@ -30,13 +29,6 @@
                                 <span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-label-sm font-bold rounded-full">Sakit</span>
                             @else
                                 <span class="px-3 py-1 bg-primary-container text-on-primary-container text-label-sm font-bold rounded-full">Izin</span>
-                            @endif
-                        </td>
-                        <td class="p-4 font-body-md">
-                            @if($att->verified_at)
-                                <span class="flex items-center gap-1 text-tertiary font-bold"><span class="material-symbols-outlined text-[16px]">verified</span> Ya</span>
-                            @else
-                                <span class="flex items-center gap-1 text-secondary"><span class="material-symbols-outlined text-[16px]">pending</span> Menunggu</span>
                             @endif
                         </td>
                     </tr>

@@ -84,7 +84,7 @@
                     <span class="material-symbols-outlined">keyboard</span> Manual Kode PIN
                 </button>
                 
-                <button @click="step = 'selfie'; method = 'selfie'" type="button" class="w-full bg-[#F59E0B] text-white py-3 rounded-xl font-title-md font-bold hover:bg-[#F59E0B]/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
+                <button @click="step = 'selfie'; method = 'selfie'" type="button" class="w-full bg-[#F59E0B] text-gray-900 py-3 rounded-xl font-title-md font-bold hover:bg-[#F59E0B]/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
                     <span class="material-symbols-outlined">add_a_photo</span> Foto Selfie
                 </button>
             </div>
