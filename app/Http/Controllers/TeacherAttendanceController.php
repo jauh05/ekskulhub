@@ -145,6 +145,14 @@ class TeacherAttendanceController extends Controller
     
     public function destroy(Attendance $attendance)
     {
+        if ($attendance->selfie_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($attendance->selfie_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($attendance->selfie_path);
+        }
+        
+        if ($attendance->proof_file && \Illuminate\Support\Facades\Storage::disk('public')->exists($attendance->proof_file)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($attendance->proof_file);
+        }
+
         $attendance->delete();
         return back()->with('success', 'Data presensi berhasil dihapus.');
     }
