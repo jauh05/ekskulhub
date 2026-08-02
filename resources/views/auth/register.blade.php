@@ -185,7 +185,7 @@
 </div>
 <div class="flex flex-col">
 <span class="font-label-sm text-on-surface-variant">Langkah 3</span>
-<span class="font-title-md text-on-surface text-[14px] lg:text-[20px] whitespace-nowrap">Pilih Ekskul</span>
+<span class="font-title-md text-on-surface text-[14px] lg:text-[20px] whitespace-nowrap">Kode Kelas</span>
 </div>
 </div>
 <div class="step-indicator relative flex flex-col lg:flex-row items-center lg:items-center text-center lg:text-left gap-2 lg:gap-md group min-w-[100px] lg:min-w-0 snap-center shrink-0 z-10 opacity-40" data-step="4">
@@ -202,6 +202,18 @@
 <!-- Right Column: Form Multi-step -->
 <div class="lg:col-span-8">
 <div class="bg-surface-container-lowest p-xl rounded-xl shadow-xl min-h-[600px] flex flex-col border border-surface-container-high">
+
+@if ($errors->any())
+    <div class="mb-6 bg-error-container text-on-error-container p-4 rounded-lg">
+        <div class="font-bold mb-2">Registrasi Gagal:</div>
+        <ul class="list-disc list-inside text-sm">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form method="POST" action="{{ route('register') }}" class="flex-grow" id="regForm">
 @csrf
 <!-- STEP 1: AKUN -->
@@ -239,16 +251,23 @@
 <div class="step-content hidden space-y-lg animate-in fade-in slide-in-from-right-4 duration-500" id="step-2-content">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
 <div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">NIS / NISN</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all" name="nisn" type="text"/>
+<label class="font-label-md text-on-surface-variant">Nama Sekolah</label>
+<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="school_name">
+    <option value="">Pilih Nama Sekolah</option>
+    @foreach($schools as $school)
+        <option value="{{ $school }}">{{ $school }}</option>
+    @endforeach
+</select>
 </div>
 <div class="flex flex-col gap-xs">
 <label class="font-label-md text-on-surface-variant">Kelas</label>
 <select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="class">
-<option>Pilih Kelas</option>
-<option>X-1</option>
-<option>XI-IPA-1</option>
-<option>XII-IPS-2</option>
+<option value="">Pilih Kelas</option>
+@foreach(['7','8','9'] as $grade)
+    @foreach(['A','B','C','D','E','F'] as $letter)
+        <option value="{{ $grade }} {{ $letter }}">Kelas {{ $grade }} {{ $letter }}</option>
+    @endforeach
+@endforeach
 </select>
 </div>
 <div class="flex flex-col gap-xs">
@@ -280,18 +299,18 @@
 <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1e9biaceJJst8Yo8C4QcknIWkZC9tvCG_vVbRpQa4r_kv4nWXn29Qio5cs80xTEnTUYaMPr-iI7whbiTeZLsMH-teKGfv-RjkvBlNkKlOE0rdRR7RptEmkgfwgq5TV_KAYnSfb9iA2tAYumdD5Fmyt6s4ucmyEIjfI5liiFhMJMHxHBNN94OhcfDlWwEiNy6OXDq5Oo9UC8HvrCaSw2CM7ieO1tMe7D28L1sb5OW9WQtiLZ5BCRGG"/>
 </div>
 <div class="flex-grow">
-<h3 class="font-title-md text-on-surface">Andi Pratama</h3>
-<p class="text-on-surface-variant font-label-sm">NISN: 0045239121 • Kelas XI-IPA-1</p>
+<h3 class="font-title-md text-on-surface" id="confirm-name">Andi Pratama</h3>
+<p class="text-on-surface-variant font-label-sm" id="confirm-subinfo">Sekolah: - • Kelas -</p>
 </div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-md text-sm">
 <div class="space-y-1">
 <p class="text-on-surface-variant uppercase font-label-sm text-[10px]">Email</p>
-<p class="font-body-md text-on-surface">andi.pratama@email.com</p>
+<p class="font-body-md text-on-surface" id="confirm-email">andi.pratama@email.com</p>
 </div>
 <div class="space-y-1">
 <p class="text-on-surface-variant uppercase font-label-sm text-[10px]">WhatsApp</p>
-<p class="font-body-md text-on-surface">0812-3456-7890</p>
+<p class="font-body-md text-on-surface" id="confirm-whatsapp">0812-3456-7890</p>
 </div>
 
 </div>
@@ -399,6 +418,19 @@
         const successScreen = document.getElementById('success-screen');
 
         function updateUI() {
+            if (currentStep === 4) {
+                const name = document.querySelector('input[name="name"]').value || '-';
+                const schoolName = document.querySelector('select[name="school_name"]').value || '-';
+                const className = document.querySelector('select[name="class"]').value || '-';
+                const email = document.querySelector('input[name="email"]').value || '-';
+                const whatsapp = document.querySelector('input[name="whatsapp"]').value || '-';
+                
+                document.getElementById('confirm-name').textContent = name;
+                document.getElementById('confirm-subinfo').textContent = 'Sekolah: ' + schoolName + ' • Kelas ' + className;
+                document.getElementById('confirm-email').textContent = email;
+                document.getElementById('confirm-whatsapp').textContent = whatsapp;
+            }
+
             // Update contents
             contents.forEach((content, idx) => {
                 if (idx + 1 === currentStep) {

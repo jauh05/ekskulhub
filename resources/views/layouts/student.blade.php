@@ -56,7 +56,7 @@
             <span class="material-symbols-outlined text-primary text-[28px]">school</span>
         </div>
         <div class="flex items-center gap-4">
-            <a href="{{ route('student.profile.index') }}" class="w-10 h-10 rounded-full bg-primary-container overflow-hidden border border-outline-variant flex items-center justify-center text-primary font-bold">
+            <a href="{{ route('student.profile.index') }}" class="w-10 h-10 rounded-full bg-primary overflow-hidden border border-primary flex items-center justify-center text-white font-bold uppercase">
                 {{ substr(Auth::user()->name, 0, 1) }}
             </a>
         </div>

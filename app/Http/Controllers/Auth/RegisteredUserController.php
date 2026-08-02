@@ -20,7 +20,11 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $schools = \App\Models\TeacherProfile::whereNotNull('school_name')
+            ->distinct()
+            ->pluck('school_name');
+            
+        return view('auth.register', compact('schools'));
     }
 
     /**
@@ -35,11 +39,13 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'whatsapp' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'nisn' => ['required', 'string', 'max:50'],
+            'school_name' => ['required', 'string', 'max:255'],
             'class' => ['required', 'string', 'max:50'],
             'dob' => ['nullable', 'date'],
             'ekskul' => ['nullable', 'string'],
-            'class_code' => ['nullable', 'string'],
+            'class_code' => ['nullable', 'string', 'exists:extracurriculars,class_code'],
+        ], [
+            'class_code.exists' => 'Kode Kelas yang Anda masukkan tidak valid atau tidak ditemukan.',
         ]);
 
         $user = User::create([
@@ -52,7 +58,7 @@ class RegisteredUserController extends Controller
 
         \App\Models\StudentProfile::create([
             'user_id' => $user->id,
-            'nis' => $request->nisn,
+            'school_name' => $request->school_name,
             'class_name' => $request->class,
             'birth_date' => $request->dob,
         ]);

@@ -1,6 +1,43 @@
 <x-student-layout>
     <div class="mb-6">
-        <h3 class="font-headline-lg text-headline-lg text-on-surface">Pilih Ekstrakurikuler</h3>
+        <h3 class="font-headline-lg text-headline-lg text-on-surface">Gabung Ekstrakurikuler</h3>
+        <p class="text-on-surface-variant font-body-md mt-2">Masukkan kode kelas dari pembina ekstrakurikuler untuk bergabung.</p>
+    </div>
+
+    @if(session('error'))
+        <div class="mb-4 bg-error-container text-on-error-container p-4 rounded-lg font-bold">
+            {{ session('error') }}
+        </div>
+    @endif
+    
+    @if(session('success'))
+        <div class="mb-4 bg-primary-container text-on-primary-container p-4 rounded-lg font-bold">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="mb-4 bg-error-container text-on-error-container p-4 rounded-lg font-bold">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
+    <div class="bg-white p-6 md:p-8 rounded-xl border border-outline-variant soft-shadow max-w-xl mb-12">
+        <form action="{{ route('student.extracurriculars.store') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="font-label-md text-on-surface-variant mb-2 block">Kode Kelas</label>
+                <input type="text" name="class_code" placeholder="Misal: ROB-2024" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono tracking-widest uppercase" required>
+            </div>
+            <button type="submit" class="w-full bg-primary text-on-primary py-3 rounded-lg font-title-md hover:bg-primary-container transition-all">
+                Gabung Sekarang
+            </button>
+        </form>
+    </div>
+
+    @if($extracurriculars->count() > 0)
+    <div class="mb-6">
+        <h3 class="font-title-lg text-title-lg text-on-surface">Ekstrakurikuler Saya</h3>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -18,11 +55,7 @@
                 <div class="space-y-2 text-on-surface-variant text-label-md">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">schedule</span>
-                        {{ $ekskul->schedule }}
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">location_on</span>
-                        {{ $ekskul->location }}
+                        {{ $ekskul->regular_day }}
                     </div>
                 </div>
             </div>
@@ -41,17 +74,10 @@
                             Menunggu Persetujuan
                         </div>
                     @endif
-                @else
-                    <form action="{{ route('student.extracurriculars.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="extracurricular_id" value="{{ $ekskul->id }}">
-                        <button type="submit" onclick="return confirm('Daftar ekstrakurikuler ini?')" class="w-full text-center py-2 bg-primary text-on-primary rounded-lg font-label-md font-bold hover:bg-primary-container transition-colors">
-                            Daftar Sekarang
-                        </button>
-                    </form>
                 @endif
             </div>
         </div>
         @endforeach
     </div>
+    @endif
 </x-student-layout>

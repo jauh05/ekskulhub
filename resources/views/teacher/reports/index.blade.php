@@ -22,7 +22,7 @@
             <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
                 <span class="material-symbols-outlined text-[20px]">filter_list</span> Terapkan Filter
             </button>
-            <a href="{{ route('teacher.reports.export_csv', request()->query()) }}" class="bg-[#10B981] text-white px-4 py-2 rounded-lg font-label-md font-bold hover:bg-[#059669] transition-colors flex items-center gap-2 shadow-md">
+            <a href="{{ route('teacher.reports.export', request()->query()) }}" class="bg-[#10B981] text-white px-4 py-2 rounded-lg font-label-md font-bold hover:bg-[#059669] transition-colors flex items-center gap-2 shadow-md">
                 <span class="material-symbols-outlined text-[20px]">download</span> Export CSV
             </a>
         </form>

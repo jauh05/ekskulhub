@@ -214,15 +214,44 @@
                                         </td>
                                         <td class="px-6 py-4 font-body-md text-on-surface-variant">{{ $participant->extracurricular->name ?? '-' }}</td>
                                         <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2">
-                                                <span class="px-2 py-1 bg-[#10B981]/10 text-[#10B981] text-label-sm font-bold rounded-full">Aktif</span>
-                                                <span class="text-label-sm text-secondary">{{ $participant->created_at->diffForHumans() }}</span>
+                                            <div class="flex flex-col gap-1">
+                                                <div class="flex items-center gap-2">
+                                                    @if($participant->status === 'approved')
+                                                        <span class="px-2 py-1 bg-[#10B981]/10 text-[#10B981] text-[10px] font-bold rounded-full uppercase">Aktif</span>
+                                                    @elseif($participant->status === 'pending')
+                                                        <span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded-full uppercase">Pending</span>
+                                                    @else
+                                                        <span class="px-2 py-1 bg-error/10 text-error text-[10px] font-bold rounded-full uppercase">Ditolak</span>
+                                                    @endif
+                                                    <span class="text-label-sm text-secondary">{{ $participant->created_at->diffForHumans() }}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <a href="{{ route('teacher.participants.index') }}" class="text-primary p-2 hover:bg-primary-container/10 rounded-full transition-colors inline-block">
-                                                <span class="material-symbols-outlined">chevron_right</span>
-                                            </a>
+                                            @if($participant->status === 'pending')
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <input type="hidden" name="status" value="approved">
+                                                        <button type="submit" class="bg-[#10B981]/10 text-[#10B981] p-2 hover:bg-[#10B981]/20 rounded-full transition-colors flex items-center justify-center" title="Terima Siswa">
+                                                            <span class="material-symbols-outlined text-[18px]">check</span>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <input type="hidden" name="status" value="rejected">
+                                                        <button type="submit" class="bg-error/10 text-error p-2 hover:bg-error/20 rounded-full transition-colors flex items-center justify-center" title="Tolak Siswa">
+                                                            <span class="material-symbols-outlined text-[18px]">close</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @else
+                                                <a href="{{ route('teacher.participants.index') }}" class="text-primary p-2 hover:bg-primary-container/10 rounded-full transition-colors inline-block">
+                                                    <span class="material-symbols-outlined">chevron_right</span>
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @empty

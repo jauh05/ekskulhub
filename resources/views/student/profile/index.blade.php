@@ -9,14 +9,26 @@
             @csrf
             
             <div class="space-y-1.5">
-                <label class="font-label-md text-on-surface-variant">Nomor Induk Siswa (NIS)</label>
-                <input type="text" name="nis" value="{{ old('nis', $profile->nis ?? '') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md" required>
+                <label class="font-label-md text-on-surface-variant">Nama Sekolah</label>
+                <select name="school_name" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md" required>
+                    <option value="">Pilih Nama Sekolah</option>
+                    @foreach($schools as $school)
+                        <option value="{{ $school }}" {{ old('school_name', $profile->school_name ?? '') == $school ? 'selected' : '' }}>{{ $school }}</option>
+                    @endforeach
+                </select>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="font-label-md text-on-surface-variant">Kelas</label>
-                    <input type="text" name="class" value="{{ old('class', $profile->class ?? '') }}" placeholder="Contoh: X MIPA 1" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md" required>
+                    <select name="class_name" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md" required>
+                        <option value="">Pilih Kelas</option>
+                        @foreach(['7','8','9'] as $grade)
+                            @foreach(['A','B','C','D','E','F'] as $letter)
+                                <option value="{{ $grade }} {{ $letter }}" {{ old('class_name', $profile->class_name ?? '') == "$grade $letter" ? 'selected' : '' }}>Kelas {{ $grade }} {{ $letter }}</option>
+                            @endforeach
+                        @endforeach
+                    </select>
                 </div>
                 <div class="space-y-1.5">
                     <label class="font-label-md text-on-surface-variant">Jenis Kelamin</label>

@@ -187,12 +187,10 @@
 <h1 class="font-headline-lg text-headline-lg text-on-surface">Selamat Datang Kembali</h1>
 <p class="font-body-md text-on-surface-variant mt-2 text-center lg:text-left">Silakan masuk untuk mengakses dasbor kegiatanmu.</p>
 </div>
-<!-- Form -->
-<form method="POST" action="{{ route('login') }}" class="space-y-gutter" id="loginForm">
-@csrf
 
 @if ($errors->any())
-    <div class="p-4 mb-4 bg-red-100 text-red-700 rounded-xl">
+    <div class="mb-4 bg-error-container text-on-error-container p-4 rounded-lg">
+        <div class="font-bold mb-2">Login Gagal:</div>
         <ul class="list-disc list-inside text-sm">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>

@@ -54,6 +54,7 @@ class TeacherRegisteredUserController extends Controller
         TeacherProfile::create([
             'user_id' => $user->id,
             'nip' => $request->nip,
+            'school_name' => $request->school_name,
         ]);
 
         // If ekskul_name is provided, create a new extracurricular assigned to this teacher

@@ -184,6 +184,18 @@
 <!-- Right Column: Form Multi-step -->
 <div class="lg:col-span-8">
 <div class="bg-surface-container-lowest p-xl rounded-xl shadow-xl min-h-[600px] flex flex-col border border-surface-container-high">
+
+@if ($errors->any())
+    <div class="mb-6 bg-error-container text-on-error-container p-4 rounded-lg">
+        <div class="font-bold mb-2">Registrasi Gagal:</div>
+        <ul class="list-disc list-inside text-sm">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form method="POST" action="{{ route('register.guru') }}" class="flex-grow" id="regForm">
 @csrf
 <!-- STEP 1: AKUN -->

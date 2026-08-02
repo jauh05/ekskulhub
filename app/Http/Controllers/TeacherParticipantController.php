@@ -35,4 +35,25 @@ class TeacherParticipantController extends Controller
             'participants', 'ekskuls', 'totalSiswa', 'siswaBaruBulanIni', 'totalEkskul'
         ));
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        $registration = ExtracurricularRegistration::findOrFail($id);
+        
+        // Verify this registration belongs to an extracurricular taught by this teacher
+        $teacher = Auth::user();
+        if (!$teacher->taughtExtracurriculars->contains($registration->extracurricular_id)) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $registration->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status pendaftaran berhasil diperbarui.');
+    }
 }

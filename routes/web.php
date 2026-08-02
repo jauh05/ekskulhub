@@ -21,6 +21,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/dashboard', function () {
+    if (auth()->check()) {
+        $role = auth()->user()->role;
+        if ($role === 'admin') return redirect()->route('admin.dashboard');
+        if ($role === 'teacher') return redirect()->route('teacher.dashboard');
+        if ($role === 'student') return redirect()->route('student.dashboard');
+    }
+    return redirect('/');
+})->middleware('auth')->name('dashboard');
+
 Route::middleware(['auth', 'active'])->group(function () {
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -34,7 +44,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
         Route::post('/dashboard/class-code/{extracurricular}', [TeacherDashboardController::class, 'updateClassCode'])->name('class_code.update');
         Route::resource('schedules', TeacherScheduleController::class);
-        Route::resource('participants', TeacherParticipantController::class)->only(['index']);
+        Route::resource('participants', TeacherParticipantController::class)->only(['index', 'update']);
         Route::post('/attendances/session/start', [TeacherAttendanceController::class, 'startSession'])->name('attendances.start');
         Route::get('/attendances/session/{session}/live', [TeacherAttendanceController::class, 'live'])->name('attendances.live');
         Route::get('/attendances/session/{session}/api/qr', [TeacherAttendanceController::class, 'getLiveQr'])->name('attendances.live.qr');
