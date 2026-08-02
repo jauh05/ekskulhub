@@ -73,6 +73,159 @@
         </div>
     </div>
 
+    <!-- Riwayat Sesi Presensi Table -->
+    <div x-data="{ 
+        showEditSessionModal: false, 
+        showDeleteSessionModal: false, 
+        selectedSession: {},
+        
+        openEditSession(sess) {
+            this.selectedSession = sess;
+            this.showEditSessionModal = true;
+        },
+        openDeleteSession(sess) {
+            this.selectedSession = sess;
+            this.showDeleteSessionModal = true;
+        }
+    }" class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden mb-8">
+        <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+            <h4 class="font-title-md font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">view_list</span> Riwayat Sesi Presensi
+            </h4>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-outline-variant bg-surface-container-lowest">
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">calendar_today</span> TANGGAL & WAKTU</th>
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">sports_martial_arts</span> EKSKUL</th>
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">info</span> STATUS</th>
+                        <th class="p-4 font-label-md text-secondary"><span class="material-symbols-outlined text-[18px]">group</span> JUMLAH HADIR</th>
+                        <th class="p-4 font-label-md text-secondary">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant">
+                    @forelse($attendanceSessions as $sess)
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="p-4 font-body-md text-on-surface-variant">
+                            <span class="font-bold text-on-surface">{{ \Carbon\Carbon::parse($sess->schedule->activity_date)->format('d M Y') }}</span><br>
+                            <span class="text-label-sm">{{ \Carbon\Carbon::parse($sess->schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($sess->schedule->end_time)->format('H:i') }}</span>
+                        </td>
+                        <td class="p-4 font-body-md text-on-surface font-semibold">{{ $sess->schedule->extracurricular->name ?? '-' }}</td>
+                        <td class="p-4">
+                            @if($sess->status == 'open')
+                                <span class="px-3 py-1 bg-[#10B981]/10 text-[#10B981] text-label-sm font-bold rounded-full border border-[#10B981]/20 animate-pulse flex items-center gap-1 w-max">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span> Berjalan
+                                </span>
+                            @else
+                                <span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-label-sm font-bold rounded-full">Selesai</span>
+                            @endif
+                        </td>
+                        <td class="p-4 font-body-md text-on-surface font-bold">
+                            {{ $sess->attendances_count }} Siswa
+                        </td>
+                        <td class="p-4 flex gap-2">
+                            <a href="{{ route('teacher.attendances.index', ['session_id' => $sess->id]) }}" class="px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-label-sm font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span> Lihat Absensi
+                            </a>
+                            <button @click="openEditSession({{ json_encode($sess) }})" class="w-8 h-8 rounded bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center hover:bg-[#F59E0B] hover:text-white transition-colors" title="Edit Sesi">
+                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                            </button>
+                            <button @click="openDeleteSession({{ json_encode($sess) }})" class="w-8 h-8 rounded bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors" title="Hapus Sesi">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="p-4 text-center text-on-surface-variant">Belum ada data sesi presensi</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4 border-t border-outline-variant">
+            {{ $attendanceSessions->links() }}
+        </div>
+
+        <!-- Edit Session Modal -->
+        <div x-show="showEditSessionModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showEditSessionModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showEditSessionModal = false" aria-hidden="true"></div>
+                <div x-show="showEditSessionModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 border-b border-outline-variant">
+                        <h3 class="text-title-lg font-bold text-on-surface">Edit Sesi Presensi</h3>
+                    </div>
+                    <form :action="'{{ route('teacher.attendances.session.update', 'ID_PLACEHOLDER') }}'.replace('ID_PLACEHOLDER', selectedSession?.id)" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="px-4 py-5 sm:p-6 space-y-4">
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Tanggal Kegiatan</label>
+                                <input type="date" name="activity_date" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" :value="selectedSession?.schedule?.activity_date ? selectedSession.schedule.activity_date.split(' ')[0] : ''" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-label-md font-bold text-on-surface mb-1">Waktu Mulai</label>
+                                    <input type="time" name="start_time" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" :value="selectedSession?.schedule?.start_time ? selectedSession.schedule.start_time.substring(0, 5) : ''" required>
+                                </div>
+                                <div>
+                                    <label class="block text-label-md font-bold text-on-surface mb-1">Waktu Selesai</label>
+                                    <input type="time" name="end_time" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" :value="selectedSession?.schedule?.end_time ? selectedSession.schedule.end_time.substring(0, 5) : ''" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Status Sesi</label>
+                                <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" :value="selectedSession?.status" required>
+                                    <option value="open">Berjalan (Open)</option>
+                                    <option value="closed">Selesai (Closed)</option>
+                                </select>
+                                <p class="text-body-sm text-secondary mt-1">Jika Anda mengubah status menjadi "Berjalan", Anda bisa membuka kembali halaman QR Code di menu utama.</p>
+                            </div>
+                        </div>
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Simpan Perubahan</button>
+                            <button type="button" @click="showEditSessionModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Session Modal -->
+        <div x-show="showDeleteSessionModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showDeleteSessionModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDeleteSessionModal = false" aria-hidden="true"></div>
+                <div x-show="showDeleteSessionModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error/10 mb-4">
+                            <span class="material-symbols-outlined text-error text-[24px]">warning</span>
+                        </div>
+                        <h3 class="text-title-md font-bold text-on-surface mb-2">Hapus Sesi Presensi?</h3>
+                        <p class="text-body-md text-secondary">Apakah Anda yakin ingin menghapus sesi presensi ini? <br><br> <span class="font-bold text-error">Perhatian:</span> Menghapus sesi akan ikut <strong>MENGHAPUS SEMUA DATA KEHADIRAN SISWA</strong> yang terekam pada sesi tersebut secara permanen!</p>
+                    </div>
+                    <form :action="'{{ route('teacher.attendances.session.destroy', 'ID_PLACEHOLDER') }}'.replace('ID_PLACEHOLDER', selectedSession?.id)" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-error text-base font-medium text-white hover:bg-error/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Ya, Hapus Semua</button>
+                            <button type="button" @click="showDeleteSessionModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @if(request()->filled('session_id'))
+    <div class="mb-4 flex items-center justify-between bg-primary-container text-on-primary-container px-4 py-3 rounded-lg border border-primary/20">
+        <div class="flex items-center gap-2 font-medium">
+            <span class="material-symbols-outlined">filter_alt</span> Menampilkan daftar absen khusus untuk sesi yang dipilih.
+        </div>
+        <a href="{{ route('teacher.attendances.index') }}" class="text-primary hover:underline font-bold text-sm">Reset Filter</a>
+    </div>
+    @endif
+    
     <div x-data="{ 
         showAddModal: false, 
         showEditModal: false, 

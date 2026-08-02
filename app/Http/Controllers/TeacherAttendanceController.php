@@ -28,6 +28,10 @@ class TeacherAttendanceController extends Controller
                 }
             });
             
+        if ($request->filled('session_id')) {
+            $query->where('attendance_session_id', $request->session_id);
+        }
+            
         // Statistics
         $totalHadir = (clone $query)->where('status', 'present')->count();
         $totalSakit = (clone $query)->where('status', 'sick')->count();
@@ -62,8 +66,20 @@ class TeacherAttendanceController extends Controller
             ->where('status', 'open')
             ->first();
             
+        // Fetch sessions for the new history table
+        $attendanceSessionsQuery = \App\Models\AttendanceSession::with(['schedule.extracurricular'])
+            ->withCount('attendances')
+            ->whereHas('schedule', function($q) use ($ekskulIds, $request) {
+                $q->whereIn('extracurricular_id', $ekskulIds);
+                if ($request->filled('ekskul_id')) {
+                    $q->where('extracurricular_id', $request->ekskul_id);
+                }
+            });
+            
+        $attendanceSessions = $attendanceSessionsQuery->latest('created_at')->paginate(5, ['*'], 'session_page')->withQueryString();
+            
         return view('teacher.attendances.index', compact(
-            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents', 'activeSession'
+            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents', 'activeSession', 'attendanceSessions'
         ));
     }
     
@@ -131,6 +147,45 @@ class TeacherAttendanceController extends Controller
     {
         $attendance->delete();
         return back()->with('success', 'Data presensi berhasil dihapus.');
+    }
+
+    public function updateSession(Request $request, AttendanceSession $session)
+    {
+        if ($session->opened_by != Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'activity_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
+            'status' => 'required|in:open,closed'
+        ]);
+
+        $session->schedule->update([
+            'activity_date' => $request->activity_date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ]);
+
+        $session->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Data sesi berhasil diperbarui.');
+    }
+
+    public function destroySession(AttendanceSession $session)
+    {
+        if ($session->opened_by != Auth::id()) {
+            abort(403);
+        }
+
+        // This will cascade delete attendances because of DB constraints, but we can also manually do it or just let DB handle it.
+        // It's safer to delete explicitly or let cascade handle it. Cascade is set in migration.
+        $session->delete();
+
+        return back()->with('success', 'Sesi beserta semua data presensinya berhasil dihapus.');
     }
 
     public function startSession(Request $request)

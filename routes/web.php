@@ -53,6 +53,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/attendances/session/{session}/api/qr', [TeacherAttendanceController::class, 'getLiveQr'])->name('attendances.live.qr');
         Route::get('/attendances/session/{session}/api/data', [TeacherAttendanceController::class, 'getLiveData'])->name('attendances.live.data');
         Route::post('/attendances/session/{session}/close', [TeacherAttendanceController::class, 'closeSession'])->name('attendances.live.close');
+        Route::put('/attendances/session/{session}/update', [TeacherAttendanceController::class, 'updateSession'])->name('attendances.session.update');
+        Route::delete('/attendances/session/{session}/delete', [TeacherAttendanceController::class, 'destroySession'])->name('attendances.session.destroy');
         Route::resource('attendances', TeacherAttendanceController::class)->except(['create', 'edit', 'show']);
         Route::resource('grading', TeacherGradingController::class);
         
