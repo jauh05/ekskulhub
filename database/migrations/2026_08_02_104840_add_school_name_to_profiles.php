@@ -16,6 +16,10 @@ return new class extends Migration
             $table->dropColumn('nis');
             $table->string('school_name')->nullable()->after('user_id');
         });
+
+        Schema::table('teacher_profiles', function (Blueprint $table) {
+            $table->string('school_name')->nullable()->after('user_id');
+        });
     }
 
     /**
@@ -26,6 +30,10 @@ return new class extends Migration
         Schema::table('student_profiles', function (Blueprint $table) {
             $table->dropColumn('school_name');
             $table->string('nis')->unique()->after('user_id');
+        });
+
+        Schema::table('teacher_profiles', function (Blueprint $table) {
+            $table->dropColumn('school_name');
         });
     }
 };
