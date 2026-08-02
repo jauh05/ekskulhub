@@ -115,13 +115,13 @@
                                             </template>
                                         </td>
                                         <td class="p-4">
-                                            <span class="px-2 py-1 rounded-full text-[12px] font-bold"
+                                            <span class="px-2 py-1 rounded-full text-[12px] font-bold uppercase"
                                                   :class="{
                                                     'bg-[#10B981]/10 text-[#10B981]': attendance.status === 'present',
                                                     'bg-error/10 text-error': attendance.status === 'absent' || attendance.status === 'late',
                                                     'bg-tertiary/10 text-tertiary': attendance.status === 'permission' || attendance.status === 'sick'
                                                   }"
-                                                  x-text="attendance.status.toUpperCase()">
+                                                  x-text="formatStatus(attendance.status)">
                                             </span>
                                         </td>
                                         <td class="p-4 text-right">
@@ -249,6 +249,17 @@
                 formatTime(dateString) {
                     const date = new Date(dateString);
                     return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                },
+
+                formatStatus(status) {
+                    const map = {
+                        'present': 'Hadir',
+                        'permission': 'Izin',
+                        'sick': 'Sakit',
+                        'absent': 'Alpa',
+                        'late': 'Terlambat'
+                    };
+                    return map[status] || status.toUpperCase();
                 }
             }))
         })
