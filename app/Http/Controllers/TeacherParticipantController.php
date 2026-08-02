@@ -15,7 +15,7 @@ class TeacherParticipantController extends Controller
         $ekskulIds = $teacher->taughtExtracurriculars()->pluck('id');
         $ekskuls = $teacher->taughtExtracurriculars;
         
-        $query = ExtracurricularRegistration::with(['student.studentProfile', 'extracurricular'])
+        $query = ExtracurricularRegistration::with(['student.studentProfile', 'student.attendances', 'extracurricular.schedules'])
             ->whereIn('extracurricular_id', $ekskulIds)
             ->where('status', 'approved');
             

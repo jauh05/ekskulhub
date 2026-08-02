@@ -40,6 +40,14 @@ class StudentHomeController extends Controller
             ->whereDate('activity_date', Carbon::today())
             ->get();
 
-        return view('student.dashboard', compact('user', 'totalEkskul', 'attendancePercentage', 'jadwalHariIni', 'ekskulTerdaftar'));
+        // Pengumuman Terbaru
+        $pengumuman = \App\Models\Announcement::with('extracurricular')
+            ->whereIn('extracurricular_id', $ekskulIds)
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->take(5)
+            ->get();
+
+        return view('student.dashboard', compact('user', 'totalEkskul', 'attendancePercentage', 'jadwalHariIni', 'ekskulTerdaftar', 'pengumuman'));
     }
 }

@@ -72,6 +72,30 @@
         @endforelse
     </section>
 
+    <!-- Pengumuman Terbaru List -->
+    @if(isset($pengumuman) && $pengumuman->count() > 0)
+    <section class="flex flex-col gap-2 mt-4">
+        <h3 class="text-lg font-semibold text-on-surface mb-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-primary text-[20px]">campaign</span> Pengumuman Terbaru
+        </h3>
+        <div class="flex flex-col gap-3">
+            @foreach($pengumuman as $p)
+            <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary group-hover:w-1.5 transition-all"></div>
+                <div class="pl-2">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-full">{{ $p->extracurricular->name }}</span>
+                        <span class="text-xs text-secondary">{{ \Carbon\Carbon::parse($p->published_at)->diffForHumans() }}</span>
+                    </div>
+                    <h5 class="text-base font-bold text-on-surface mb-1">{{ $p->title }}</h5>
+                    <p class="text-sm text-on-surface-variant line-clamp-2 leading-relaxed">{{ $p->content }}</p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
     <!-- Aktivitas Terbaru List -->
     <section class="flex flex-col gap-2 mt-4">
         <h3 class="text-lg font-semibold text-on-surface mb-1">Status Registrasi</h3>

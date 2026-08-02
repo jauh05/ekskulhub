@@ -249,10 +249,10 @@
 </div>
 <!-- STEP 2: DATA DIRI -->
 <div class="step-content hidden space-y-lg animate-in fade-in slide-in-from-right-4 duration-500" id="step-2-content">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
 <div class="flex flex-col gap-xs">
 <label class="font-label-md text-on-surface-variant">Nama Sekolah</label>
-<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="school_name">
+<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="school_name" required>
     <option value="">Pilih Nama Sekolah</option>
     @foreach($schools as $school)
         <option value="{{ $school }}">{{ $school }}</option>
@@ -261,13 +261,21 @@
 </div>
 <div class="flex flex-col gap-xs">
 <label class="font-label-md text-on-surface-variant">Kelas</label>
-<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="class">
+<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="class" required>
 <option value="">Pilih Kelas</option>
 @foreach(['7','8','9'] as $grade)
     @foreach(['A','B','C','D','E','F'] as $letter)
         <option value="{{ $grade }} {{ $letter }}">Kelas {{ $grade }} {{ $letter }}</option>
     @endforeach
 @endforeach
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-on-surface-variant">Jenis Kelamin</label>
+<select class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all appearance-none" name="gender" required>
+<option value="">Pilih Jenis Kelamin</option>
+<option value="male">Laki-Laki</option>
+<option value="female">Perempuan</option>
 </select>
 </div>
 <div class="flex flex-col gap-xs">
@@ -295,8 +303,8 @@
 <div class="step-content hidden space-y-lg animate-in fade-in slide-in-from-right-4 duration-500" id="step-4-content">
 <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant">
 <div class="flex items-center gap-lg mb-lg">
-<div class="w-20 h-20 rounded-full bg-surface-dim border-2 border-primary-fixed overflow-hidden flex-shrink-0">
-<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1e9biaceJJst8Yo8C4QcknIWkZC9tvCG_vVbRpQa4r_kv4nWXn29Qio5cs80xTEnTUYaMPr-iI7whbiTeZLsMH-teKGfv-RjkvBlNkKlOE0rdRR7RptEmkgfwgq5TV_KAYnSfb9iA2tAYumdD5Fmyt6s4ucmyEIjfI5liiFhMJMHxHBNN94OhcfDlWwEiNy6OXDq5Oo9UC8HvrCaSw2CM7ieO1tMe7D28L1sb5OW9WQtiLZ5BCRGG"/>
+<div class="w-20 h-20 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-[28px] font-bold uppercase tracking-widest flex-shrink-0" id="confirm-avatar">
+AN
 </div>
 <div class="flex-grow">
 <h3 class="font-title-md text-on-surface" id="confirm-name">Andi Pratama</h3>
@@ -425,6 +433,9 @@
                 const email = document.querySelector('input[name="email"]').value || '-';
                 const whatsapp = document.querySelector('input[name="whatsapp"]').value || '-';
                 
+                const initials = name !== '-' ? name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : 'AN';
+                
+                document.getElementById('confirm-avatar').textContent = initials;
                 document.getElementById('confirm-name').textContent = name;
                 document.getElementById('confirm-subinfo').textContent = 'Sekolah: ' + schoolName + ' • Kelas ' + className;
                 document.getElementById('confirm-email').textContent = email;

@@ -62,11 +62,27 @@ class TeacherAttendanceController extends Controller
 
     public function startSession(Request $request)
     {
-        $request->validate([
-            'schedule_id' => 'required|exists:schedules,id'
-        ]);
-
-        $schedule = Schedule::findOrFail($request->schedule_id);
+        if ($request->has('schedule_id') && !empty($request->schedule_id)) {
+            $schedule = Schedule::findOrFail($request->schedule_id);
+        } elseif ($request->has('extracurricular_id') && !empty($request->extracurricular_id)) {
+            // Verify teacher owns this extracurricular
+            $extracurricular = \App\Models\Extracurricular::where('id', $request->extracurricular_id)
+                ->where('teacher_id', Auth::id())
+                ->firstOrFail();
+                
+            $schedule = Schedule::create([
+                'extracurricular_id' => $extracurricular->id,
+                'title' => 'Sesi Latihan Tambahan',
+                'activity_date' => now()->toDateString(),
+                'start_time' => now()->format('H:i'),
+                'end_time' => now()->addHours(2)->format('H:i'),
+                'attendance_start_at' => now()->format('H:i'),
+                'attendance_end_at' => now()->addHours(2)->format('H:i'),
+                'created_by' => Auth::id(),
+            ]);
+        } else {
+            return back()->with('error', 'Pilih jadwal atau ekstrakurikuler terlebih dahulu.');
+        }
 
         $existingSession = AttendanceSession::where('schedule_id', $schedule->id)
             ->where('status', 'open')

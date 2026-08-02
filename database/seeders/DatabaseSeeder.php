@@ -69,7 +69,6 @@ class DatabaseSeeder extends Seeder
             ]);
             StudentProfile::create([
                 'user_id' => $siswa->id,
-                'nis' => '1000' . $i,
                 'class_name' => '10A',
                 'gender' => $i % 2 == 0 ? 'female' : 'male',
                 'parent_name' => 'Ortu ' . $i,

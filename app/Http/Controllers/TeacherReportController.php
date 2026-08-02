@@ -37,8 +37,8 @@ class TeacherReportController extends Controller
             // Count total schedules for THIS particular ekskul
             $totalSchedules = Schedule::where('extracurricular_id', $reg->extracurricular_id)->count();
             
-            $attendancesCount = AttendanceSession::where('student_id', $reg->student_id)
-                ->whereHas('schedule', function($q) use ($reg) {
+            $attendancesCount = \App\Models\Attendance::where('student_id', $reg->student_id)
+                ->whereHas('attendanceSession.schedule', function($q) use ($reg) {
                     $q->where('extracurricular_id', $reg->extracurricular_id);
                 })
                 ->where('status', 'present')
@@ -98,8 +98,8 @@ class TeacherReportController extends Controller
             fputcsv($file, array('Nama Siswa', 'Kelas', 'Ekstrakurikuler', 'Kehadiran (%)', 'Periode', 'Nilai Angka', 'Predikat'));
 
             foreach ($registrations as $reg) {
-                $attendancesCount = AttendanceSession::where('student_id', $reg->student_id)
-                    ->whereHas('schedule', function($q) use ($ekskulIds) {
+                $attendancesCount = \App\Models\Attendance::where('student_id', $reg->student_id)
+                    ->whereHas('attendanceSession.schedule', function($q) use ($ekskulIds) {
                         $q->whereIn('extracurricular_id', $ekskulIds);
                     })
                     ->where('status', 'present')
@@ -110,7 +110,7 @@ class TeacherReportController extends Controller
 
                 fputcsv($file, array(
                     $reg->student->name,
-                    $reg->student->studentProfile->class ?? '-',
+                    $reg->student->studentProfile->class_name ?? '-',
                     $reg->extracurricular->name,
                     $attendancePercentage . '%',
                     $latestAssessment ? $latestAssessment->period_name : '-',

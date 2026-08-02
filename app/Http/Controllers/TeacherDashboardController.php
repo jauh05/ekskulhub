@@ -28,10 +28,9 @@ class TeacherDashboardController extends Controller
             ->with('extracurricular')
             ->orderBy('activity_date')
             ->orderBy('start_time')
-            ->take(3)
+            ->take(1)
             ->get();
         $recentParticipants = ExtracurricularRegistration::whereIn('extracurricular_id', $ekskulIds)
-            ->where('status', 'approved')
             ->with(['student', 'extracurricular'])
             ->latest()
             ->take(5)

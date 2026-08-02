@@ -1,10 +1,10 @@
 <x-app-layout>
-    <div class="pt-24 px-8 pb-12">
+    <div class="pt-6 px-8 pb-12">
         <!-- Welcome Header -->
         <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-primary-container text-primary rounded-full flex items-center justify-center shrink-0 shadow-sm border border-primary/20">
-                    <span class="material-symbols-outlined text-[32px]">waving_hand</span>
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-[32px] text-white">waving_hand</span>
                 </div>
                 <div>
                     <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface">Selamat Datang, {{ explode(' ', auth()->user()->name ?? 'Guru')[0] }}!</h3>

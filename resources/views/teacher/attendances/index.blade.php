@@ -24,7 +24,7 @@
             <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
                 <span class="material-symbols-outlined text-[20px]">filter_list</span> Terapkan Filter
             </button>
-            <button type="button" @click="showRunModal = true" class="bg-[#10B981] text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-[#059669] transition-all flex items-center gap-2 ml-2 shadow-md">
+            <button type="button" @click="showRunModal = true" class="bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-2 ml-2 shadow-md">
                 <span class="material-symbols-outlined text-[20px]">play_circle</span> Jalankan Presensi
             </button>
         </form>
@@ -135,10 +135,10 @@
 
     <!-- Modal Jalankan Presensi -->
     <div x-show="showRunModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showRunModal" x-transition.opacity class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showRunModal = false" aria-hidden="true"></div>
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+            <div x-show="showRunModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showRunModal = false" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div x-show="showRunModal" x-transition.scale.origin.bottom class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+            <div x-show="showRunModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg w-full relative z-10">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-outline-variant">
                     <div class="sm:flex sm:items-start">
                         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 sm:mx-0 sm:h-10 sm:w-10">
@@ -174,21 +174,27 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="p-4 bg-error-container text-on-error-container rounded-lg flex items-start gap-2">
-                                <span class="material-symbols-outlined mt-0.5">error</span>
+                            <div class="space-y-4 text-left">
+                                <div class="p-3 bg-primary/10 text-primary rounded-lg text-body-sm flex gap-2 border border-primary/20">
+                                    <span class="material-symbols-outlined text-[20px]">info</span>
+                                    <span>Tidak ada jadwal hari ini. Sistem akan otomatis membuat jadwal sesi latihan baru untuk hari ini saat Anda klik Mulai.</span>
+                                </div>
                                 <div>
-                                    <p class="font-bold">Tidak ada jadwal hari ini.</p>
-                                    <p class="text-sm mt-1">Anda belum membuat jadwal untuk hari ini, atau Anda tidak mengampu ekskul apapun di hari ini.</p>
+                                    <label class="block text-label-md font-bold text-on-surface mb-2">Pilih Ekstrakurikuler:</label>
+                                    <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md" required>
+                                        <option value="">Pilih Ekskul...</option>
+                                        @foreach($ekskuls as $ek)
+                                            <option value="{{ $ek->id }}">{{ $ek->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         @endif
                     </div>
                     <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
-                        @if(isset($todaySchedules) && $todaySchedules->count() > 0)
-                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                                Mulai Presensi
-                            </button>
-                        @endif
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            Mulai Presensi
+                        </button>
                         <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                             Batal
                         </button>

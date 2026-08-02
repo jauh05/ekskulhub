@@ -14,8 +14,10 @@ use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentAssessmentController;
 use App\Http\Controllers\TeacherScheduleController;
 use App\Http\Controllers\TeacherParticipantController;
+use App\Http\Controllers\TeacherRegistrationController;
 use App\Http\Controllers\TeacherAttendanceController;
 use App\Http\Controllers\TeacherGradingController;
+use App\Http\Controllers\TeacherAnnouncementController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,6 +47,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/dashboard/class-code/{extracurricular}', [TeacherDashboardController::class, 'updateClassCode'])->name('class_code.update');
         Route::resource('schedules', TeacherScheduleController::class);
         Route::resource('participants', TeacherParticipantController::class)->only(['index', 'update']);
+        Route::resource('registrations', TeacherRegistrationController::class)->only(['index', 'update']);
         Route::post('/attendances/session/start', [TeacherAttendanceController::class, 'startSession'])->name('attendances.start');
         Route::get('/attendances/session/{session}/live', [TeacherAttendanceController::class, 'live'])->name('attendances.live');
         Route::get('/attendances/session/{session}/api/qr', [TeacherAttendanceController::class, 'getLiveQr'])->name('attendances.live.qr');
@@ -55,6 +58,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         
         Route::get('/report', [\App\Http\Controllers\TeacherReportController::class, 'index'])->name('reports.index');
         Route::get('/report/export', [\App\Http\Controllers\TeacherReportController::class, 'export'])->name('reports.export');
+        
+        Route::resource('announcements', TeacherAnnouncementController::class);
     });
 
     Route::prefix('siswa')->name('student.')->middleware('role:student')->group(function () {
