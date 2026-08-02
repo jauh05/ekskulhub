@@ -47,7 +47,7 @@
                     
                     <div class="mb-6">
                         <p class="text-label-sm text-secondary">Atau gunakan Kode PIN Manual:</p>
-                        <p class="text-display-md font-mono font-bold text-primary tracking-[0.2em] bg-primary/10 px-4 py-2 rounded-xl mt-2 inline-block border border-primary/20">{{ $session->session_code }}</p>
+                        <p class="text-display-md font-mono font-bold text-primary tracking-[0.2em] bg-primary/10 px-4 py-2 rounded-xl mt-2 inline-block border border-primary/20" x-text="sessionCode">{{ $session->session_code }}</p>
                     </div>
                     
                     <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full">
@@ -149,6 +149,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('liveAttendance', (sessionId) => ({
                 sessionId: sessionId,
+                sessionCode: '{{ $session->session_code }}',
                 attendances: [],
                 qrExpiresAt: null,
                 qrHash: '------',
@@ -209,6 +210,7 @@
                             this.qrCodeInstance.clear();
                             this.qrCodeInstance.makeCode(res.qr_payload);
                             this.qrHash = res.hash;
+                            if (res.session_code) this.sessionCode = res.session_code;
                             this.qrExpiresAt = new Date(res.expires_at).getTime();
                             this.updateTimer();
                         }

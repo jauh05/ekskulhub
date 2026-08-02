@@ -306,6 +306,7 @@ class TeacherAttendanceController extends Controller
         if (now()->greaterThanOrEqualTo($session->qr_expires_at)) {
             $session->update([
                 'qr_secret_hash' => sprintf("%06d", mt_rand(1, 999999)),
+                'session_code' => strtoupper(\Illuminate\Support\Str::random(6)),
                 'qr_expires_at' => now()->addSeconds(10),
                 'qr_last_rotated_at' => now(),
             ]);
@@ -319,6 +320,7 @@ class TeacherAttendanceController extends Controller
         return response()->json([
             'expires_at' => $session->qr_expires_at->toIso8601String(),
             'hash' => $session->qr_secret_hash,
+            'session_code' => $session->session_code,
             'qr_payload' => $qrData
         ]);
     }
