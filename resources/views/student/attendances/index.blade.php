@@ -10,7 +10,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-outline-variant bg-surface-container-lowest">
-                        <th class="p-4 font-label-md text-secondary">TANGGAL</th>
+                        <th class="p-4 font-label-md text-secondary">TANGGAL & WAKTU</th>
                         <th class="p-4 font-label-md text-secondary">EKSKUL</th>
                         <th class="p-4 font-label-md text-secondary">STATUS</th>
                     </tr>
@@ -18,7 +18,10 @@
                 <tbody class="divide-y divide-outline-variant">
                     @forelse($attendances as $att)
                     <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-4 font-body-md text-on-surface-variant">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->activity_date)->format('d M Y') }}</td>
+                        <td class="p-4 font-body-md text-on-surface-variant">
+                            <span class="font-bold text-on-surface">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->activity_date)->format('d M Y') }}</span><br>
+                            <span class="text-label-sm">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($att->attendanceSession->schedule->end_time)->format('H:i') }}</span>
+                        </td>
                         <td class="p-4 font-body-md text-on-surface font-semibold">{{ $att->attendanceSession->schedule->extracurricular->name ?? '-' }}</td>
                         <td class="p-4">
                             @if($att->status == 'present')
