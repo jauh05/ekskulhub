@@ -82,6 +82,7 @@ class TeacherAttendanceController extends Controller
                 'end_time' => now()->addHours(2)->format('H:i'),
                 'attendance_start_at' => now()->format('H:i'),
                 'attendance_end_at' => now()->addHours(2)->format('H:i'),
+                'location' => 'Lapangan Utama / Ruang Kelas',
                 'created_by' => Auth::id(),
             ]);
         } else {
