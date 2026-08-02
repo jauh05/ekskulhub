@@ -1,4 +1,6 @@
 <x-student-layout>
+    <x-student-active-session-poller />
+    
     <div class="mb-6">
         <h3 class="font-headline-lg text-headline-lg text-on-surface">Riwayat Absensi</h3>
     </div>

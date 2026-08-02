@@ -76,6 +76,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/absensi', [StudentAttendanceController::class, 'index'])->name('attendances.index');
         Route::get('/absensi/scan', [StudentAttendanceController::class, 'create'])->name('attendances.create');
         Route::post('/absensi', [StudentAttendanceController::class, 'store'])->name('attendances.store');
+        Route::get('/api/active-sessions', [StudentAttendanceController::class, 'getActiveSessions'])->name('api.active-sessions');
         
         Route::get('/penilaian', [StudentAssessmentController::class, 'index'])->name('assessments.index');
     });

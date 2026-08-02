@@ -67,6 +67,40 @@ class StudentAttendanceController extends Controller
         $attendance->checked_at = now();
         $attendance->save();
 
-        return redirect()->route('student.attendances.index')->with('success', 'Berhasil mencatat kehadiran');
+        return redirect()->route('student.attendances.index')->with('success', 'Berhasil melakukan absensi');
+    }
+
+    public function getActiveSessions(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Ekskul diikuti (approved)
+        $ekskulIds = \App\Models\ExtracurricularRegistration::where('student_id', $user->id)
+            ->where('status', 'approved')
+            ->pluck('extracurricular_id');
+            
+        // Get active sessions
+        $activeSessions = \App\Models\AttendanceSession::with('schedule.extracurricular')
+            ->where('status', 'open')
+            ->whereHas('schedule', function($q) use ($ekskulIds) {
+                $q->whereIn('extracurricular_id', $ekskulIds);
+            })
+            ->get();
+            
+        $result = [];
+        foreach ($activeSessions as $session) {
+            $alreadyAttended = \App\Models\Attendance::where('attendance_session_id', $session->id)
+                ->where('student_id', $user->id)
+                ->exists();
+                
+            $result[] = [
+                'id' => $session->id,
+                'schedule_id' => $session->schedule_id,
+                'extracurricular_name' => $session->schedule->extracurricular->name,
+                'already_attended' => $alreadyAttended
+            ];
+        }
+        
+        return response()->json($result);
     }
 }

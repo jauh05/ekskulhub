@@ -1,5 +1,6 @@
 <x-student-layout>
 <div class="flex flex-col w-full gap-6 pb-4">
+    <x-student-active-session-poller />
     <!-- Welcome Greeting -->
     <section class="mt-2">
         <div class="flex flex-col">
