@@ -84,6 +84,14 @@ class TeacherAttendanceController extends Controller
             return back()->with('error', 'Pilih jadwal atau ekstrakurikuler terlebih dahulu.');
         }
 
+        $participantsCount = \App\Models\ExtracurricularRegistration::where('extracurricular_id', $schedule->extracurricular_id)
+            ->where('status', 'approved')
+            ->count();
+            
+        if ($participantsCount === 0) {
+            return back()->with('error', 'Tidak dapat memulai presensi karena belum ada siswa yang terdaftar/disetujui di ekstrakurikuler ini.');
+        }
+
         $existingSession = AttendanceSession::where('schedule_id', $schedule->id)
             ->where('status', 'open')
             ->first();

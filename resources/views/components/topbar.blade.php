@@ -20,7 +20,9 @@
 <p class="text-label-md font-bold text-on-surface leading-tight">{{ Auth::user()->name }}</p>
 <p class="text-label-sm text-secondary leading-tight">{{ Auth::user()->role }}</p>
 </div>
-<img class="w-9 h-9 rounded-full object-cover border border-outline-variant" data-alt="A professional studio portrait of a friendly Southeast Asian male teacher in his late 30s wearing a clean school uniform. He has a warm smile and is set against a soft, out-of-focus background of a bright modern school hallway. The lighting is natural and high-key, matching a clean minimalist UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4KUDmRrj_rqSADbSacfXcch0T1hHv-rN0tgyRbUbsYH66EuFDldcT3h-1OKfaJH_JAQRlqxBIqFOLQmZ0bCc1mD9Htjgf7I0uaDHNtjROqLS29EXnfv5GCeqAHVurIw8E2gWNyQMLRqJxG0OPLG456y2Ka8mjw8JbRFcK7AHOZ5iNILcE0WwxPqBCveANhHqbPgXcsi-3WkplLEfKcVeEwM-OWPVxG2mJsowVXa1OJ_BaL3lFtgys"/>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold font-title-sm border border-primary/20">
+{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+</div>
 </div>
 </div>
 </header>
