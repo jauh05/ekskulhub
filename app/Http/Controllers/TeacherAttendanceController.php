@@ -282,7 +282,7 @@ class TeacherAttendanceController extends Controller
             'opened_at' => now(),
             'qr_secret_hash' => sprintf("%06d", mt_rand(1, 999999)),
             'session_code' => strtoupper(\Illuminate\Support\Str::random(6)),
-            'qr_expires_at' => now()->addSeconds(10),
+            'qr_expires_at' => now()->addSeconds(30),
             'qr_last_rotated_at' => now(),
         ]);
 
@@ -315,7 +315,7 @@ class TeacherAttendanceController extends Controller
             $session->update([
                 'qr_secret_hash' => sprintf("%06d", mt_rand(1, 999999)),
                 'session_code' => strtoupper(\Illuminate\Support\Str::random(6)),
-                'qr_expires_at' => now()->addSeconds(10),
+                'qr_expires_at' => now()->addSeconds(30),
                 'qr_last_rotated_at' => now(),
             ]);
         }

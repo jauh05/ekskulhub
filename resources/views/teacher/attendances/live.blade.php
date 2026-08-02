@@ -213,7 +213,7 @@
                 selectedPhotoUrl: null,
                 qrExpiresAt: null,
                 qrHash: '------',
-                timerDisplay: '00:10',
+                timerDisplay: '00:30',
                 timerInterval: null,
                 pollingInterval: null,
                 qrCodeInstance: null,
