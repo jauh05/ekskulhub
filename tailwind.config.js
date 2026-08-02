@@ -1,0 +1,100 @@
+import defaultTheme from 'tailwindcss/defaultTheme';
+import forms from '@tailwindcss/forms';
+
+/** @type {import('tailwindcss').Config} */
+export default {
+    darkMode: "class",
+    content: [
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
+        './resources/views/**/*.blade.php',
+    ],
+
+    theme: {
+        extend: {
+            colors: {
+                "outline": "#737686",
+                "surface-bright": "#f8f9ff",
+                "primary": "#0ea5e9",
+                "inverse-surface": "#27313f",
+                "surface-variant": "#d9e3f6",
+                "on-secondary-container": "#5e656d",
+                "on-tertiary-fixed-variant": "#005320",
+                "on-primary-fixed-variant": "#003ea8",
+                "on-secondary": "#ffffff",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#c0c7d0",
+                "tertiary-fixed": "#7ffc97",
+                "secondary": "#585f67",
+                "error-container": "#ffdad6",
+                "tertiary-container": "#007f36",
+                "secondary-fixed": "#dce3ec",
+                "surface-container-high": "#dee9fc",
+                "on-tertiary-container": "#c7ffca",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#0053db",
+                "primary-fixed": "#dbe1ff",
+                "on-secondary-fixed": "#151c23",
+                "primary-fixed-dim": "#b4c5ff",
+                "primary-container": "#2563eb",
+                "on-surface-variant": "#434655",
+                "on-primary": "#ffffff",
+                "surface-container-highest": "#d9e3f6",
+                "on-tertiary-fixed": "#002109",
+                "tertiary-fixed-dim": "#62df7d",
+                "tertiary": "#006329",
+                "inverse-on-surface": "#eaf1ff",
+                "on-primary-container": "#eeefff",
+                "on-background": "#121c2a",
+                "on-tertiary": "#ffffff",
+                "on-secondary-fixed-variant": "#40484f",
+                "surface-container": "#e6eeff",
+                "background": "#f8f9ff",
+                "secondary-container": "#dce3ec",
+                "on-surface": "#121c2a",
+                "surface-dim": "#d0dbed",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "surface-container-low": "#eff4ff",
+                "inverse-primary": "#b4c5ff",
+                "on-error": "#ffffff",
+                "outline-variant": "#c3c6d7",
+                "on-primary-fixed": "#00174b"
+            },
+            borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            spacing: {
+                "gutter": "24px",
+                "base": "4px",
+                "xs": "4px",
+                "xl": "32px",
+                "sm": "8px",
+                "lg": "24px",
+                "margin-mobile": "16px",
+                "margin-desktop": "32px",
+                "container-max": "1280px",
+                "2xl": "48px",
+                "md": "16px"
+            },
+            fontFamily: {
+                "display": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "label-md": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "title-md": ["Plus Jakarta Sans"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "label-sm": ["Plus Jakarta Sans"],
+                "title-lg": ["Plus Jakarta Sans"],
+                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+            }
+        },
+    },
+
+    plugins: [forms, require('@tailwindcss/container-queries')],
+};

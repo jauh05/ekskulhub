@@ -1,0 +1,230 @@
+<x-app-layout>
+    <div class="pt-24 px-8 pb-12" x-data="liveAttendance('{{ $session->id }}')">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-14 h-14 bg-error/10 text-error rounded-xl flex items-center justify-center animate-pulse">
+                    <span class="material-symbols-outlined text-[32px]">podcasts</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface font-bold">Live Presensi</h3>
+                    <p class="text-body-md text-secondary mt-1">
+                        Ekskul: <strong class="text-on-surface">{{ $session->schedule->extracurricular->name }}</strong> | 
+                        Jadwal: {{ \Carbon\Carbon::parse($session->schedule->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->schedule->attendance_end_at)->format('H:i') }}
+                    </p>
+                </div>
+            </div>
+            
+            <form action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20" onclick="return confirm('Apakah Anda yakin ingin menutup sesi presensi ini?')">
+                    <span class="material-symbols-outlined text-[20px]">stop_circle</span> Akhiri Presensi
+                </button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left: QR Code Section -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl border border-outline-variant card-shadow p-8 flex flex-col items-center justify-center text-center">
+                    <h4 class="font-title-lg font-bold text-on-surface mb-2">Scan QR Code</h4>
+                    <p class="text-body-sm text-secondary mb-6">Minta siswa memindai QR code ini melalui aplikasi mereka. QR berganti setiap 10 detik.</p>
+                    
+                    <div class="p-4 bg-white border-2 border-dashed border-outline-variant rounded-xl mb-4 relative">
+                        <div id="qr-container" class="w-[250px] h-[250px] flex items-center justify-center text-outline mx-auto">
+                            <!-- QR Code will be rendered here by qrcode.js -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="text-label-sm text-secondary">Atau gunakan Kode Presensi:</p>
+                        <p class="text-display-sm font-mono font-bold text-primary tracking-[0.2em]" x-text="qrHash">------</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full">
+                        <span class="material-symbols-outlined text-primary text-[18px]">timer</span>
+                        <span class="font-mono font-bold text-primary text-title-md" x-text="timerDisplay">05:00</span>
+                    </div>
+                    <button type="button" @click="fetchQr()" class="mt-4 text-primary text-label-sm font-bold hover:underline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">sync</span> Refresh Manual
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Realtime Data Table -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden flex flex-col h-full min-h-[500px]">
+                    <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+                        <h4 class="font-title-md font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">history_toggle_off</span> 
+                            Riwayat Masuk (<span x-text="attendances.length">0</span> Siswa)
+                        </h4>
+                        <div class="flex items-center gap-2 text-label-sm text-secondary">
+                            <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span> Live Update
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto bg-surface-container-lowest p-0">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="sticky top-0 bg-surface-container-lowest border-b border-outline-variant z-10">
+                                <tr>
+                                    <th class="p-4 font-label-md text-secondary">NAMA SISWA</th>
+                                    <th class="p-4 font-label-md text-secondary">WAKTU SCAN</th>
+                                    <th class="p-4 font-label-md text-secondary">METODE</th>
+                                    <th class="p-4 font-label-md text-secondary">BUKTI</th>
+                                    <th class="p-4 font-label-md text-secondary">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant" x-ref="tableBody">
+                                <!-- Populated by Alpine JS -->
+                                <template x-for="attendance in attendances" :key="attendance.id">
+                                    <tr class="hover:bg-surface-container-low transition-colors animate-fade-in">
+                                        <td class="p-4 font-body-md text-on-surface font-semibold" x-text="attendance.student.name"></td>
+                                        <td class="p-4 font-body-md text-on-surface-variant font-mono" x-text="formatTime(attendance.created_at)"></td>
+                                        <td class="p-4 font-body-md text-on-surface-variant uppercase" x-text="attendance.method"></td>
+                                        <td class="p-4 font-body-sm text-on-surface-variant">
+                                            <template x-if="attendance.method === 'selfie' && attendance.selfie_path">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-[16px] text-primary">photo_camera</span>
+                                                    <span>Selfie Terlampir</span>
+                                                </div>
+                                            </template>
+                                            <template x-if="attendance.method === 'qr'">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-[16px] text-primary">qr_code</span>
+                                                    <span x-text="'Kode: ' + (attendance.notes || 'Scan QR')"></span>
+                                                </div>
+                                            </template>
+                                            <template x-if="attendance.method === 'manual'">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-[16px] text-secondary">edit_document</span>
+                                                    <span x-text="attendance.notes || 'Input Manual'"></span>
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td class="p-4">
+                                            <span class="px-2 py-1 rounded-full text-[12px] font-bold"
+                                                  :class="{
+                                                    'bg-[#10B981]/10 text-[#10B981]': attendance.status === 'present',
+                                                    'bg-error/10 text-error': attendance.status === 'absent' || attendance.status === 'late',
+                                                    'bg-tertiary/10 text-tertiary': attendance.status === 'permission' || attendance.status === 'sick'
+                                                  }"
+                                                  x-text="attendance.status.toUpperCase()">
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr x-show="attendances.length === 0">
+                                    <td colspan="4" class="p-8 text-center text-secondary">Belum ada siswa yang melakukan presensi.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('liveAttendance', (sessionId) => ({
+                sessionId: sessionId,
+                attendances: [],
+                qrExpiresAt: null,
+                qrHash: '------',
+                timerDisplay: '00:10',
+                timerInterval: null,
+                pollingInterval: null,
+                qrCodeInstance: null,
+
+                init() {
+                    this.$nextTick(() => {
+                        this.qrCodeInstance = new QRCode(document.getElementById("qr-container"), {
+                            text: "Loading...",
+                            width: 250,
+                            height: 250,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+
+                        this.fetchQr();
+                        this.fetchData();
+
+                        // Poll data every 5 seconds
+                        this.pollingInterval = setInterval(() => {
+                            this.fetchData();
+                        }, 5000);
+
+                        // Timer countdown every second
+                        this.timerInterval = setInterval(() => {
+                            this.updateTimer();
+                        }, 1000);
+                    });
+                },
+
+                fetchQr() {
+                    $.ajax({
+                        url: `/guru/attendances/session/${this.sessionId}/api/qr`,
+                        method: 'GET',
+                        success: (res) => {
+                            this.qrCodeInstance.clear();
+                            this.qrCodeInstance.makeCode(res.qr_payload);
+                            this.qrHash = res.hash;
+                            this.qrExpiresAt = new Date(res.expires_at).getTime();
+                            this.updateTimer();
+                        }
+                    });
+                },
+
+                fetchData() {
+                    $.ajax({
+                        url: `/guru/attendances/session/${this.sessionId}/api/data`,
+                        method: 'GET',
+                        success: (res) => {
+                            // Check if new data length is different to play sound (optional)
+                            this.attendances = res.attendances;
+                        }
+                    });
+                },
+
+                updateTimer() {
+                    if (!this.qrExpiresAt) return;
+                    
+                    const now = new Date().getTime();
+                    const distance = this.qrExpiresAt - now;
+
+                    if (distance <= 0) {
+                        this.timerDisplay = '00:00';
+                        this.fetchQr(); // auto refresh QR when expired
+                        return;
+                    }
+
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    this.timerDisplay = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+                },
+
+                formatTime(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+            }))
+        })
+    </script>
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; background-color: #E6F4EA; }
+            to { opacity: 1; background-color: transparent; }
+        }
+    </style>
+    @endpush
+</x-app-layout>

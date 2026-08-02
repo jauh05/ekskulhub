@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ekskul - Dashboard Siswa</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-secondary-container": "#5e656d",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#eeefff",
+                        "inverse-surface": "#27313f",
+                        "background": "#f8f9ff",
+                        "outline": "#737686",
+                        "surface-variant": "#d9e3f6",
+                        "secondary-container": "#dce3ec",
+                        "on-surface": "#121c2a",
+                        "tertiary-fixed": "#7ffc97",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c3c6d7",
+                        "secondary-fixed-dim": "#c0c7d0",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed": "#dbe1ff",
+                        "primary": "#004ac6",
+                        "on-tertiary-fixed": "#002109",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-container": "#007f36",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dee9fc",
+                        "tertiary-fixed-dim": "#62df7d",
+                        "surface-tint": "#0053db",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#40484f",
+                        "tertiary": "#006329",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-fixed-variant": "#005320",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#d9e3f6",
+                        "secondary": "#585f67",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "on-tertiary-container": "#c7ffca",
+                        "on-secondary-fixed": "#151c23",
+                        "surface-dim": "#d0dbed",
+                        "on-background": "#121c2a",
+                        "surface-container": "#e6eeff",
+                        "secondary-fixed": "#dce3ec",
+                        "inverse-primary": "#b4c5ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "container-max": "1280px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "2xl": "48px",
+                        "margin-mobile": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"],
+                        "title-lg": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-surface sticky top-0 z-50 border-b border-outline-variant flex justify-between items-center px-margin-mobile py-4 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">school</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Ekskul</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<div class="w-10 h-10 rounded-full bg-primary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A portrait of a cheerful Indonesian high school student with a friendly expression, wearing a clean white school uniform. The background is a brightly lit, modern school hallway with soft blue and white tones, matching a clean educational dashboard aesthetic. High quality photography with soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfLIVR8P1hQIvYMr08q9N1bZqhEVT_wfjPgnDcAWmhT0YOsTTGPk7wIrzYJT7SI12hF0BItV2Z-XeisHg-afNgdxKIyjRtjr6uhzAw_ZY7Uiqy-SOfhQ7Ez0H2seyFeGHrrIzKj1FeVDC2Rs56BcC78AhTvkuhltp2l-w9rSBMwH0fU2E03aQsE-7kZVv25FDnZ47orImTwR5XCiSqTeud46M7lgbIzAujyF3Pw-OTrwxQ8QmEQZkI"/>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile pt-6 space-y-8">
+<!-- Greeting Section -->
+<section class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Halo, Ahmad!</h2>
+<p class="font-body-md text-on-secondary-container mt-1">Cek kegiatan ekskulmu hari ini.</p>
+</section>
+<!-- Stats Grid (2x2) -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface p-4 rounded-xl border border-outline-variant soft-shadow flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">groups</span>
+<div>
+<p class="font-label-sm text-on-secondary-container">Ekskul Diikuti</p>
+<p class="font-title-lg text-title-lg text-on-surface">2</p>
+</div>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant soft-shadow flex flex-col gap-2">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<div>
+<p class="font-label-sm text-on-secondary-container">Kehadiran</p>
+<p class="font-title-lg text-title-lg text-on-surface">95%</p>
+</div>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant soft-shadow flex flex-col gap-2">
+<span class="material-symbols-outlined text-[#F59E0B]" style="font-variation-settings: 'FILL' 1;">stars</span>
+<div>
+<p class="font-label-sm text-on-secondary-container">Poin Keaktifan</p>
+<p class="font-title-lg text-title-lg text-on-surface">120</p>
+</div>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant soft-shadow flex flex-col gap-2">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">description</span>
+<div>
+<p class="font-label-sm text-on-secondary-container">Tugas/Materi</p>
+<p class="font-title-lg text-title-lg text-on-surface">3</p>
+</div>
+</div>
+</section>
+<!-- Jadwal Hari Ini Section -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h3 class="font-title-lg text-title-lg text-on-surface">Jadwal Hari Ini</h3>
+<button class="text-primary font-label-md hover:underline">Lihat Semua</button>
+</div>
+<div class="bg-primary-container p-5 rounded-xl text-on-primary-container soft-shadow relative overflow-hidden group">
+<!-- Abstract decorative element -->
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+<div class="flex justify-between items-start mb-4">
+<span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white font-label-sm">Akan Datang</span>
+<span class="material-symbols-outlined text-white/80">sports_basketball</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-white mb-1">Basket Putra</h4>
+<div class="flex flex-col gap-2 mt-4 text-white/90">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-body-md">15:30 - 17:30</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-body-md">GOR Utama</span>
+</div>
+</div>
+<button class="mt-6 w-full bg-white text-primary font-title-md py-3 rounded-lg active:scale-95 transition-transform">
+                    Presensi Sekarang
+                </button>
+</div>
+</section>
+<!-- Ekskul Saya Section -->
+<section class="space-y-4">
+<h3 class="font-title-lg text-title-lg text-on-surface">Ekskul Saya</h3>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 px-1 -mx-1">
+<!-- Card 1 -->
+<div class="min-w-[160px] bg-surface rounded-xl border border-outline-variant soft-shadow overflow-hidden group cursor-pointer hover:border-primary transition-colors">
+<div class="h-24 bg-surface-container-highest relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A dynamic, high-action close-up shot of an orange basketball swooshing through a net against a clear blue sky. The sunlight creates sharp shadows and highlights the texture of the ball. Professional sports photography style with a vibrant, energetic atmosphere, suitable for a school activity dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8rzxixGf2kjqFR50NSMzD8TX1auhRQk5LYgXjlf-Et6GXlXpQsywis5poqxg950fUDAnZRoIOoyWmyYW6qGsNSBoFieKEZQMexUmPSMm4vyJXIom3iey7iEdn281mSbOHEBSz5PuUHekdI8_dhOPrFelMHbJAk7B_cERGcG0d3Ahqw1e8nTWJ6jmqdQ6ICVDc6dKOOtghdd1ZXETECPDyyOSCjK55Twp4sOTatq3rK-_yWLGIS1Hv"/>
+</div>
+<div class="p-3">
+<p class="font-title-md text-on-surface">Basket</p>
+<p class="font-label-sm text-on-secondary-container">Minggu &amp; Rabu</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[160px] bg-surface rounded-xl border border-outline-variant soft-shadow overflow-hidden group cursor-pointer hover:border-primary transition-colors">
+<div class="h-24 bg-surface-container-highest relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A serene outdoor scene showing a neatly tied scout scarf (kacu) laying on a wooden table with a compass and a piece of rope nearby. Soft dappled sunlight filters through green trees in the background. The mood is adventurous and educational. Cinematic lighting, shallow depth of field, minimalist and clean composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR0uoWL3iuMCSc0OmJyhzCDIT9VckSpnvOiVNgEodHQOqHTyNiBdKRMFozn2Pd9FcEIEVEmFX9n3bUgxrKQot284sH8vTa942zKiXzleihRWAsIZ_K8lc5bRc_SAkb3VrNEUpCSmbQp3H2IiXXDAmDNYoxBnvzJtMdqnWlo-AiTOL4Z6AFCqSUpfU-fWYxb-9w96bqvv2bLjx2OepDyATpQuPHw5CNDuKIPEqa_kykuyaNLmB27HEE"/>
+</div>
+<div class="p-3">
+<p class="font-title-md text-on-surface">Pramuka</p>
+<p class="font-label-sm text-on-secondary-container">Sabtu</p>
+</div>
+</div>
+<!-- Add More Button -->
+<div class="min-w-[120px] border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center gap-2 text-on-secondary-container hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95">
+<span class="material-symbols-outlined text-[32px]">add_circle</span>
+<span class="font-label-md">Cari Ekskul</span>
+</div>
+</div>
+</section>
+<!-- Pengumuman Terbaru Section -->
+<section class="space-y-4">
+<h3 class="font-title-lg text-title-lg text-on-surface">Pengumuman Terbaru</h3>
+<div class="bg-surface-container-low border border-primary/20 p-4 rounded-xl flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">campaign</span>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-center">
+<p class="font-title-md text-on-surface">Bpk. Supriadi</p>
+<span class="font-label-sm text-on-secondary-container">2j yang lalu</span>
+</div>
+<p class="font-body-md text-on-surface-variant">Latihan basket hari Rabu depan dimajukan menjadi pukul 14:00 karena ada rapat guru. Harap maklum.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full flex justify-around items-center py-2 bg-surface border-t border-outline-variant pb-safe z-50 soft-shadow">
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-sm mt-1">Jadwal</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-label-sm mt-1">Ekskul Saya</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label-sm mt-1">Profil</span>
+</a>
+</nav>
+<!-- Desktop Navigation (Simplified for responsiveness demonstration) -->
+<div class="hidden md:flex flex-col h-screen fixed left-0 top-0 py-lg bg-surface-container-low border-r border-outline-variant w-72 z-50">
+<div class="px-6 mb-10 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]">school</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">Ekskul</span>
+</div>
+<div class="flex flex-col gap-1 px-2">
+<a class="bg-primary-container text-on-primary-container rounded-full px-4 py-3 flex items-center gap-3 font-semibold transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-4 py-3 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-md">Kegiatan</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-4 py-3 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-md">Kehadiran</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-4 py-3 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-label-md">Ekskul Saya</span>
+</a>
+</div>
+<div class="mt-auto px-4 pb-4">
+<div class="p-4 bg-surface rounded-xl border border-outline-variant flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up profile photo of a smiling student in school uniform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBM9lkrwyyOBn-_2Cy_5CUL9uMHL7y2Q9OZdM2sRlp1aEmvuY2HC3nu5JOhgLi55jyE3g7hszHh_veRgXZ24ZrK8JAV3E28xk_HYXWSRxGqGqPXc3w3FFzCY_bKS4fT-NeGcdM2KHTRq7EC-Bpl0K86Ymks4mHkgArT196EVO5C-0cAy6T9DNhDDKVrU01sX5UPCJwYiIntZm4C52tkWHMjmBUfGOfVjQ8t6CiQXK97JyTAvimein1"/>
+</div>
+<div class="overflow-hidden">
+<p class="font-title-md text-on-surface truncate">Ahmad</p>
+<p class="font-label-sm text-on-secondary-container truncate">Siswa Kelas 10</p>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Simple interaction for mobile navigation
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => {
+                    l.classList.remove('text-primary', 'font-bold');
+                    l.classList.add('text-on-secondary-container');
+                    l.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                });
+                link.classList.add('text-primary', 'font-bold');
+                link.classList.remove('text-on-secondary-container');
+                link.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+    </script>
+</body></html>

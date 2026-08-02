@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ekskul - Login Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#737686",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#004ac6",
+                    "inverse-surface": "#27313f",
+                    "surface-variant": "#d9e3f6",
+                    "on-secondary-container": "#5e656d",
+                    "on-tertiary-fixed-variant": "#005320",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#c0c7d0",
+                    "tertiary-fixed": "#7ffc97",
+                    "secondary": "#585f67",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#007f36",
+                    "secondary-fixed": "#dce3ec",
+                    "surface-container-high": "#dee9fc",
+                    "on-tertiary-container": "#c7ffca",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#0053db",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary-fixed": "#151c23",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "on-surface-variant": "#434655",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#d9e3f6",
+                    "on-tertiary-fixed": "#002109",
+                    "tertiary-fixed-dim": "#62df7d",
+                    "tertiary": "#006329",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-container": "#eeefff",
+                    "on-background": "#121c2a",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#40484f",
+                    "surface-container": "#e6eeff",
+                    "background": "#f8f9ff",
+                    "secondary-container": "#dce3ec",
+                    "on-surface": "#121c2a",
+                    "surface-dim": "#d0dbed",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#eff4ff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c3c6d7",
+                    "on-primary-fixed": "#00174b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "4px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "2xl": "48px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "display": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "title-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "title-lg": ["Plus Jakarta Sans"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .login-card {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #E5E7EB;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop relative overflow-hidden">
+<!-- Background Abstract Element -->
+<div class="absolute inset-0 pointer-events-none opacity-50">
+<div class="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] bg-primary-container/20 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[30vw] h-[30vw] bg-tertiary-fixed/30 rounded-full blur-[80px]"></div>
+</div>
+<!-- Main Container -->
+<main class="w-full max-w-[1200px] grid md:grid-cols-2 gap-xl bg-surface-container-lowest rounded-xl overflow-hidden login-card relative z-10">
+<!-- Left Side: Branding & Visual (Visible on Desktop) -->
+<div class="hidden md:flex flex-col justify-between p-2xl bg-primary relative overflow-hidden">
+<!-- Background Image -->
+<div class="absolute inset-0 opacity-20" data-alt="A clean, professional school administration office with modern computers and organized bookshelves. The lighting is bright and airy, representing a productive and calm educational environment. The overall aesthetic follows a minimalist design with soft blue and white tones to match the school management theme." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAF2wrWrkA7d6OWWv5D889Uisz_H62NY9qdmqzYmQpta3onP08w5NB_XvCx4w5Eo1dPEBaGtFTD04xPCaZG-4gKymHBFhVc1PmOak4PchTaZ0C6xPF6GsuKxA84nTIp-IRY22nobaH91QuH6nZra8Hpb3FlcRUWvp_bL2amf-JaxVePHkw8AVGMBXwk7ybRCm1grDWwcCrU-iU6DxikYB1Sw4Z_GqD2skWDxPoMtwWKFurEanHpzfJK')"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-xl">
+<span class="material-symbols-outlined text-on-primary text-[32px]">school</span>
+<span class="font-headline-md text-headline-md font-bold text-on-primary">Ekskul</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-primary mb-md leading-tight">Kelola Aktivitas Sekolah Lebih Efisien</h1>
+<p class="font-body-lg text-body-lg text-on-primary/80 max-w-[400px]">Panel Administrasi terpusat untuk memantau kehadiran, laporan, dan partisipasi siswa dalam berbagai kegiatan ekstrakurikuler.</p>
+</div>
+<div class="relative z-10 flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-10 h-10 rounded-full border-2 border-primary bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a professional school administrator smiling warmly at the camera. She is wearing a smart navy blazer in a bright, modern office setting. The style is professional, high-quality, and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArN2KtjWBqggAmiYgJK0bExAdx0bvuJGxpwJoVi6c6ZnSFAEZ3qnl45KEx-44DToVDH1fH-ZxGI3DRSRpDWVsvnh53HNcAsKZbL8nTEC9APYpLybnCxTQ1RH37RXZrvUfaNctqY7icRfbgDOGbSVGQ_qoGxMQNMdm9PuVaE_Ndn0oZenHQZqnOmzycth7YMS9Qf3WEAiqOx_WmAAGCQJfBC-QWnzq53y_U-KwrwLHt7VvODg_znsnO"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male teacher in his 40s with a friendly expression, wearing a clean white shirt. He is standing against a soft-focus classroom background. The atmosphere is professional and welcoming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOZS3FevNnLSIYkClZ8RfxQQ4aVv20q6KHtSkxTrRhCPlUWuQZsGLzSo3SwCr7uPuF0K9SCJFw17xvP_xvvuj5KidccgQ6uJg1NPcd70N_RE7u79DT42zSa1EIjkEv7ocoBgcxWAlQ4bmdvDiYd4rfhG5pSROXki5jCI30RldJJCQLOIwSS7E0mFW2oU7lGf-at19g_5DLpetC5aGAMMf4q7D9Gm_itg8S8JCO-PbExJi5aFF5G4GZ"/>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-primary/90">Bergabung dengan 50+ Sekolah Lainnya</span>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="flex flex-col justify-center p-md sm:p-xl md:p-2xl bg-surface">
+<!-- Mobile Logo -->
+<div class="flex items-center gap-2 mb-xl md:hidden">
+<span class="material-symbols-outlined text-primary text-[28px]">school</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">Ekskul</span>
+</div>
+<div class="mb-xl">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Masuk sebagai Admin</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Gunakan akun administrator Anda untuk mengakses panel kontrol.</p>
+</div>
+<form class="space-y-lg">
+<!-- Email Field -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface-variant ml-1" for="email">Email Sekolah</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" id="email" placeholder="admin@sekolah.sch.id" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-base">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant ml-1" for="password">Kata Sandi</label>
+<a class="font-label-sm text-label-sm text-primary hover:underline transition-all" href="#">Lupa Password?</a>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full pl-12 pr-12 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me -->
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary" id="remember" type="checkbox"/>
+<label class="font-body-md text-body-md text-on-surface-variant select-none" for="remember">Ingat saya di perangkat ini</label>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-3 bg-primary text-on-primary rounded-lg font-title-md text-title-md font-semibold hover:bg-primary-container transition-all active:scale-[0.98] duration-150 flex items-center justify-center gap-2" type="submit">
+<span>Masuk</span>
+<span class="material-symbols-outlined text-[20px]">login</span>
+</button>
+</form>
+<!-- Footer Note -->
+<div class="mt-xl text-center">
+<p class="font-label-md text-label-md text-on-surface-variant">
+                    Bukan administrator? <a class="text-primary font-bold hover:underline" href="#">Masuk sebagai Siswa</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Simple Footer Copyright (Mobile Style) -->
+<footer class="absolute bottom-6 w-full text-center px-margin-mobile">
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">
+            © 2024 Ekskul Management System. Semua hak dilindungi.
+        </p>
+</footer>
+<script>
+        // Simple Interaction for the Password Visibility Toggle
+        document.querySelector('button[type="button"]').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon = this.querySelector('.material-symbols-outlined');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+
+        // Form Submission animation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="animate-spin material-symbols-outlined">progress_activity</span> <span>Memproses...</span>';
+            btn.disabled = true;
+            
+            // Artificial delay to simulate login
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                alert('Sistem ini hanya demonstrasi UI. Fungsi login belum aktif.');
+            }, 1500);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login Siswa - Ekskul</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#737686",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#004ac6",
+                    "inverse-surface": "#27313f",
+                    "surface-variant": "#d9e3f6",
+                    "on-secondary-container": "#5e656d",
+                    "on-tertiary-fixed-variant": "#005320",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#c0c7d0",
+                    "tertiary-fixed": "#7ffc97",
+                    "secondary": "#585f67",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#007f36",
+                    "secondary-fixed": "#dce3ec",
+                    "surface-container-high": "#dee9fc",
+                    "on-tertiary-container": "#c7ffca",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#0053db",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary-fixed": "#151c23",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "on-surface-variant": "#434655",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#d9e3f6",
+                    "on-tertiary-fixed": "#002109",
+                    "tertiary-fixed-dim": "#62df7d",
+                    "tertiary": "#006329",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-container": "#eeefff",
+                    "on-background": "#121c2a",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#40484f",
+                    "surface-container": "#e6eeff",
+                    "background": "#f8f9ff",
+                    "secondary-container": "#dce3ec",
+                    "on-surface": "#121c2a",
+                    "surface-dim": "#d0dbed",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#eff4ff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c3c6d7",
+                    "on-primary-fixed": "#00174b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "4px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "2xl": "48px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "display": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "title-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "title-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "display": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .login-card-shadow {
+            box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.08);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col items-center justify-center">
+<!-- Top AppBar (Simulated Contextual Header) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="school">school</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Ekskul</h1>
+</div>
+<a class="text-primary font-title-md hover:underline decoration-2 underline-offset-4" href="#">Bantuan</a>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full flex-grow flex items-center justify-center p-margin-mobile mt-16">
+<div class="max-w-6xl w-full grid md:grid-cols-2 gap-lg items-center">
+<!-- Branding/Illustration Section -->
+<div class="hidden md:flex flex-col justify-center gap-lg pr-lg">
+<div class="w-full h-[400px] rounded-2xl overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-tertiary/10 mix-blend-multiply z-10"></div>
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" data-alt="A high-quality lifestyle photography of diverse Indonesian high school students joyfully participating in various extracurricular activities like basketball, traditional dancing, and robotics. The lighting is warm and golden hour, reflecting a positive and energetic school atmosphere. The background is a modern, clean school campus with lush greenery. The color palette emphasizes primary blue and soft whites to maintain brand consistency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMn_33SKKD-Ozq6Yls9xabWO7Igc3zZrcXFM0667fkdXep_dtuwEcc8lbxWk6tbbS_HDJi-bIapCxX4COsqUHN2FWrjFnoMmkuedcjJyZ36kr3WlnNExIkxVmQb4GqEqulfnxSaGOziWTPWo0WQVIV0AkzSTGlB58t0CzSar9zdCzX8bQQ8xaBxAllDiPf-rHwp8DeSY8wRtmurjUTfIWns7M0vWVtRbQg5_E-4zN0xo683kDQ0lMT"/>
+<div class="absolute bottom-0 left-0 p-lg z-20">
+<div class="bg-white/90 backdrop-blur-sm p-md rounded-xl max-w-sm">
+<p class="font-title-md text-primary font-bold mb-2">Kembangkan Bakatmu</p>
+<p class="font-body-md text-on-surface-variant">Temukan komunitas yang tepat dan raih prestasi di luar kelas bersama Ekskul Management System.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Login Form Section -->
+<div class="w-full flex justify-center md:justify-start">
+<div class="w-full max-w-md bg-surface-container-lowest p-xl rounded-2xl border border-outline-variant login-card-shadow">
+<div class="mb-xl text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Masuk sebagai Siswa</h2>
+<p class="font-body-md text-on-surface-variant">Silakan masukkan akun siswa Anda untuk melanjutkan.</p>
+</div>
+<form action="#" class="space-y-lg" method="POST">
+<!-- Email/NISN Input -->
+<div class="space-y-2">
+<label class="font-label-md text-on-surface-variant" for="id-login">Email atau NISN</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="person">person</span>
+<input class="w-full pl-12 pr-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary input-glow transition-all" id="id-login" placeholder="Contoh: 12345678" type="text"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="font-label-md text-on-surface-variant" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="lock">lock</span>
+<input class="w-full pl-12 pr-12 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary input-glow transition-all" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" data-icon="visibility" id="pw-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Options row -->
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 cursor-pointer group">
+<div class="relative flex items-center">
+<input class="peer hidden" type="checkbox"/>
+<div class="w-5 h-5 border-2 border-outline-variant rounded-md peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]" data-icon="check" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+<span class="font-label-md text-on-surface-variant group-hover:text-primary transition-colors">Ingat saya</span>
+</label>
+<a class="font-label-md text-primary font-bold hover:underline" href="#">Lupa password?</a>
+</div>
+<!-- Login Button -->
+<button class="w-full bg-primary-container text-on-primary py-4 rounded-xl font-title-md font-bold hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit">
+                            Masuk
+                            <span class="material-symbols-outlined" data-icon="login">login</span>
+</button>
+<!-- Divider -->
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink mx-4 font-label-md text-outline">atau masuk dengan</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- SSO Placeholder -->
+<button class="w-full bg-surface-container-low border border-outline-variant py-3 rounded-xl font-label-md text-on-surface flex items-center justify-center gap-3 hover:bg-surface-container transition-colors" type="button">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsF4SfNsorddl7R2pWyQcf7dSjIV4asFzrdjCmCkYBGXHUla8x9EnaDKvCwLMIusDdJ4EioasRqmCCW_OGWN2a_xWGoiYqgkhlYwNDkhxehFXKYWVvN9LtvmAYenXoFVmWvJ7N4yaBUoCC4KitjzNpwQF6o4_n3PUg1Tb0g92h_PF3cVIGbUihth6c59qhGlgioqR5AWecklRLy9lCCi-UHMrSBuyFyaM0fgh7izBvLVZroQhwJA4n"/>
+                            Google Workspace Sekolah
+                        </button>
+</form>
+<!-- Registration Link -->
+<div class="mt-xl text-center">
+<p class="font-body-md text-on-surface-variant">
+                            Belum punya akun? 
+                            <a class="text-primary font-bold hover:underline underline-offset-4" href="#">Daftar Sekarang</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="w-full py-2xl px-margin-mobile md:px-margin-desktop flex flex-col items-center gap-lg text-center bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant mt-auto">
+<div class="flex gap-md mb-2">
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">About Us</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+<p class="font-label-sm text-on-surface-variant">© 2024 Ekskul Management System. All rights reserved.</p>
+</footer>
+<script>
+        function togglePassword() {
+            const pwInput = document.getElementById('password');
+            const pwIcon = document.getElementById('pw-icon');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                pwIcon.innerText = 'visibility_off';
+            } else {
+                pwInput.type = 'password';
+                pwIcon.innerText = 'visibility';
+            }
+        }
+
+        // Simple form submission micro-interaction
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span> Memproses...';
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            
+            setTimeout(() => {
+                alert('Fungsi login hanya demo. Silakan hubungi admin sekolah untuk akses penuh.');
+                btn.innerHTML = 'Masuk <span class="material-symbols-outlined" data-icon="login">login</span>';
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }, 1500);
+        });
+    </script>
+</body></html>
