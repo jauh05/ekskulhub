@@ -150,26 +150,37 @@
     <!-- HTML5 QR Code Scanner Script -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        let html5QrcodeScanner = null;
+        let html5QrCode = null;
 
         function startQRScanner() {
-            if (html5QrcodeScanner) return; // already started
+            if (html5QrCode) return; // already started
             
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: {width: 250, height: 250}, aspectRatio: 1.0 },
-                false
-            );
+            html5QrCode = new Html5Qrcode("reader");
             
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            // Start scanning directly using the back camera
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                },
+                onScanSuccess,
+                onScanFailure
+            ).catch((err) => {
+                console.error("Camera access error:", err);
+                alert("Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera pada browser Anda.");
+            });
         }
         
         function stopQRScanner() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().catch(error => {
-                    console.error("Failed to clear html5QrcodeScanner. ", error);
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    html5QrCode = null;
+                }).catch(error => {
+                    console.error("Failed to stop scanner. ", error);
                 });
-                html5QrcodeScanner = null;
             }
         }
 
@@ -183,7 +194,7 @@
         }
 
         function onScanFailure(error) {
-            // handle scan failure, usually better to ignore and keep scanning.
+            // handle scan failure silently
         }
         
         function previewSelfie(event) {
