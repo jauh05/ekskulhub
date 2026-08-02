@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">Dashboard Guru</x-slot>
     <div class="pt-6 px-8 pb-12">
         <!-- Welcome Header -->
         <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
