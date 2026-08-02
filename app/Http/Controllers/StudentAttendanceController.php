@@ -74,7 +74,10 @@ class StudentAttendanceController extends Controller
         } else {
             // Type == hadir
             if ($request->method === 'qr') {
-                if ($request->qr_code !== $attendanceSession->qr_secret_hash) {
+                $qrData = json_decode($request->qr_code, true);
+                $secret = $qrData['secret'] ?? $request->qr_code;
+                
+                if ($secret !== $attendanceSession->qr_secret_hash) {
                     return back()->with('error', 'QR Code tidak valid atau sudah kedaluwarsa.');
                 }
                 $attendance->method = 'qr';
