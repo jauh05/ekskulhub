@@ -618,31 +618,40 @@
                                         <div class="flex-grow border-t border-outline-variant"></div>
                                     </div>
 
-                                    @foreach($todaySchedules as $jadwal)
-                                        @php
-                                            $now = now()->format('H:i:s');
-                                            $startTime = \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i:s');
-                                            $endTime = \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i:s');
-                                            $isWithinTime = ($now >= $startTime && $now <= $endTime);
-                                        @endphp
-                                        <label class="flex flex-col p-4 border rounded-xl transition-all {{ $isWithinTime ? 'cursor-pointer' : 'border-outline-variant/30 bg-surface-container-lowest/50 opacity-60 cursor-not-allowed' }}"
-                                               :class="selectedSchedule == '{{ $jadwal->id }}' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-outline-variant hover:bg-surface-container-low'">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0 mt-1">
-                                                    <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" x-model="selectedSchedule" class="h-5 w-5 text-primary focus:ring-primary border-outline" required {{ !$isWithinTime ? 'disabled' : '' }}>
+                                    <div x-data="{ showAllSchedules: false }" class="space-y-4">
+                                        @foreach($todaySchedules as $index => $jadwal)
+                                            @php
+                                                $now = now()->format('H:i:s');
+                                                $startTime = \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i:s');
+                                                $endTime = \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i:s');
+                                                $isWithinTime = ($now >= $startTime && $now <= $endTime);
+                                            @endphp
+                                            <label x-show="showAllSchedules || {{ $index }} === 0" x-collapse class="flex flex-col p-4 border rounded-xl transition-all {{ $isWithinTime ? 'cursor-pointer' : 'border-outline-variant/30 bg-surface-container-lowest/50 opacity-60 cursor-not-allowed' }}"
+                                                   :class="selectedSchedule == '{{ $jadwal->id }}' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-outline-variant hover:bg-surface-container-low'">
+                                                <div class="flex items-start">
+                                                    <div class="flex-shrink-0 mt-1">
+                                                        <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" x-model="selectedSchedule" class="h-5 w-5 text-primary focus:ring-primary border-outline" required {{ !$isWithinTime ? 'disabled' : '' }}>
+                                                    </div>
+                                                    <div class="ml-3 w-full">
+                                                        <span class="block text-label-lg font-bold {{ $isWithinTime ? 'text-on-surface' : 'text-secondary' }}">{{ $jadwal->extracurricular->name }}</span>
+                                                        <span class="block text-body-sm text-secondary mt-1">
+                                                            Waktu: {{ \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i') }}
+                                                        </span>
+                                                        @if(!$isWithinTime)
+                                                            <span class="block text-body-sm text-error mt-1 font-medium"><span class="material-symbols-outlined text-[14px] align-middle">warning</span> Sesi presensi belum waktunya atau sudah lewat</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                <div class="ml-3 w-full">
-                                                    <span class="block text-label-lg font-bold {{ $isWithinTime ? 'text-on-surface' : 'text-secondary' }}">{{ $jadwal->extracurricular->name }}</span>
-                                                    <span class="block text-body-sm text-secondary mt-1">
-                                                        Waktu: {{ \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i') }}
-                                                    </span>
-                                                    @if(!$isWithinTime)
-                                                        <span class="block text-body-sm text-error mt-1 font-medium"><span class="material-symbols-outlined text-[14px] align-middle">warning</span> Sesi presensi belum waktunya atau sudah lewat</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </label>
-                                    @endforeach
+                                            </label>
+                                        @endforeach
+                                        
+                                        @if($todaySchedules->count() > 1)
+                                            <button type="button" @click="showAllSchedules = !showAllSchedules" class="w-full text-center text-primary font-bold text-label-md py-3 hover:bg-primary/5 rounded-xl border border-dashed border-primary/30 transition-colors flex items-center justify-center gap-2">
+                                                <span x-text="showAllSchedules ? 'Sembunyikan Jadwal Lainnya' : 'Lihat Selengkapnya ({{ $todaySchedules->count() - 1 }} Jadwal Lain)'"></span>
+                                                <span class="material-symbols-outlined text-[18px] transition-transform" :class="showAllSchedules ? 'rotate-180' : ''">expand_more</span>
+                                            </button>
+                                        @endif
+                                    </div>
                                 @endif
                                 
                             </div>
