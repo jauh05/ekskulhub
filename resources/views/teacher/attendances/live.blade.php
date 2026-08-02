@@ -80,22 +80,25 @@
                                     <th class="p-4 font-label-md text-secondary">NAMA SISWA</th>
                                     <th class="p-4 font-label-md text-secondary">WAKTU SCAN</th>
                                     <th class="p-4 font-label-md text-secondary">METODE</th>
-                                    <th class="p-4 font-label-md text-secondary">BUKTI</th>
                                     <th class="p-4 font-label-md text-secondary">STATUS</th>
+                                    <th class="p-4 font-label-md text-secondary text-right">AKSI</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant" x-ref="tableBody">
-                                <!-- Populated by Alpine JS -->
+                            <tbody class="divide-y divide-outline-variant">
                                 <template x-for="attendance in attendances" :key="attendance.id">
-                                    <tr class="hover:bg-surface-container-low transition-colors animate-fade-in">
-                                        <td class="p-4 font-body-md text-on-surface font-semibold" x-text="attendance.student.name"></td>
-                                        <td class="p-4 font-body-md text-on-surface-variant font-mono" x-text="formatTime(attendance.created_at)"></td>
-                                        <td class="p-4 font-body-md text-on-surface-variant uppercase" x-text="attendance.method"></td>
-                                        <td class="p-4 font-body-sm text-on-surface-variant">
-                                            <template x-if="attendance.method === 'selfie' && attendance.selfie_path">
+                                    <tr class="hover:bg-surface-container-low transition-colors">
+                                        <td class="p-4 font-body-md text-on-surface font-semibold">
+                                            <div class="flex flex-col">
+                                                <span x-text="attendance.student?.name || 'Siswa tidak ditemukan'"></span>
+                                                <span class="text-label-sm text-secondary" x-text="'ID: ' + attendance.student_id"></span>
+                                            </div>
+                                        </td>
+                                        <td class="p-4 font-body-md text-on-surface-variant" x-text="formatTime(attendance.created_at)"></td>
+                                        <td class="p-4 font-body-md text-on-surface-variant">
+                                            <template x-if="attendance.method === 'selfie'">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-[16px] text-primary">photo_camera</span>
-                                                    <span>Selfie Terlampir</span>
+                                                    <span class="material-symbols-outlined text-[16px] text-[#F59E0B]">add_a_photo</span>
+                                                    <span>Selfie</span>
                                                 </div>
                                             </template>
                                             <template x-if="attendance.method === 'qr'">
@@ -121,10 +124,15 @@
                                                   x-text="attendance.status.toUpperCase()">
                                             </span>
                                         </td>
+                                        <td class="p-4 text-right">
+                                            <button type="button" @click="deleteAttendance(attendance.id)" class="px-3 py-1 rounded-full bg-error/10 text-error inline-flex items-center gap-1 hover:bg-error hover:text-white transition-colors text-label-sm font-bold" title="Batalkan/Hapus">
+                                                <span class="material-symbols-outlined text-[16px]">cancel</span> Batalkan
+                                            </button>
+                                        </td>
                                     </tr>
                                 </template>
                                 <tr x-show="attendances.length === 0">
-                                    <td colspan="4" class="p-8 text-center text-secondary">Belum ada siswa yang melakukan presensi.</td>
+                                    <td colspan="5" class="p-8 text-center text-secondary">Belum ada siswa yang melakukan presensi.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -172,6 +180,24 @@
                         this.timerInterval = setInterval(() => {
                             this.updateTimer();
                         }, 1000);
+                    });
+                },
+
+                deleteAttendance(id) {
+                    if(!confirm('Apakah Anda yakin ingin membatalkan/menghapus presensi ini?')) return;
+                    $.ajax({
+                        url: `/guru/attendances/${id}`,
+                        method: 'POST',
+                        data: {
+                            _method: 'DELETE',
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: (res) => {
+                            this.fetchData();
+                        },
+                        error: (err) => {
+                            alert('Gagal membatalkan presensi.');
+                        }
                     });
                 },
 
