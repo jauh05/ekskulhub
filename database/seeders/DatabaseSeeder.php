@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $guru1->id,
             'nip' => '198001012005011001',
             'address' => 'Jl. Merdeka No 1',
+            'school_name' => 'SMA Negeri 1 Jakarta',
         ]);
 
         $guru2 = User::create([
@@ -56,6 +57,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $guru2->id,
             'nip' => '198202022006022002',
             'address' => 'Jl. Pahlawan No 2',
+            'school_name' => 'SMA Negeri 1 Jakarta',
         ]);
 
         // 5 Siswa
