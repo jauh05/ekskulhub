@@ -153,10 +153,12 @@
     </div>
 @endif
 
-<div class="space-y-unit-xs">
-<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email atau NIP</label>
-<input class="w-full h-12 px-unit-md rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary-container transition-all font-body-md text-on-surface outline-none" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="contoh: admin@sekolah.sch.id..." type="text"/>
-</div>
+<form method="POST" action="{{ route('login') }}" class="space-y-4">
+    @csrf
+    <div class="space-y-unit-xs">
+        <label class="font-label-md text-label-md text-on-surface-variant" for="email">Email atau NIP</label>
+        <input class="w-full h-12 px-unit-md rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary-container transition-all font-body-md text-on-surface outline-none" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="contoh: admin@sekolah.sch.id..." type="text"/>
+    </div>
 <div class="space-y-unit-xs relative">
 <label class="font-label-md text-label-md text-on-surface-variant" for="password">Kata Sandi</label>
 <div class="relative">

@@ -199,13 +199,15 @@
     </div>
 @endif
 
-<div class="space-y-sm">
-<label class="block font-label-md text-on-surface-variant" for="email">Alamat Email</label>
-<div class="relative group">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary-container transition-colors">mail</span>
-<input class="w-full pl-12 pr-4 py-3 bg-surface rounded-xl border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-all font-body-md text-on-surface" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="nama@sekolah.sch.id" type="email"/>
-</div>
-</div>
+<form method="POST" action="{{ route('login') }}" class="space-y-6">
+    @csrf
+    <div class="space-y-sm">
+        <label class="block font-label-md text-on-surface-variant" for="email">Alamat Email</label>
+        <div class="relative group">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary-container transition-colors">mail</span>
+            <input class="w-full pl-12 pr-4 py-3 bg-surface rounded-xl border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-all font-body-md text-on-surface" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="nama@sekolah.sch.id" type="email"/>
+        </div>
+    </div>
 <div class="space-y-sm">
 <label class="block font-label-md text-on-surface-variant" for="password">Kata Sandi</label>
 <div class="relative group">
