@@ -1,5 +1,17 @@
 <x-app-layout>
     <div x-data="{ showRunModal: false }">
+    @if(isset($activeSession) && $activeSession)
+    <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 flex justify-between items-center card-shadow">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-[28px] animate-pulse">podcasts</span>
+            <div>
+                <h4 class="font-title-md font-bold text-primary">Sesi Presensi Sedang Berjalan</h4>
+                <p class="text-body-sm text-secondary">Anda memiliki sesi live presensi yang belum ditutup.</p>
+            </div>
+        </div>
+        <a href="{{ route('teacher.attendances.live', $activeSession->id) }}" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-label-md">Buka Kembali Halaman Live</a>
+    </div>
+    @endif
     <div class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-6">
         <div class="mb-8 flex items-center gap-3">
             <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">

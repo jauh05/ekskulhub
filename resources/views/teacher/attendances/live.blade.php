@@ -8,7 +8,10 @@
                     <span class="material-symbols-outlined text-[32px]">podcasts</span>
                 </div>
                 <div>
-                    <h3 class="font-headline-lg text-headline-lg text-on-surface font-bold">Live Presensi</h3>
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface font-bold flex items-center gap-4">
+                        Live Presensi
+                        <span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-lg text-title-md font-mono border border-outline-variant shadow-sm" x-data="{ time: new Date().toLocaleTimeString('id-ID') }" x-init="setInterval(() => time = new Date().toLocaleTimeString('id-ID'), 1000)" x-text="time"></span>
+                    </h3>
                     <p class="text-body-md text-secondary mt-1">
                         Ekskul: <strong class="text-on-surface">{{ $session->schedule->extracurricular->name }}</strong> | 
                         Jadwal: {{ \Carbon\Carbon::parse($session->schedule->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->schedule->attendance_end_at)->format('H:i') }}
@@ -16,12 +19,17 @@
                 </div>
             </div>
             
-            <form action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20" onclick="return confirm('Apakah Anda yakin ingin menutup sesi presensi ini?')">
-                    <span class="material-symbols-outlined text-[20px]">stop_circle</span> Akhiri Presensi
-                </button>
-            </form>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('teacher.attendances.index') }}" class="bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2 border border-outline-variant justify-center text-center">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span> Tutup Halaman (Biarkan Berjalan)
+                </a>
+                <form action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20 justify-center text-center" onclick="return confirm('Apakah Anda yakin ingin mengakhiri sesi presensi ini? Siswa tidak akan bisa scan QR lagi.')">
+                        <span class="material-symbols-outlined text-[20px]">stop_circle</span> Akhiri Sesi
+                    </button>
+                </form>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

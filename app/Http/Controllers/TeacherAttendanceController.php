@@ -58,8 +58,12 @@ class TeacherAttendanceController extends Controller
             ->where('status', 'approved')
             ->get();
             
+        $activeSession = \App\Models\AttendanceSession::where('opened_by', Auth::id())
+            ->where('status', 'open')
+            ->first();
+            
         return view('teacher.attendances.index', compact(
-            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents'
+            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents', 'activeSession'
         ));
     }
     
