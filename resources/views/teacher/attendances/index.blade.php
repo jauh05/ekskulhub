@@ -548,7 +548,17 @@
                         </button>
                     </div>
                 @else
-                    <div x-data="{ runMode: '{{ (isset($todaySchedules) && $todaySchedules->count() > 0) ? 'existing' : 'new' }}' }">
+                    <div x-data="{ 
+                        runMode: '{{ (isset($todaySchedules) && $todaySchedules->count() > 0) ? 'existing' : 'new' }}',
+                        currentTime: '',
+                        endTime: '',
+                        initTimes() {
+                            const d = new Date();
+                            this.currentTime = d.toTimeString().substring(0, 5);
+                            d.setHours(d.getHours() + 2);
+                            this.endTime = d.toTimeString().substring(0, 5);
+                        }
+                    }" x-init="initTimes(); $watch('showRunModal', val => { if(val) initTimes() }); $watch('runMode', val => { if(val === 'new') initTimes() });">
                         <div class="px-4 pt-3 sm:px-6">
                             <div class="flex border-b border-outline-variant">
                                 @if(isset($todaySchedules) && $todaySchedules->count() > 0)
@@ -619,11 +629,11 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-1.5">
                                         <label class="block font-label-md text-on-surface-variant">Waktu Mulai <span class="text-error">*</span></label>
-                                        <input type="time" name="start_time" value="{{ now()->format('H:i') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
+                                        <input type="time" name="start_time" x-model="currentTime" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
                                     </div>
                                     <div class="space-y-1.5">
                                         <label class="block font-label-md text-on-surface-variant">Waktu Selesai <span class="text-error">*</span></label>
-                                        <input type="time" name="end_time" value="{{ now()->addHours(2)->format('H:i') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
+                                        <input type="time" name="end_time" x-model="endTime" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
                                     </div>
                                 </div>
                                 <div class="space-y-1.5">
