@@ -12,6 +12,19 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div class="mb-4 bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg">
+        <div class="flex items-center gap-2 mb-2 font-bold">
+            <span class="material-symbols-outlined text-[20px]">warning</span> Terdapat Kesalahan:
+        </div>
+        <ul class="list-disc list-inside text-sm">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div class="bg-white p-6 md:p-8 rounded-xl border border-outline-variant soft-shadow max-w-lg mx-auto" x-data="{ step: 'main', method: '' }">
         <h4 class="font-title-lg text-on-surface text-center mb-2">{{ $schedule->extracurricular->name }}</h4>
         <p class="text-secondary text-center mb-6">{{ \Carbon\Carbon::parse($schedule->activity_date)->format('d F Y') }} | {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} WIB</p>

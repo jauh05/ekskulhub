@@ -37,12 +37,12 @@ class StudentAttendanceController extends Controller
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
             'type' => 'required|in:hadir,izin',
-            'method' => 'required_if:type,hadir|in:qr,manual,selfie',
-            'reason' => 'required_if:type,izin|string|max:255',
+            'method' => 'nullable|required_if:type,hadir|in:qr,manual,selfie',
+            'reason' => 'nullable|required_if:type,izin|string|max:255',
             'proof' => 'nullable|file|max:1024|mimes:jpg,jpeg,png,pdf',
-            'qr_code' => 'required_if:method,qr|string',
-            'session_code' => 'required_if:method,manual|string',
-            'selfie' => 'required_if:method,selfie|image|max:5120'
+            'qr_code' => 'nullable|required_if:method,qr|string',
+            'session_code' => 'nullable|required_if:method,manual|string',
+            'selfie' => 'nullable|required_if:method,selfie|image|max:5120'
         ]);
 
         $user = Auth::user();

@@ -1,4 +1,10 @@
 <div x-data="activeSessionPoller()" x-init="initPoller()" class="w-full">
+    <!-- Polling Indicator -->
+    <div x-show="isPolling" x-transition.opacity.duration.300ms class="flex items-center gap-2 text-secondary text-xs mb-2">
+        <span class="material-symbols-outlined text-[14px] animate-spin">sync</span>
+        Memeriksa sesi presensi...
+    </div>
+
     <template x-for="session in activeSessions" :key="session.id">
         <div x-show="!session.already_attended" x-transition.opacity.duration.500ms
              class="mb-6 relative overflow-hidden bg-primary p-6 rounded-2xl shadow-xl border border-primary-container animate-pulse">
@@ -14,7 +20,7 @@
                         <span class="text-sm font-bold text-white tracking-widest uppercase">Sesi Live Presensi Berjalan</span>
                     </div>
                     <h4 class="text-2xl font-bold text-white mb-1" x-text="'Ekskul: ' + session.extracurricular_name"></h4>
-                    <p class="text-white/90 text-sm">Guru Anda telah membuka sesi presensi. Segera scan QR Code untuk mencatat kehadiran Anda!</p>
+                    <p class="text-white/90 text-sm">Guru Anda telah membuka sesi presensi. Segera presensi untuk mencatat kehadiran Anda!</p>
                 </div>
                 
                 <a :href="'{{ url('siswa/absensi/scan') }}?schedule_id=' + session.schedule_id" 
@@ -31,6 +37,7 @@
         Alpine.data('activeSessionPoller', () => ({
             activeSessions: [],
             intervalId: null,
+            isPolling: false,
             
             initPoller() {
                 this.fetchSessions();
@@ -40,6 +47,7 @@
             },
             
             async fetchSessions() {
+                this.isPolling = true;
                 try {
                     const response = await fetch('{{ route("student.api.active-sessions") }}', {
                         headers: {
@@ -53,6 +61,8 @@
                     }
                 } catch (error) {
                     console.error('Failed to fetch active sessions', error);
+                } finally {
+                    setTimeout(() => { this.isPolling = false; }, 1000);
                 }
             }
         }));
