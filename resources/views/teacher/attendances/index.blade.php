@@ -543,52 +543,99 @@
                         </button>
                     </div>
                 @else
-                    <form action="{{ route('teacher.attendances.start') }}" method="POST">
-                        @csrf
-                        <div class="px-4 py-5 sm:p-6">
-                            @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                    <div x-data="{ runMode: '{{ (isset($todaySchedules) && $todaySchedules->count() > 0) ? 'existing' : 'new' }}' }">
+                        <div class="px-4 pt-3 sm:px-6">
+                            <div class="flex border-b border-outline-variant">
+                                @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                                <button type="button" @click="runMode = 'existing'" :class="runMode === 'existing' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'" class="flex-1 py-3 border-b-2 font-bold text-center transition-colors text-label-md">Jadwal Hari Ini</button>
+                                @endif
+                                <button type="button" @click="runMode = 'new'" :class="runMode === 'new' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'" class="flex-1 py-3 border-b-2 font-bold text-center transition-colors text-label-md">Jadwal Dadakan</button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Existing Schedules -->
+                        @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                        <form action="{{ route('teacher.attendances.start') }}" method="POST" x-show="runMode === 'existing'">
+                            @csrf
+                            <div class="px-4 py-5 sm:p-6">
                                 <div class="space-y-4">
                                     @foreach($todaySchedules as $jadwal)
-                                        <label class="flex items-start p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                                        @php
+                                            $now = now()->format('H:i:s');
+                                            $startTime = \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i:s');
+                                            $endTime = \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i:s');
+                                            $isWithinTime = ($now >= $startTime && $now <= $endTime);
+                                        @endphp
+                                        <label class="flex items-start p-4 border rounded-lg transition-colors {{ $isWithinTime ? 'border-outline-variant cursor-pointer hover:bg-surface-container-low' : 'border-outline-variant/30 bg-surface-container-lowest/50 opacity-60 cursor-not-allowed' }}">
                                             <div class="flex-shrink-0 mt-1">
-                                                <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" class="h-4 w-4 text-primary focus:ring-primary border-outline" required>
+                                                <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" class="h-4 w-4 text-primary focus:ring-primary border-outline" required {{ !$isWithinTime ? 'disabled' : '' }}>
                                             </div>
-                                            <div class="ml-3">
-                                                <span class="block text-label-lg font-bold text-on-surface">{{ $jadwal->extracurricular->name }}</span>
+                                            <div class="ml-3 w-full">
+                                                <span class="block text-label-lg font-bold {{ $isWithinTime ? 'text-on-surface' : 'text-secondary' }}">{{ $jadwal->extracurricular->name }}</span>
                                                 <span class="block text-body-sm text-secondary mt-1">
                                                     Waktu: {{ \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i') }}
                                                 </span>
+                                                @if(!$isWithinTime)
+                                                    <span class="block text-body-sm text-error mt-1 font-medium"><span class="material-symbols-outlined text-[14px] align-middle">warning</span> Sesi presensi belum waktunya atau sudah lewat</span>
+                                                @endif
                                             </div>
                                         </label>
                                     @endforeach
                                 </div>
-                            @else
-                                <div class="space-y-4 text-left">
-                                    <div class="p-3 bg-primary/10 text-primary rounded-lg text-body-sm flex gap-2 border border-primary/20">
-                                        <span class="material-symbols-outlined text-[20px]">info</span>
-                                        <span>Tidak ada jadwal hari ini. Sistem akan otomatis membuat jadwal sesi latihan baru untuk hari ini saat Anda klik Mulai.</span>
+                            </div>
+                            <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                    Mulai Presensi
+                                </button>
+                                <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                        @endif
+
+                        <!-- TAB: New Dadakan Schedule -->
+                        <form action="{{ route('teacher.attendances.start') }}" method="POST" x-show="runMode === 'new'" style="display: none;">
+                            @csrf
+                            <div class="px-4 py-5 sm:p-6 space-y-4 text-left max-h-[60vh] overflow-y-auto">
+                                <div class="space-y-1.5">
+                                    <label class="block font-label-md text-on-surface-variant">Ekstrakurikuler <span class="text-error">*</span></label>
+                                    <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md" required>
+                                        <option value="">-- Pilih Ekskul --</option>
+                                        @foreach($ekskuls as $ek)
+                                            <option value="{{ $ek->id }}">{{ $ek->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block font-label-md text-on-surface-variant">Topik / Agenda</label>
+                                    <input type="text" name="topic" placeholder="Contoh: Sesi Latihan Tambahan" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label class="block font-label-md text-on-surface-variant">Waktu Mulai <span class="text-error">*</span></label>
+                                        <input type="time" name="start_time" value="{{ now()->format('H:i') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
                                     </div>
-                                    <div>
-                                        <label class="block text-label-md font-bold text-on-surface mb-2">Pilih Ekstrakurikuler:</label>
-                                        <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md" required>
-                                            <option value="">Pilih Ekskul...</option>
-                                            @foreach($ekskuls as $ek)
-                                                <option value="{{ $ek->id }}">{{ $ek->name }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="space-y-1.5">
+                                        <label class="block font-label-md text-on-surface-variant">Waktu Selesai <span class="text-error">*</span></label>
+                                        <input type="time" name="end_time" value="{{ now()->addHours(2)->format('H:i') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
                                     </div>
                                 </div>
-                            @endif
-                        </div>
-                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
-                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                                Mulai Presensi
-                            </button>
-                            <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
+                                <div class="space-y-1.5">
+                                    <label class="block font-label-md text-on-surface-variant">Lokasi <span class="text-error">*</span></label>
+                                    <input type="text" name="location" value="Lapangan Utama" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 font-body-md" required>
+                                </div>
+                            </div>
+                            <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                    Buat & Mulai Presensi
+                                </button>
+                                <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 @endif
             </div>
         </div>

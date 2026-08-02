@@ -208,6 +208,17 @@ class TeacherAttendanceController extends Controller
     {
         if ($request->has('schedule_id') && !empty($request->schedule_id)) {
             $schedule = Schedule::findOrFail($request->schedule_id);
+            
+            // Check if current time is within schedule attendance window
+            $now = now()->format('H:i:s');
+            $startTime = \Carbon\Carbon::parse($schedule->attendance_start_at)->format('H:i:s');
+            $endTime = \Carbon\Carbon::parse($schedule->attendance_end_at)->format('H:i:s');
+            
+            // If it's a different date, we shouldn't allow it either, but typically todaySchedules are filtered by today.
+            // Just comparing time is enough for today schedules.
+            if ($now < $startTime || $now > $endTime) {
+                return back()->with('error', 'Presensi gagal dimulai: Waktu sekarang ('.now()->format('H:i').') berada di luar rentang waktu jadwal ('.\Carbon\Carbon::parse($startTime)->format('H:i').' - '.\Carbon\Carbon::parse($endTime)->format('H:i').').');
+            }
         } elseif ($request->has('extracurricular_id') && !empty($request->extracurricular_id)) {
             // Verify teacher owns this extracurricular
             $extracurricular = \App\Models\Extracurricular::where('id', $request->extracurricular_id)
@@ -216,13 +227,13 @@ class TeacherAttendanceController extends Controller
                 
             $schedule = Schedule::create([
                 'extracurricular_id' => $extracurricular->id,
-                'title' => 'Sesi Latihan Tambahan',
-                'activity_date' => now()->toDateString(),
-                'start_time' => now()->format('H:i'),
-                'end_time' => now()->addHours(2)->format('H:i'),
-                'attendance_start_at' => now()->format('H:i'),
-                'attendance_end_at' => now()->addHours(2)->format('H:i'),
-                'location' => 'Lapangan Utama / Ruang Kelas',
+                'title' => $request->topic ?? 'Sesi Latihan Tambahan',
+                'activity_date' => $request->activity_date ?? now()->toDateString(),
+                'start_time' => $request->start_time ?? now()->format('H:i'),
+                'end_time' => $request->end_time ?? now()->addHours(2)->format('H:i'),
+                'attendance_start_at' => $request->start_time ?? now()->format('H:i'),
+                'attendance_end_at' => $request->end_time ?? now()->addHours(2)->format('H:i'),
+                'location' => $request->location ?? 'Lapangan Utama / Ruang Kelas',
                 'created_by' => Auth::id(),
             ]);
         } else {
