@@ -154,52 +154,67 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('teacher.attendances.start') }}" method="POST">
-                    @csrf
-                    <div class="px-4 py-5 sm:p-6">
-                        @if(isset($todaySchedules) && $todaySchedules->count() > 0)
-                            <div class="space-y-4">
-                                @foreach($todaySchedules as $jadwal)
-                                    <label class="flex items-start p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
-                                        <div class="flex-shrink-0 mt-1">
-                                            <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" class="h-4 w-4 text-primary focus:ring-primary border-outline" required>
-                                        </div>
-                                        <div class="ml-3">
-                                            <span class="block text-label-lg font-bold text-on-surface">{{ $jadwal->extracurricular->name }}</span>
-                                            <span class="block text-body-sm text-secondary mt-1">
-                                                Waktu: {{ \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i') }}
-                                            </span>
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="space-y-4 text-left">
-                                <div class="p-3 bg-primary/10 text-primary rounded-lg text-body-sm flex gap-2 border border-primary/20">
-                                    <span class="material-symbols-outlined text-[20px]">info</span>
-                                    <span>Tidak ada jadwal hari ini. Sistem akan otomatis membuat jadwal sesi latihan baru untuk hari ini saat Anda klik Mulai.</span>
-                                </div>
-                                <div>
-                                    <label class="block text-label-md font-bold text-on-surface mb-2">Pilih Ekstrakurikuler:</label>
-                                    <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md" required>
-                                        <option value="">Pilih Ekskul...</option>
-                                        @foreach($ekskuls as $ek)
-                                            <option value="{{ $ek->id }}">{{ $ek->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        @endif
+                @if(isset($totalActiveStudents) && $totalActiveStudents == 0)
+                    <div class="px-4 py-5 sm:p-6 text-center">
+                        <div class="bg-error/10 text-error p-4 rounded-xl inline-block mb-4">
+                            <span class="material-symbols-outlined text-[32px]">warning</span>
+                        </div>
+                        <h4 class="text-title-md font-bold text-on-surface mb-2">Belum Memiliki Siswa Aktif</h4>
+                        <p class="text-body-md text-secondary">Kamu belum mempunyai siswa aktif, sehingga belum bisa melakukan presensi. Silakan tunggu siswa mendaftar dan setujui pendaftarannya terlebih dahulu.</p>
                     </div>
                     <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
-                        <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                            Mulai Presensi
-                        </button>
-                        <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                            Batal
+                        <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                            Tutup
                         </button>
                     </div>
-                </form>
+                @else
+                    <form action="{{ route('teacher.attendances.start') }}" method="POST">
+                        @csrf
+                        <div class="px-4 py-5 sm:p-6">
+                            @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($todaySchedules as $jadwal)
+                                        <label class="flex items-start p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                                            <div class="flex-shrink-0 mt-1">
+                                                <input type="radio" name="schedule_id" value="{{ $jadwal->id }}" class="h-4 w-4 text-primary focus:ring-primary border-outline" required>
+                                            </div>
+                                            <div class="ml-3">
+                                                <span class="block text-label-lg font-bold text-on-surface">{{ $jadwal->extracurricular->name }}</span>
+                                                <span class="block text-body-sm text-secondary mt-1">
+                                                    Waktu: {{ \Carbon\Carbon::parse($jadwal->attendance_start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->attendance_end_at)->format('H:i') }}
+                                                </span>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="space-y-4 text-left">
+                                    <div class="p-3 bg-primary/10 text-primary rounded-lg text-body-sm flex gap-2 border border-primary/20">
+                                        <span class="material-symbols-outlined text-[20px]">info</span>
+                                        <span>Tidak ada jadwal hari ini. Sistem akan otomatis membuat jadwal sesi latihan baru untuk hari ini saat Anda klik Mulai.</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-label-md font-bold text-on-surface mb-2">Pilih Ekstrakurikuler:</label>
+                                        <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md" required>
+                                            <option value="">Pilih Ekskul...</option>
+                                            @foreach($ekskuls as $ek)
+                                                <option value="{{ $ek->id }}">{{ $ek->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                Mulai Presensi
+                            </button>
+                            <button type="button" @click="showRunModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
     </div>

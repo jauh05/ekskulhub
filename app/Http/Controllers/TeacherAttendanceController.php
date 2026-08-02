@@ -44,8 +44,12 @@ class TeacherAttendanceController extends Controller
             ->with('extracurricular')
             ->get();
             
+        $totalActiveStudents = \App\Models\ExtracurricularRegistration::whereIn('extracurricular_id', $ekskulIds)
+            ->where('status', 'approved')
+            ->count();
+            
         return view('teacher.attendances.index', compact(
-            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules'
+            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents'
         ));
     }
     
