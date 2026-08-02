@@ -48,20 +48,85 @@ class TeacherAttendanceController extends Controller
             ->where('status', 'approved')
             ->count();
             
+        $allSchedules = Schedule::whereIn('extracurricular_id', $ekskulIds)
+            ->latest('activity_date')
+            ->limit(50)
+            ->get();
+            
+        $activeStudents = \App\Models\ExtracurricularRegistration::with('student')
+            ->whereIn('extracurricular_id', $ekskulIds)
+            ->where('status', 'approved')
+            ->get();
+            
         return view('teacher.attendances.index', compact(
-            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents'
+            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents'
         ));
     }
     
+    public function store(Request $request)
+    {
+        $request->validate([
+            'schedule_id' => 'required|exists:schedules,id',
+            'student_id' => 'required|exists:users,id',
+            'status' => 'required|in:present,late,permitted,sick,absent',
+            'notes' => 'nullable|string'
+        ]);
+
+        // Find or create attendance session for this schedule
+        $session = AttendanceSession::firstOrCreate(
+            ['schedule_id' => $request->schedule_id],
+            [
+                'status' => 'closed',
+                'opened_by' => Auth::id(),
+                'opened_at' => now(),
+            ]
+        );
+
+        // Check if attendance already exists
+        $exists = Attendance::where('attendance_session_id', $session->id)
+            ->where('student_id', $request->student_id)
+            ->exists();
+            
+        if ($exists) {
+            return back()->with('error', 'Siswa tersebut sudah memiliki riwayat presensi pada jadwal ini.');
+        }
+
+        Attendance::create([
+            'attendance_session_id' => $session->id,
+            'student_id' => $request->student_id,
+            'status' => $request->status,
+            'method' => 'manual',
+            'checked_at' => now(),
+            'notes' => $request->notes,
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
+        ]);
+
+        return back()->with('success', 'Data presensi berhasil ditambahkan.');
+    }
+
     public function update(Request $request, Attendance $attendance)
     {
-        // Teacher can manually verify attendance
+        $request->validate([
+            'status' => 'required|in:present,late,permitted,sick,absent',
+            'notes' => 'nullable|string'
+        ]);
+
         $attendance->update([
-            'status' => $request->status, // present, absent, sick, permitted
-            'is_verified_by_teacher' => true
+            'status' => $request->status,
+            'notes' => $request->notes,
+            'is_verified_by_teacher' => true,
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
         ]);
         
-        return redirect()->back()->with('success', 'Status absensi diperbarui');
+        return redirect()->back()->with('success', 'Data presensi berhasil diperbarui.');
+    }
+    
+    public function destroy(Attendance $attendance)
+    {
+        $attendance->delete();
+        return back()->with('success', 'Data presensi berhasil dihapus.');
     }
 
     public function startSession(Request $request)

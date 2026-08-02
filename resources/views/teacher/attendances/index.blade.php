@@ -61,11 +61,33 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden">
+    <div x-data="{ 
+        showAddModal: false, 
+        showEditModal: false, 
+        showDeleteModal: false, 
+        showDetailModal: false,
+        selectedAttendance: {},
+        
+        openEdit(att) {
+            this.selectedAttendance = att;
+            this.showEditModal = true;
+        },
+        openDelete(att) {
+            this.selectedAttendance = att;
+            this.showDeleteModal = true;
+        },
+        openDetail(att) {
+            this.selectedAttendance = att;
+            this.showDetailModal = true;
+        }
+    }" class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden">
         <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
             <h4 class="font-title-md font-bold text-on-surface flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary">table_view</span> Detail Kehadiran Siswa
+                <span class="material-symbols-outlined text-primary">table_view</span> Riwayat Presensi
             </h4>
+            <button @click="showAddModal = true" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-label-md font-bold hover:bg-primary/90 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">add</span> Tambah Presensi
+            </button>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -108,16 +130,16 @@
                                 <span class="text-outline text-label-sm">-</span>
                             @endif
                         </td>
-                        <td class="p-4">
-                            <form action="{{ route('teacher.attendances.update', $att->id) }}" method="POST" class="flex gap-1">
-                                @csrf @method('PATCH')
-                                <select name="status" class="py-1 px-2 border border-outline-variant rounded text-label-sm" onchange="this.form.submit()">
-                                    <option value="present" {{ $att->status == 'present' ? 'selected' : '' }}>Hadir</option>
-                                    <option value="sick" {{ $att->status == 'sick' ? 'selected' : '' }}>Sakit</option>
-                                    <option value="permitted" {{ $att->status == 'permitted' ? 'selected' : '' }}>Izin</option>
-                                    <option value="absent" {{ $att->status == 'absent' ? 'selected' : '' }}>Alpa</option>
-                                </select>
-                            </form>
+                        <td class="p-4 flex gap-2">
+                            <button @click="openDetail({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors" title="Detail">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                            </button>
+                            <button @click="openEdit({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center hover:bg-[#F59E0B] hover:text-white transition-colors" title="Edit">
+                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                            </button>
+                            <button @click="openDelete({{ json_encode($att) }})" class="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors" title="Hapus">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
                         </td>
                     </tr>
                     @empty
@@ -131,6 +153,165 @@
         <div class="p-4 border-t border-outline-variant">
             {{ $attendances->links() }}
         </div>
+
+        <!-- Add Modal -->
+        <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showAddModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showAddModal = false" aria-hidden="true"></div>
+                <div x-show="showAddModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 border-b border-outline-variant">
+                        <h3 class="text-title-lg font-bold text-on-surface">Tambah Presensi Manual</h3>
+                    </div>
+                    <form action="{{ route('teacher.attendances.store') }}" method="POST">
+                        @csrf
+                        <div class="px-4 py-5 sm:p-6 space-y-4">
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Jadwal</label>
+                                <select name="schedule_id" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" required>
+                                    <option value="">Pilih Jadwal...</option>
+                                    @foreach($allSchedules as $sch)
+                                        <option value="{{ $sch->id }}">{{ $sch->extracurricular->name }} - {{ \Carbon\Carbon::parse($sch->activity_date)->format('d M Y') }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Siswa</label>
+                                <select name="student_id" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" required>
+                                    <option value="">Pilih Siswa...</option>
+                                    @foreach($activeStudents as $reg)
+                                        <option value="{{ $reg->student->id }}">{{ $reg->student->name }} ({{ $reg->extracurricular->name }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Status</label>
+                                <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" required>
+                                    <option value="present">Hadir</option>
+                                    <option value="sick">Sakit</option>
+                                    <option value="permitted">Izin</option>
+                                    <option value="absent">Alpa</option>
+                                    <option value="late">Terlambat</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Catatan Tambahan (Opsional)</label>
+                                <textarea name="notes" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" rows="2" placeholder="Tulis catatan jika diperlukan..."></textarea>
+                            </div>
+                        </div>
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Simpan</button>
+                            <button type="button" @click="showAddModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showEditModal = false" aria-hidden="true"></div>
+                <div x-show="showEditModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 border-b border-outline-variant">
+                        <h3 class="text-title-lg font-bold text-on-surface">Edit Presensi</h3>
+                        <p class="text-body-sm text-secondary mt-1" x-text="selectedAttendance?.student?.name"></p>
+                    </div>
+                    <form :action="'{{ route('teacher.attendances.update', 'ID_PLACEHOLDER') }}'.replace('ID_PLACEHOLDER', selectedAttendance?.id)" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <div class="px-4 py-5 sm:p-6 space-y-4">
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Status</label>
+                                <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" x-model="selectedAttendance.status" required>
+                                    <option value="present">Hadir</option>
+                                    <option value="sick">Sakit</option>
+                                    <option value="permitted">Izin</option>
+                                    <option value="absent">Alpa</option>
+                                    <option value="late">Terlambat</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Catatan Tambahan (Opsional)</label>
+                                <textarea name="notes" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" rows="2" x-model="selectedAttendance.notes" placeholder="Tulis catatan jika diperlukan..."></textarea>
+                            </div>
+                        </div>
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Simpan</button>
+                            <button type="button" @click="showEditModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Modal -->
+        <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showDeleteModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDeleteModal = false" aria-hidden="true"></div>
+                <div x-show="showDeleteModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-sm w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error/10 mb-4">
+                            <span class="material-symbols-outlined text-error text-[24px]">delete</span>
+                        </div>
+                        <h3 class="text-title-md font-bold text-on-surface mb-2">Hapus Data Presensi?</h3>
+                        <p class="text-body-md text-secondary">Apakah Anda yakin ingin menghapus data presensi untuk <span class="font-bold text-on-surface" x-text="selectedAttendance?.student?.name"></span>? Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                    <form :action="'{{ route('teacher.attendances.destroy', 'ID_PLACEHOLDER') }}'.replace('ID_PLACEHOLDER', selectedAttendance?.id)" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="bg-surface-container-low px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-outline-variant">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-error text-base font-medium text-white hover:bg-error/90 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Hapus</button>
+                            <button type="button" @click="showDeleteModal = false" class="mt-3 w-full inline-flex justify-center rounded-lg border border-outline-variant shadow-sm px-4 py-2 bg-white text-base font-medium text-secondary hover:bg-surface-container-low focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div x-show="showDetailModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="showDetailModal" x-transition.opacity class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDetailModal = false" aria-hidden="true"></div>
+                <div x-show="showDetailModal" x-transition.scale.origin.center class="inline-block align-middle bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full relative z-10">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 border-b border-outline-variant flex justify-between items-center">
+                        <h3 class="text-title-lg font-bold text-on-surface">Detail Presensi</h3>
+                        <button type="button" @click="showDetailModal = false" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+                            <span class="text-body-md text-secondary">Nama Siswa</span>
+                            <span class="font-bold text-on-surface" x-text="selectedAttendance?.student?.name"></span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+                            <span class="text-body-md text-secondary">Status</span>
+                            <span class="font-bold px-2 py-1 rounded text-label-sm"
+                                  :class="{
+                                      'bg-tertiary-container text-on-tertiary-container': selectedAttendance?.status === 'present',
+                                      'bg-error-container text-on-error-container': selectedAttendance?.status === 'absent',
+                                      'bg-surface-variant text-on-surface-variant': selectedAttendance?.status === 'sick',
+                                      'bg-primary-container text-on-primary-container': selectedAttendance?.status === 'permitted',
+                                      'bg-[#F59E0B]/10 text-[#F59E0B]': selectedAttendance?.status === 'late'
+                                  }"
+                                  x-text="selectedAttendance?.status === 'present' ? 'Hadir' : (selectedAttendance?.status === 'absent' ? 'Alpa' : (selectedAttendance?.status === 'sick' ? 'Sakit' : (selectedAttendance?.status === 'permitted' ? 'Izin' : 'Terlambat')))">
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+                            <span class="text-body-md text-secondary">Metode</span>
+                            <span class="font-medium text-on-surface uppercase" x-text="selectedAttendance?.method"></span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+                            <span class="text-body-md text-secondary">Waktu Absen</span>
+                            <span class="font-medium text-on-surface" x-text="selectedAttendance?.checked_at ? new Date(selectedAttendance.checked_at).toLocaleString('id-ID') : '-'"></span>
+                        </div>
+                        <div class="flex flex-col gap-1 border-b border-outline-variant pb-2">
+                            <span class="text-body-md text-secondary">Catatan</span>
+                            <span class="font-medium text-on-surface" x-text="selectedAttendance?.notes || '-'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Modal Jalankan Presensi -->
