@@ -97,11 +97,11 @@
                             @endif
                         </td>
                         <td class="p-4 flex gap-2 justify-end">
-                            @if($part->status === 'pending')
+                             @if($part->status === 'pending')
                                 <form action="{{ route('teacher.registrations.update', $part->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="status" value="approved">
                                     <button type="submit" class="w-8 h-8 rounded-full bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981] hover:text-white flex items-center justify-center transition-colors shadow-sm" title="Terima Siswa">
                                         <span class="material-symbols-outlined text-[18px]">check</span>
                                     </button>
@@ -109,7 +109,7 @@
                                 <form action="{{ route('teacher.registrations.update', $part->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="status" value="rejected">
                                     <button type="submit" class="w-8 h-8 rounded-full bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444] hover:text-white flex items-center justify-center transition-colors shadow-sm" title="Tolak Siswa">
                                         <span class="material-symbols-outlined text-[18px]">close</span>
                                     </button>
@@ -215,7 +215,7 @@
                 <form id="kickForm" method="POST" class="w-full">
                     @csrf
                     @method('PATCH')
-                    <input type="hidden" name="action" value="reject">
+                    <input type="hidden" name="status" value="rejected">
                     <button type="submit" class="w-full py-2 rounded-lg font-label-md bg-error text-white hover:bg-error/90 transition-all shadow-sm flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">person_remove</span> Tolak Pendaftaran
                     </button>

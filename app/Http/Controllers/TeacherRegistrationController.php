@@ -38,6 +38,16 @@ class TeacherRegistrationController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Handle both 'status' and 'action' request inputs
+        $status = $request->input('status') ?? $request->input('action');
+        if ($status === 'approve') {
+            $status = 'approved';
+        } elseif ($status === 'reject') {
+            $status = 'rejected';
+        }
+
+        $request->merge(['status' => $status]);
+
         $request->validate([
             'status' => 'required|in:approved,rejected',
         ]);

@@ -206,7 +206,7 @@ class TeacherAttendanceController extends Controller
 
     public function startSession(Request $request)
     {
-        if ($request->has('schedule_id') && !empty($request->schedule_id) && $request->schedule_id !== 'dadakan') {
+        if ($request->has('schedule_id') && !empty($request->schedule_id)) {
             $schedule = Schedule::findOrFail($request->schedule_id);
             
             // Check if current time is within schedule attendance window
