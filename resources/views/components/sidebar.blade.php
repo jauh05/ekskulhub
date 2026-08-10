@@ -3,14 +3,19 @@
 
 <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
-    <div class="px-6 mb-10 flex items-center gap-3">
-        <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
+    <div class="px-6 mb-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-primary">Ekskul</h1>
+                <p class="text-label-sm text-secondary -mt-1">Management</p>
+            </div>
         </div>
-        <div>
-            <h1 class="font-headline-md text-headline-md font-bold text-primary">Ekskul</h1>
-            <p class="text-label-sm text-secondary -mt-1">Management</p>
-        </div>
+        <button @click="sidebarOpen = false" class="md:hidden w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
     </div>
     <nav class="flex-1 space-y-1">
         @if(Auth::user()->role === 'admin')
