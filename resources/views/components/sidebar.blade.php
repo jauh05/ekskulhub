@@ -13,8 +13,8 @@
                 <p class="text-label-sm text-secondary -mt-1">Management</p>
             </div>
         </div>
-        <button type="button" @click="sidebarOpen = !sidebarOpen" class="md:hidden w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-colors relative z-50 cursor-pointer bg-surface-container">
-            <span class="material-symbols-outlined text-[24px]">close</span>
+        <button type="button" @click="sidebarOpen = false" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50;" class="md:hidden text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-colors bg-surface-container">
+            <span class="material-symbols-outlined" style="font-size: 24px;">close</span>
         </button>
     </div>
     <nav class="flex-1 space-y-1">
