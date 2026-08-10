@@ -1,4 +1,5 @@
-<header class="sticky top-0 z-10 glass-nav border-b border-outline-variant flex justify-between items-center px-4 md:px-8 h-16 transition-all duration-300 w-full">
+<header class="fixed top-0 right-0 z-20 glass-nav border-b border-outline-variant flex justify-between items-center px-4 md:px-8 h-16 transition-all duration-300"
+    :style="sidebarOpen && window.innerWidth >= 768 ? 'width: calc(100% - 16rem);' : 'width: 100%;'">
 <div class="flex items-center gap-2 md:gap-4">
 <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
 <span class="material-symbols-outlined">menu</span>

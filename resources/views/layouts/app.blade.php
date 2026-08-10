@@ -23,10 +23,10 @@
 <body class="text-on-surface" x-data="{ sidebarOpen: window.innerWidth >= 768 }" @resize.window="if(window.innerWidth >= 768) { sidebarOpen = true } else { sidebarOpen = false }">
     @include('components.sidebar')
 
-    <main class="min-h-screen transition-all duration-300" :style="sidebarOpen && window.innerWidth >= 768 ? 'margin-left: 16rem;' : 'margin-left: 0;'">
+    <main class="min-h-screen transition-all duration-300" :style="sidebarOpen && window.innerWidth >= 768 ? 'padding-left: 16rem;' : 'padding-left: 0;'">
         @include('components.topbar')
 
-        <div class="pt-8 px-4 md:px-8 pb-12">
+        <div class="pt-24 px-4 md:px-8 pb-12">
             <!-- Flash Message -->
             @if(session('success'))
                 <div class="mb-4 p-4 bg-tertiary-container text-on-tertiary-container rounded-lg">
