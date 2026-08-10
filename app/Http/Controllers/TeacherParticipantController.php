@@ -16,12 +16,19 @@ class TeacherParticipantController extends Controller
         $ekskuls = $teacher->taughtExtracurriculars;
         
         $query = ExtracurricularRegistration::with(['student.studentProfile', 'student.attendances', 'extracurricular.schedules'])
-            ->whereIn('extracurricular_id', $ekskulIds)
-            ->where('status', 'approved');
+            ->whereIn('extracurricular_id', $ekskulIds);
             
         // Filter by ekskul
         if ($request->filled('ekskul_id')) {
             $query->where('extracurricular_id', $request->ekskul_id);
+        }
+        
+        // Search by name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('student', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
         }
         
         // Calculate stats

@@ -22,8 +22,8 @@
             </div>
             
             <div class="flex flex-col sm:flex-row gap-3">
-                <a href="{{ route('teacher.attendances.index') }}" class="bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2 border border-outline-variant justify-center text-center">
-                    <span class="material-symbols-outlined text-[20px]">arrow_back</span> Tutup
+                <a href="{{ route('teacher.attendances.index') }}" class="bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2 border border-outline-variant justify-center text-center" title="Kembali ke Halaman Sebelumnya">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span> Kembali
                 </a>
                 <form action="{{ route('teacher.attendances.live.extend', $session->id) }}" method="POST">
                     @csrf

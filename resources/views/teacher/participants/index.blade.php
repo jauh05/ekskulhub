@@ -10,8 +10,12 @@
             </div>
         </div>
         
-        <form action="{{ route('teacher.participants.index') }}" method="GET" class="flex items-center gap-2">
-            <select name="ekskul_id" class="px-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md min-w-[200px]">
+        <form action="{{ route('teacher.participants.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+            <div class="relative w-full sm:w-auto">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama siswa..." class="w-full sm:w-64 pl-10 pr-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md text-on-surface">
+            </div>
+            <select name="ekskul_id" class="w-full sm:w-auto px-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white font-body-md min-w-[200px]">
                 <option value="">Semua Ekstrakurikuler</option>
                 @foreach($ekskuls as $ek)
                     <option value="{{ $ek->id }}" {{ request('ekskul_id') == $ek->id ? 'selected' : '' }}>
@@ -19,8 +23,8 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
-                <span class="material-symbols-outlined text-[20px]">filter_list</span> Terapkan Filter
+            <button type="submit" class="w-full sm:w-auto bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">filter_list</span> Filter
             </button>
         </form>
     </div>
