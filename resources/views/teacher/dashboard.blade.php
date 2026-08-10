@@ -3,76 +3,74 @@
     <div class="pt-6 px-8 pb-12">
         <!-- Welcome Header -->
         <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                    <span class="material-symbols-outlined text-[32px] text-white">waving_hand</span>
+            <div class="flex items-start md:items-center gap-4">
+                <div class="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-[24px] md:text-[32px] text-white">waving_hand</span>
                 </div>
                 <div>
-                    <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface">Selamat Datang, {{ explode(' ', auth()->user()->name ?? 'Guru')[0] }}!</h3>
-                    <p class="text-body-lg text-secondary flex items-center gap-2 mt-1">
-                        <span class="material-symbols-outlined text-[18px]">insights</span>
-                        Pantau perkembangan siswa dan jadwal kegiatan hari ini.
+                    <h3 class="font-headline-sm md:font-headline-lg text-headline-sm md:text-headline-lg font-bold text-on-surface">Selamat Datang, {{ explode(' ', auth()->user()->name ?? 'Guru')[0] }}!</h3>
+                    <p class="text-body-sm md:text-body-lg text-secondary flex items-start md:items-center gap-1 md:gap-2 mt-1">
+                        <span class="material-symbols-outlined text-[16px] md:text-[18px] mt-0.5 md:mt-0 shrink-0">insights</span>
+                        <span>Pantau perkembangan siswa dan jadwal kegiatan hari ini.</span>
                     </p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('teacher.schedules.create') }}" class="bg-primary text-on-primary px-5 py-2.5 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-md">
+            <div class="flex gap-2 w-full md:w-auto">
+                <a href="{{ route('teacher.schedules.create') }}" class="w-full md:w-auto justify-center bg-primary text-on-primary px-5 py-2.5 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-md">
                     <span class="material-symbols-outlined text-[20px]">add_task</span>
                     Buat Jadwal Baru
                 </a>
             </div>
         </div>
 
-        <!-- Ringkasan Statistik (1 Baris Kanan Kiri) -->
-        <div class="bg-white rounded-xl border border-outline-variant card-shadow mb-8 overflow-x-auto">
-            <div class="flex flex-row items-center divide-x divide-outline-variant min-w-max w-full">
-                
-                <div class="flex-1 p-4 flex flex-row items-center justify-center gap-3">
-                    <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[24px]">group</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-label-md text-secondary font-medium">Total Peserta:</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-title-lg font-bold text-on-surface leading-none">{{ $totalParticipants ?? 0 }}</span>
-                            <span class="text-label-sm text-tertiary flex items-center font-bold bg-tertiary/10 px-1.5 py-0.5 rounded text-[10px]">
-                                <span class="material-symbols-outlined text-[12px] mr-0.5">trending_up</span> 12%
-                            </span>
-                        </div>
+        <!-- Ringkasan Statistik (Grid Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            
+            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
+                <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">group</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-label-md text-secondary font-medium">Total Peserta:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-title-lg font-bold text-on-surface leading-none">{{ $totalParticipants ?? 0 }}</span>
+                        <span class="text-label-sm text-tertiary flex items-center font-bold bg-tertiary/10 px-1.5 py-0.5 rounded text-[10px]">
+                            <span class="material-symbols-outlined text-[12px] mr-0.5">trending_up</span> 12%
+                        </span>
                     </div>
                 </div>
-
-                <div class="flex-1 p-4 flex flex-row items-center justify-center gap-3">
-                    <div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[24px]">event_available</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-label-md text-secondary font-medium">Sesi Bulan Ini:</span>
-                        <span class="text-title-lg font-bold text-on-surface leading-none">{{ $schedulesThisMonth ?? 0 }}</span>
-                    </div>
-                </div>
-
-                <div class="flex-1 p-4 flex flex-row items-center justify-center gap-3">
-                    <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-full flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[24px]">how_to_reg</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-label-md text-secondary font-medium">Hadir Hari Ini:</span>
-                        <span class="text-title-lg font-bold text-on-surface leading-none">{{ $presentToday }}</span>
-                    </div>
-                </div>
-
-                <div class="flex-1 p-4 flex flex-row items-center justify-center gap-3">
-                    <div class="w-12 h-12 bg-error/10 text-error rounded-full flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[24px]">warning</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-label-md text-error font-bold">Sesi Presensi Aktif:</span>
-                        <span class="text-title-lg font-bold text-error leading-none">{{ $pendingSessions }}</span>
-                    </div>
-                </div>
-
             </div>
+
+            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
+                <div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">event_available</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-label-md text-secondary font-medium">Sesi Bulan Ini:</span>
+                    <span class="text-title-lg font-bold text-on-surface leading-none">{{ $schedulesThisMonth ?? 0 }}</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
+                <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-full flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">how_to_reg</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-label-md text-secondary font-medium">Hadir Hari Ini:</span>
+                    <span class="text-title-lg font-bold text-on-surface leading-none">{{ $presentToday }}</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
+                <div class="w-12 h-12 bg-error/10 text-error rounded-full flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">warning</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-label-md text-error font-bold">Sesi Presensi Aktif:</span>
+                    <span class="text-title-lg font-bold text-error leading-none">{{ $pendingSessions }}</span>
+                </div>
+            </div>
+
         </div>
 
         <!-- Layout Grid: Main Content -->
@@ -146,18 +144,19 @@
                                     <span class="material-symbols-outlined text-6xl">event</span>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-outline-variant">
-                                <a href="{{ route('teacher.attendances.index') }}" class="bg-primary text-white px-8 py-3 rounded-lg font-body-md font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2">
+                            <div class="flex flex-col sm:flex-row flex-wrap gap-4 mt-8 pt-6 border-t border-outline-variant">
+                                <a href="{{ route('teacher.attendances.index') }}" class="flex-1 justify-center bg-primary text-white px-8 py-3 rounded-lg font-body-md font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2">
                                     <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span> Buka Absensi
                                 </a>
-                                <a href="{{ route('teacher.schedules.edit', $jadwal->id) }}" class="bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
+                                <a href="{{ route('teacher.schedules.edit', $jadwal->id) }}" class="flex-1 justify-center bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
                                     <span class="material-symbols-outlined text-[20px]">edit</span> Edit Jadwal
                                 </a>
-                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus jadwal ini?');">
+                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Hapus jadwal ini?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-error/10 text-error px-4 py-3 rounded-lg font-body-md font-bold hover:bg-error/20 transition-all active:scale-95 flex items-center gap-2">
+                                    <button type="submit" class="w-full justify-center bg-error/10 text-error px-4 py-3 rounded-lg font-body-md font-bold hover:bg-error/20 transition-all active:scale-95 flex items-center gap-2">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        <span class="sm:hidden">Hapus Jadwal</span>
                                     </button>
                                 </form>
                             </div>
@@ -293,10 +292,10 @@
                             </div>
                         </div>
                         
-                        <form action="{{ route('teacher.class_code.update', $ekskul->id) }}" method="POST" class="flex gap-2">
+                        <form action="{{ route('teacher.class_code.update', $ekskul->id) }}" method="POST" class="flex flex-col sm:flex-row gap-2">
                             @csrf
                             <input type="text" name="class_code" value="{{ $ekskul->class_code }}" placeholder="Kode Baru" class="flex-grow h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all font-mono uppercase" required>
-                            <button type="submit" class="bg-primary text-on-primary px-6 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2">
+                            <button type="submit" class="w-full sm:w-auto justify-center bg-primary text-on-primary px-6 h-11 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[18px]">save</span> Simpan
                             </button>
                         </form>
