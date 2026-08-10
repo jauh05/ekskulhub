@@ -125,13 +125,30 @@
                             {{ $sess->attendances_count }} Siswa
                         </td>
                         <td class="p-4 flex gap-2">
-                            <a href="{{ route('teacher.attendances.index', ['session_id' => $sess->id]) }}" class="px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-label-sm font-bold flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[16px]">visibility</span> Lihat Absensi
+                            <a href="{{ route('teacher.attendances.index', ['session_id' => $sess->id]) }}" class="px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-label-sm font-bold flex items-center gap-1" title="Lihat Absensi">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span>
                             </a>
-                            <button @click="openEditSession({{ json_encode($sess) }})" class="w-8 h-8 rounded bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center hover:bg-[#F59E0B] hover:text-white transition-colors" title="Edit Sesi">
+                            @if($sess->status == 'closed')
+                                <form action="{{ route('teacher.attendances.session.update', $sess->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="activity_date" value="{{ \Carbon\Carbon::parse($sess->schedule->activity_date)->format('Y-m-d') }}">
+                                    <input type="hidden" name="start_time" value="{{ \Carbon\Carbon::parse($sess->schedule->start_time)->format('H:i') }}">
+                                    <input type="hidden" name="end_time" value="{{ now()->addHours(1)->format('H:i') }}">
+                                    <input type="hidden" name="status" value="open">
+                                    <button type="submit" class="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] flex items-center gap-1 hover:bg-[#10B981] hover:text-white transition-colors text-label-sm font-bold" title="Buka Kembali" onclick="return confirm('Membuka kembali sesi akan memperpanjang waktu selesai 1 jam dari sekarang. Lanjutkan?')">
+                                        <span class="material-symbols-outlined text-[16px]">lock_open</span> Buka
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('teacher.attendances.live', $sess->id) }}" class="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] flex items-center gap-1 hover:bg-[#10B981] hover:text-white transition-colors text-label-sm font-bold" title="Live QR">
+                                    <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Live
+                                </a>
+                            @endif
+                            <button @click="openEditSession({{ json_encode($sess) }})" class="px-3 py-1.5 rounded bg-[#F59E0B]/10 text-[#F59E0B] flex items-center gap-1 hover:bg-[#F59E0B] hover:text-white transition-colors text-label-sm font-bold" title="Edit Sesi">
                                 <span class="material-symbols-outlined text-[16px]">edit</span>
                             </button>
-                            <button @click="openDeleteSession({{ json_encode($sess) }})" class="w-8 h-8 rounded bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors" title="Hapus Sesi">
+                            <button @click="openDeleteSession({{ json_encode($sess) }})" class="px-3 py-1.5 rounded bg-error/10 text-error flex items-center gap-1 hover:bg-error hover:text-white transition-colors text-label-sm font-bold" title="Hapus Sesi">
                                 <span class="material-symbols-outlined text-[16px]">delete</span>
                             </button>
                         </td>
@@ -176,7 +193,7 @@
                             </div>
                             <div>
                                 <label class="block text-label-md font-bold text-on-surface mb-1">Status Sesi</label>
-                                <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" :value="selectedSession?.status" required>
+                                <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" x-model="selectedSession.status" required>
                                     <option value="open">Berjalan (Open)</option>
                                     <option value="closed">Selesai (Closed)</option>
                                 </select>

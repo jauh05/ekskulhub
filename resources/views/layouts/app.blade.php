@@ -26,7 +26,7 @@
     <main class="md:ml-64 min-h-screen transition-all duration-300">
         @include('components.topbar')
 
-        <div class="pt-24 px-4 md:px-8 pb-12">
+        <div class="pt-8 px-4 md:px-8 pb-12">
             <!-- Flash Message -->
             @if(session('success'))
                 <div class="mb-4 p-4 bg-tertiary-container text-on-tertiary-container rounded-lg">

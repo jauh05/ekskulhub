@@ -1,8 +1,8 @@
 <!-- Mobile overlay -->
 <div x-show="sidebarOpen" class="fixed inset-0 bg-black/50 z-20 md:hidden" @click="sidebarOpen = false" x-transition.opacity style="display: none;"></div>
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300 md:translate-x-0"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300 -translate-x-full md:translate-x-0"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
     <div class="px-6 mb-10 flex items-center gap-3">
         <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
             <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
