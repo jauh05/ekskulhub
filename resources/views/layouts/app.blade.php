@@ -20,10 +20,10 @@
         }
     </style>
 </head>
-<body class="text-on-surface" x-data="{ sidebarOpen: false }">
+<body class="text-on-surface" x-data="{ sidebarOpen: window.innerWidth >= 768 }" @resize.window="if(window.innerWidth >= 768) { sidebarOpen = true } else { sidebarOpen = false }">
     @include('components.sidebar')
 
-    <main class="md:ml-64 min-h-screen transition-all duration-300">
+    <main class="min-h-screen transition-all duration-300" :style="sidebarOpen && window.innerWidth >= 768 ? 'margin-left: 16rem;' : 'margin-left: 0;'">
         @include('components.topbar')
 
         <div class="pt-8 px-4 md:px-8 pb-12">
