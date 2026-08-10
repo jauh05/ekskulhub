@@ -149,6 +149,11 @@
                 </tbody>
             </table>
         </div>
+        @if($participants->hasPages())
+            <div class="p-4 border-t border-outline-variant bg-surface-container-lowest">
+                {{ $participants->links() }}
+            </div>
+        @endif
         </div>
     </div>
 
