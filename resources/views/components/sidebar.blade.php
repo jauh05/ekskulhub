@@ -1,7 +1,4 @@
-<!-- Mobile overlay -->
-<div x-show="sidebarOpen" class="fixed inset-0 bg-black/50 z-20 md:hidden" @click="sidebarOpen = false" x-transition.opacity style="display: none;"></div>
-
-<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300"
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex-col py-6 z-30 transition-transform duration-300"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
     <div class="px-6 mb-10 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -13,9 +10,6 @@
                 <p class="text-label-sm text-secondary -mt-1">Management</p>
             </div>
         </div>
-        <button type="button" @click="sidebarOpen = false" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50;" class="md:hidden text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-colors bg-surface-container">
-            <span class="material-symbols-outlined" style="font-size: 24px;">close</span>
-        </button>
     </div>
     <nav class="flex-1 space-y-1">
         @if(Auth::user()->role === 'admin')

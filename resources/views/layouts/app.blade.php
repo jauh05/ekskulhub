@@ -54,8 +54,9 @@
 <body class="text-on-surface" x-data="{ sidebarOpen: window.innerWidth >= 768 }" @resize.window="if(window.innerWidth >= 768) { sidebarOpen = true } else { sidebarOpen = false }">
     @include('components.sidebar')
 
-    <main class="min-h-screen transition-all duration-300" :style="sidebarOpen && window.innerWidth >= 768 ? 'padding-left: 16rem;' : 'padding-left: 0;'">
+    <main class="min-h-screen transition-all duration-300 pb-20 md:pb-0" :style="sidebarOpen && window.innerWidth >= 768 ? 'padding-left: 16rem;' : 'padding-left: 0;'">
         @include('components.topbar')
+        @include('components.bottom-nav')
 
         <div class="px-4 md:px-8 pb-12" style="padding-top: 6rem;">
             <!-- Flash Message -->
