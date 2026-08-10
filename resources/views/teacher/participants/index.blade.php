@@ -228,7 +228,7 @@
             <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/50 flex flex-col gap-2">
                 <form id="resetPasswordForm" method="POST" class="w-full">
                     @csrf
-                    <button type="submit" class="w-full py-2 rounded-lg font-label-md bg-secondary text-white hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2" onclick="return confirm('Apakah Anda yakin ingin mereset kata sandi siswa ini menjadi default: password ?')">
+                    <button type="submit" class="w-full py-2 rounded-lg font-label-md bg-secondary text-white hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2" onclick="confirmAction(event, 'Apakah Anda yakin ingin mereset kata sandi siswa ini menjadi default: password ?')">
                         <span class="material-symbols-outlined text-[16px]">lock_reset</span> Reset Sandi (default: password)
                     </button>
                 </form>

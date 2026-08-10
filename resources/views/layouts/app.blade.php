@@ -19,6 +19,37 @@
             backdrop-filter: blur(10px);
         }
     </style>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.confirmAction = function(event, message, formElement = null) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10B981',
+                cancelButtonColor: '#F43F5E',
+                confirmButtonText: 'Ya, Lanjutkan!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    container: 'font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (formElement) {
+                        formElement.submit();
+                    } else if (event.target.closest('form')) {
+                        event.target.closest('form').submit();
+                    } else if (event.target.closest('a')) {
+                        window.location.href = event.target.closest('a').href;
+                    }
+                }
+            });
+        }
+    </script>
 </head>
 <body class="text-on-surface" x-data="{ sidebarOpen: window.innerWidth >= 768 }" @resize.window="if(window.innerWidth >= 768) { sidebarOpen = true } else { sidebarOpen = false }">
     @include('components.sidebar')

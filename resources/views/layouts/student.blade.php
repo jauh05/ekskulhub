@@ -17,6 +17,37 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.confirmAction = function(event, message, formElement = null) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10B981',
+                cancelButtonColor: '#F43F5E',
+                confirmButtonText: 'Ya, Lanjutkan!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    container: 'font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (formElement) {
+                        formElement.submit();
+                    } else if (event.target.closest('form')) {
+                        event.target.closest('form').submit();
+                    } else if (event.target.closest('a')) {
+                        window.location.href = event.target.closest('a').href;
+                    }
+                }
+            });
+        }
+    </script>
 </head>
 <body class="bg-background text-on-surface min-h-screen pb-24 md:pb-0 md:pl-72">
 

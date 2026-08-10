@@ -54,7 +54,7 @@
                                     <a href="{{ route('teacher.announcements.edit', $announcement->id) }}" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
-                                    <form action="{{ route('teacher.announcements.destroy', $announcement->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?');">
+                                    <form action="{{ route('teacher.announcements.destroy', $announcement->id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Apakah Anda yakin ingin menghapus pengumuman ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors">

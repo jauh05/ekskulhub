@@ -27,7 +27,7 @@
                 </a>
                 <form action="{{ route('teacher.attendances.live.extend', $session->id) }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full bg-[#10B981] text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-[#10B981]/90 transition-all flex items-center gap-2 shadow-lg shadow-[#10B981]/20 justify-center text-center" onclick="return confirm('Perpanjang batas waktu absensi 15 menit?')">
+                    <button type="submit" class="w-full bg-[#10B981] text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-[#10B981]/90 transition-all flex items-center gap-2 shadow-lg shadow-[#10B981]/20 justify-center text-center" onclick="confirmAction(event, 'Perpanjang batas waktu absensi 15 menit?')">
                         <span class="material-symbols-outlined text-[20px]">more_time</span> Perpanjang 15 Menit
                     </button>
                 </form>
@@ -310,7 +310,7 @@
                         },
                         error: (err) => {
                             this.showDeleteModal = false;
-                            alert('Gagal membatalkan presensi.');
+                            Swal.fire('Gagal', 'Gagal membatalkan presensi.', 'error');
                         }
                     });
                 },

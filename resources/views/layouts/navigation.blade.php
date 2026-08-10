@@ -43,8 +43,7 @@
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                if(confirm('Apakah Anda yakin ingin keluar?')) this.closest('form').submit();">
+                                    onclick="confirmAction(event, 'Apakah Anda yakin ingin keluar?', this.closest('form'));">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -89,8 +88,7 @@
                     @csrf
 
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        if(confirm('Apakah Anda yakin ingin keluar?')) this.closest('form').submit();">
+                            onclick="confirmAction(event, 'Apakah Anda yakin ingin keluar?', this.closest('form'));">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

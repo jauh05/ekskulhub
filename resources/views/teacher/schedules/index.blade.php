@@ -35,7 +35,7 @@
                     <a href="{{ route('teacher.schedules.edit', $sched->id) }}" class="text-on-surface-variant hover:bg-surface-container-high hover:text-primary px-3 py-2 rounded-lg transition-colors flex items-center">
                         <span class="material-symbols-outlined text-[18px]">edit</span>
                     </a>
-                    <form action="{{ route('teacher.schedules.destroy', $sched->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus jadwal ini?');">
+                    <form action="{{ route('teacher.schedules.destroy', $sched->id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Hapus jadwal ini?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-error hover:bg-error/10 px-3 py-2 rounded-lg transition-colors flex items-center">

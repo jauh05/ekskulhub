@@ -42,7 +42,7 @@
                 <a href="{{ route('admin.extracurriculars.edit', $ekskul->id) }}" class="text-primary hover:bg-primary-container/20 px-4 py-2 rounded-lg transition-colors font-label-md font-semibold">
                     Edit
                 </a>
-                <form action="{{ route('admin.extracurriculars.destroy', $ekskul->id) }}" method="POST" onsubmit="return confirm('Hapus ekskul ini?');">
+                <form action="{{ route('admin.extracurriculars.destroy', $ekskul->id) }}" method="POST" onsubmit="confirmAction(event, 'Hapus ekskul ini?');">
                     @csrf @method('DELETE')
                     <button type="submit" class="text-error hover:bg-error-container/20 px-4 py-2 rounded-lg transition-colors font-label-md font-semibold">
                         Hapus

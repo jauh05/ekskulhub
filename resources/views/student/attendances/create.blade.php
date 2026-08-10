@@ -169,7 +169,7 @@
                 onScanFailure
             ).catch((err) => {
                 console.error("Camera access error:", err);
-                alert("Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera pada browser Anda.");
+                Swal.fire('Akses Ditolak', 'Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera pada browser Anda.', 'error');
             });
         }
         

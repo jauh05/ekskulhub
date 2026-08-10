@@ -39,7 +39,7 @@
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="text-primary hover:bg-primary-container/20 p-2 rounded-full transition-colors">
                                 <span class="material-symbols-outlined text-[20px]">edit</span>
                             </a>
-                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?');">
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="confirmAction(event, 'Yakin ingin menghapus?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-error hover:bg-error-container/20 p-2 rounded-full transition-colors">

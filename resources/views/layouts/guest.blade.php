@@ -14,6 +14,37 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            window.confirmAction = function(event, message, formElement = null) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10B981',
+                    cancelButtonColor: '#F43F5E',
+                    confirmButtonText: 'Ya, Lanjutkan!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        container: 'font-sans'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (formElement) {
+                            formElement.submit();
+                        } else if (event.target.closest('form')) {
+                            event.target.closest('form').submit();
+                        } else if (event.target.closest('a')) {
+                            window.location.href = event.target.closest('a').href;
+                        }
+                    }
+                });
+            }
+        </script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">

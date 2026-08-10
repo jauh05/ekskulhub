@@ -151,7 +151,7 @@
                                 <a href="{{ route('teacher.schedules.edit', $jadwal->id) }}" class="flex-1 justify-center bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
                                     <span class="material-symbols-outlined text-[20px]">edit</span> Edit Jadwal
                                 </a>
-                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Hapus jadwal ini?');">
+                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="confirmAction(event, 'Hapus jadwal ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-full justify-center bg-error/10 text-error px-4 py-3 rounded-lg font-body-md font-bold hover:bg-error/20 transition-all active:scale-95 flex items-center gap-2">

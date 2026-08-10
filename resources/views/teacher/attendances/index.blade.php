@@ -136,7 +136,7 @@
                                     <input type="hidden" name="start_time" value="{{ \Carbon\Carbon::parse($sess->schedule->start_time)->format('H:i') }}">
                                     <input type="hidden" name="end_time" value="{{ now()->addHours(1)->format('H:i') }}">
                                     <input type="hidden" name="status" value="open">
-                                    <button type="submit" class="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] flex items-center gap-1 hover:bg-[#10B981] hover:text-white transition-colors text-label-sm font-bold" title="Buka Kembali" onclick="return confirm('Membuka kembali sesi akan memperpanjang waktu selesai 1 jam dari sekarang. Lanjutkan?')">
+                                    <button type="submit" class="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] flex items-center gap-1 hover:bg-[#10B981] hover:text-white transition-colors text-label-sm font-bold" title="Buka Kembali" onclick="confirmAction(event, 'Membuka kembali sesi akan memperpanjang waktu selesai 1 jam dari sekarang. Lanjutkan?')">
                                         <span class="material-symbols-outlined text-[16px]">lock_open</span> Buka
                                     </button>
                                 </form>
