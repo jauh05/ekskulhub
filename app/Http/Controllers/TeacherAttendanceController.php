@@ -188,6 +188,10 @@ class TeacherAttendanceController extends Controller
             $session->closeWithAutoAlpha();
         }
 
+        if (!$wasOpen && $request->status === 'open') {
+            return redirect()->route('teacher.attendances.live', $session->id)->with('success', 'Sesi absensi berhasil dibuka kembali.');
+        }
+
         return back()->with('success', 'Data sesi berhasil diperbarui.');
     }
 
