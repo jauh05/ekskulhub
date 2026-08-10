@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="pt-24 px-8 pb-12">
+    <div class="w-full">
 <!-- Welcome Header -->
 <div class="mb-8">
 <h3 class="font-headline-lg text-headline-lg text-on-surface">Selamat Datang, Admin!</h3>
@@ -116,12 +116,12 @@
 <img class="w-full h-full object-cover" data-alt="A cinematic, high-action photograph of a modern indoor basketball court with polished wooden floors and professional hoops. The atmosphere is energetic yet orderly, with warm gym lighting casting soft shadows. The scene captures the professional environment of a school sports program. High resolution, vibrant colors, minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN7iGBQIIuIWcotnp4-4p1qZRieoLYcad3NxeHRO48lLIWlkHI90nw3Id7ItUg9r-Oo-ru9VLQD_QykeMXAfPwkWwzmQ28Q-Ul1or-W2XSbyUG7PjcPSgOvbiNyJBWWdmAENS7J5vPaSE0mmus9a7Fn84UhPsHWnQZSHD1kMbF6nKlNr38xnAYJV0mPz8z0Tm5JVfQwUZ2fWkXO0kKdD5NQt6N2Ib3loX_SiCV4yMI05Z8U4bawcNA"/>
 </div>
 </div>
-<div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-outline-variant">
-<button class="bg-primary text-white px-8 py-3 rounded-lg font-body-md font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2">
+<div class="flex flex-col sm:flex-row flex-wrap gap-4 mt-8 pt-6 border-t border-outline-variant">
+<button class="w-full sm:w-auto justify-center flex-1 bg-primary text-white px-8 py-3 rounded-lg font-body-md font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2">
 <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
                                         Buka Absensi
                                     </button>
-<button class="bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
+<button class="w-full sm:w-auto justify-center flex-1 bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
 <span class="material-symbols-outlined text-[20px]">visibility</span>
                                         Lihat Peserta
                                     </button>
@@ -138,7 +138,8 @@
 </button>
 </div>
 <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden">
-<table class="w-full text-left border-collapse">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-max">
 <thead>
 <tr class="bg-surface-container-low border-b border-outline-variant">
 <th class="px-6 py-4 text-label-sm font-bold text-secondary uppercase tracking-wider">Nama Siswa</th>
@@ -225,6 +226,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <div class="p-4 text-center border-t border-outline-variant">
 <button class="text-primary font-label-md font-bold hover:underline">Lihat Semua Peserta (124)</button>
 </div>

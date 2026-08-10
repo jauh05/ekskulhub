@@ -1,24 +1,16 @@
-<!-- Overlay -->
-<div x-show="sidebarOpen" 
-     @click="sidebarOpen = false"
-     class="fixed inset-0 bg-black/50 z-20 lg:hidden" 
-     x-transition.opacity style="display: none;"></div>
+<!-- Mobile overlay -->
+<div x-show="sidebarOpen" class="fixed inset-0 bg-black/50 z-20 md:hidden" @click="sidebarOpen = false" x-transition.opacity style="display: none;"></div>
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300 lg:translate-x-0"
-       :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
-    <div class="px-6 mb-10 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
-            </div>
-            <div>
-                <h1 class="font-headline-md text-headline-md font-bold text-primary">Ekskul</h1>
-                <p class="text-label-sm text-secondary -mt-1">Management</p>
-            </div>
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-30 transition-transform duration-300 md:translate-x-0"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+    <div class="px-6 mb-10 flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
         </div>
-        <button @click="sidebarOpen = false" class="lg:hidden text-secondary hover:text-on-surface">
-            <span class="material-symbols-outlined">close</span>
-        </button>
+        <div>
+            <h1 class="font-headline-md text-headline-md font-bold text-primary">Ekskul</h1>
+            <p class="text-label-sm text-secondary -mt-1">Management</p>
+        </div>
     </div>
     <nav class="flex-1 space-y-1">
         @if(Auth::user()->role === 'admin')
