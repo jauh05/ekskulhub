@@ -105,7 +105,7 @@
                                 <form action="{{ route('teacher.participants.update', $part->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="status" value="approved">
                                     <button type="submit" class="w-8 h-8 rounded-full bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981] hover:text-white flex items-center justify-center transition-colors shadow-sm" title="Terima Siswa">
                                         <span class="material-symbols-outlined text-[18px]">check</span>
                                     </button>
@@ -113,7 +113,7 @@
                                 <form action="{{ route('teacher.participants.update', $part->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="status" value="rejected">
                                     <button type="submit" class="w-8 h-8 rounded-full bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444] hover:text-white flex items-center justify-center transition-colors shadow-sm" title="Tolak Siswa">
                                         <span class="material-symbols-outlined text-[18px]">close</span>
                                     </button>
@@ -122,6 +122,7 @@
                             <button type="button" 
                                 onclick="openDetailModal(
                                     '{{ $part->id }}', 
+                                    '{{ $part->student_id }}',
                                     '{{ addslashes($part->student->name ?? '-') }}', 
                                     '{{ addslashes($part->student->studentProfile->class_name ?? '-') }}', 
                                     '{{ addslashes($part->student->email ?? '-') }}', 
@@ -215,11 +216,17 @@
             </div>
 
             <!-- Footer Action -->
-            <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/50">
+            <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/50 flex flex-col gap-2">
+                <form id="resetPasswordForm" method="POST" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full py-2 rounded-lg font-label-md bg-secondary text-white hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2" onclick="return confirm('Apakah Anda yakin ingin mereset kata sandi siswa ini menjadi default: password ?')">
+                        <span class="material-symbols-outlined text-[16px]">lock_reset</span> Reset Sandi (default: password)
+                    </button>
+                </form>
                 <form id="kickForm" method="POST" class="w-full">
                     @csrf
                     @method('PATCH')
-                    <input type="hidden" name="action" value="reject">
+                    <input type="hidden" name="status" value="rejected">
                     <button type="submit" class="w-full py-2 rounded-lg font-label-md bg-error text-white hover:bg-error/90 transition-all shadow-sm flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">person_remove</span> Keluarkan Siswa
                     </button>
@@ -229,7 +236,7 @@
     </div>
 
     <script>
-        function openDetailModal(id, name, className, email, phone, gender, ekskul, status, absen) {
+        function openDetailModal(id, student_id, name, className, email, phone, gender, ekskul, status, absen) {
             document.getElementById('modalName').textContent = name;
             document.getElementById('modalInitial').textContent = name.charAt(0).toUpperCase();
             document.getElementById('modalClass').textContent = 'Kelas ' + className;
@@ -255,10 +262,16 @@
             if(status === 'rejected') {
                 kickForm.style.display = 'none';
             } else {
-                kickForm.style.display = 'inline-block';
+                kickForm.style.display = 'block';
                 // Set the action URL correctly
                 const baseUrl = "{{ route('teacher.participants.update', ':id') }}";
                 kickForm.action = baseUrl.replace(':id', id);
+            }
+
+            const resetForm = document.getElementById('resetPasswordForm');
+            if (resetForm) {
+                const resetBaseUrl = "{{ route('teacher.participants.reset_password', ':user') }}";
+                resetForm.action = resetBaseUrl.replace(':user', student_id);
             }
 
             const modal = document.getElementById('detailModal');

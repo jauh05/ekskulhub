@@ -23,8 +23,14 @@
             
             <div class="flex flex-col sm:flex-row gap-3">
                 <a href="{{ route('teacher.attendances.index') }}" class="bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2 border border-outline-variant justify-center text-center">
-                    <span class="material-symbols-outlined text-[20px]">arrow_back</span> Tutup Halaman (Biarkan Berjalan)
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span> Tutup
                 </a>
+                <form action="{{ route('teacher.attendances.live.extend', $session->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full bg-[#10B981] text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-[#10B981]/90 transition-all flex items-center gap-2 shadow-lg shadow-[#10B981]/20 justify-center text-center" onclick="return confirm('Perpanjang batas waktu absensi 15 menit?')">
+                        <span class="material-symbols-outlined text-[20px]">more_time</span> Perpanjang 15 Menit
+                    </button>
+                </form>
                 <form id="endSessionForm" action="{{ route('teacher.attendances.live.close', $session->id) }}" method="POST">
                     @csrf
                     <button type="button" @click="showEndSessionModal = true" class="w-full bg-error text-white px-6 py-3 rounded-lg font-label-lg font-bold hover:bg-error/90 transition-all flex items-center gap-2 shadow-lg shadow-error/20 justify-center text-center">

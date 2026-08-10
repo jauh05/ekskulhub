@@ -56,4 +56,28 @@ class TeacherParticipantController extends Controller
 
         return back()->with('success', 'Status pendaftaran berhasil diperbarui.');
     }
+
+    public function resetPassword(Request $request, \App\Models\User $user)
+    {
+        $teacher = Auth::user();
+        
+        if ($user->role !== 'student') {
+            abort(403, 'Hanya dapat mereset sandi siswa.');
+        }
+
+        $isStudentInTeacherEkskul = ExtracurricularRegistration::where('student_id', $user->id)
+            ->whereIn('extracurricular_id', $teacher->taughtExtracurriculars()->pluck('id'))
+            ->where('status', 'approved')
+            ->exists();
+
+        if (!$isStudentInTeacherEkskul) {
+            abort(403, 'Unauthorized action. Siswa bukan peserta ekskul Anda.');
+        }
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make('password')
+        ]);
+
+        return back()->with('success', 'Kata sandi siswa ' . $user->name . ' berhasil direset menjadi: password');
+    }
 }

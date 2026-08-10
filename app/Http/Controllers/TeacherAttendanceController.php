@@ -330,4 +330,22 @@ class TeacherAttendanceController extends Controller
 
         return redirect()->route('teacher.attendances.index')->with('success', 'Sesi absensi telah ditutup.');
     }
+
+    public function extendSession(Request $request, AttendanceSession $session)
+    {
+        if ($session->opened_by != Auth::id()) {
+            abort(403);
+        }
+
+        $schedule = $session->schedule;
+        
+        // Perpanjang 15 menit
+        $newEndTime = \Carbon\Carbon::parse($schedule->attendance_end_at)->addMinutes(15)->format('H:i:s');
+        
+        $schedule->update([
+            'attendance_end_at' => $newEndTime
+        ]);
+
+        return back()->with('success', 'Waktu absensi berhasil diperpanjang 15 menit.');
+    }
 }

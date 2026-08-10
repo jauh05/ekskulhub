@@ -47,12 +47,14 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/dashboard/class-code/{extracurricular}', [TeacherDashboardController::class, 'updateClassCode'])->name('class_code.update');
         Route::resource('schedules', TeacherScheduleController::class);
         Route::resource('participants', TeacherParticipantController::class)->only(['index', 'update']);
+        Route::post('/participants/{user}/reset-password', [TeacherParticipantController::class, 'resetPassword'])->name('participants.reset_password');
         Route::resource('registrations', TeacherRegistrationController::class)->only(['index', 'update']);
         Route::post('/attendances/session/start', [TeacherAttendanceController::class, 'startSession'])->name('attendances.start');
         Route::get('/attendances/session/{session}/live', [TeacherAttendanceController::class, 'live'])->name('attendances.live');
         Route::get('/attendances/session/{session}/api/qr', [TeacherAttendanceController::class, 'getLiveQr'])->name('attendances.live.qr');
         Route::get('/attendances/session/{session}/api/data', [TeacherAttendanceController::class, 'getLiveData'])->name('attendances.live.data');
         Route::post('/attendances/session/{session}/close', [TeacherAttendanceController::class, 'closeSession'])->name('attendances.live.close');
+        Route::post('/attendances/session/{session}/extend', [TeacherAttendanceController::class, 'extendSession'])->name('attendances.live.extend');
         Route::put('/attendances/session/{session}/update', [TeacherAttendanceController::class, 'updateSession'])->name('attendances.session.update');
         Route::delete('/attendances/session/{session}/delete', [TeacherAttendanceController::class, 'destroySession'])->name('attendances.session.destroy');
         Route::resource('attendances', TeacherAttendanceController::class)->except(['create', 'edit', 'show']);
