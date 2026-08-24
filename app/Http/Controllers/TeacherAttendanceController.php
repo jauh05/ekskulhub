@@ -37,7 +37,7 @@ class TeacherAttendanceController extends Controller
         // Statistics
         $totalHadir = (clone $query)->where('status', 'present')->count();
         $totalSakit = (clone $query)->where('status', 'sick')->count();
-        $totalIzin = (clone $query)->where('status', 'permitted')->count();
+        $totalIzin = (clone $query)->where('status', 'permission')->count();
         $totalAlpa = (clone $query)->where('status', 'absent')->count();
         $totalSiswa = $totalHadir + $totalSakit + $totalIzin + $totalAlpa;
         
@@ -90,7 +90,7 @@ class TeacherAttendanceController extends Controller
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
             'student_id' => 'required|exists:users,id',
-            'status' => 'required|in:present,late,permitted,sick,absent',
+            'status' => 'required|in:present,late,permission,sick,absent',
             'notes' => 'nullable|string'
         ]);
 
@@ -130,7 +130,7 @@ class TeacherAttendanceController extends Controller
     public function update(Request $request, Attendance $attendance)
     {
         $request->validate([
-            'status' => 'required|in:present,late,permitted,sick,absent',
+            'status' => 'required|in:present,late,permission,sick,absent',
             'notes' => 'nullable|string'
         ]);
 

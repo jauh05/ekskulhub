@@ -371,21 +371,54 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div>
-                                <label class="block text-label-md font-bold text-on-surface mb-1">Siswa</label>
-                                <select name="student_id" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" required>
-                                    <option value="">Pilih Siswa...</option>
+                            <div x-data="{ 
+                                open: false, 
+                                search: '', 
+                                selectedValue: '', 
+                                selectedText: 'Pilih Siswa...',
+                                options: [
                                     @foreach($activeStudents as $reg)
-                                        <option value="{{ $reg->student->id }}">{{ $reg->student->name }} ({{ $reg->extracurricular->name }})</option>
+                                        { id: '{{ $reg->student->id }}', text: '{{ addslashes($reg->student->name) }} ({{ addslashes($reg->extracurricular->name) }})' },
                                     @endforeach
-                                </select>
+                                ],
+                                get filteredOptions() {
+                                    if (this.search === '') {
+                                        return this.options;
+                                    }
+                                    return this.options.filter(opt => opt.text.toLowerCase().includes(this.search.toLowerCase()));
+                                },
+                                selectOption(opt) {
+                                    this.selectedValue = opt.id;
+                                    this.selectedText = opt.text;
+                                    this.open = false;
+                                    this.search = '';
+                                }
+                            }" class="relative" @click.away="open = false">
+                                <label class="block text-label-md font-bold text-on-surface mb-1">Siswa</label>
+                                <input type="hidden" name="student_id" :value="selectedValue" required>
+                                <button type="button" @click="open = !open" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-white flex justify-between items-center focus:ring-2 focus:ring-primary/20 focus:outline-none text-left">
+                                    <span x-text="selectedText" :class="selectedValue === '' ? 'text-gray-500' : 'text-on-surface'"></span>
+                                    <span class="material-symbols-outlined text-[20px] text-gray-400">expand_more</span>
+                                </button>
+                                
+                                <div x-show="open" x-transition style="display: none;" class="absolute z-50 w-full mt-1 bg-white border border-outline-variant rounded-lg shadow-lg max-h-60 flex flex-col">
+                                    <div class="p-2 border-b border-outline-variant sticky top-0 bg-white z-10 rounded-t-lg">
+                                        <input type="text" x-model="search" placeholder="Cari nama siswa..." class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-gray-50 focus:bg-white text-sm focus:outline-none" @click.stop>
+                                    </div>
+                                    <ul class="overflow-y-auto overflow-x-hidden flex-1 p-1">
+                                        <li x-show="filteredOptions.length === 0" class="px-3 py-2 text-sm text-gray-500 text-center">Siswa tidak ditemukan</li>
+                                        <template x-for="opt in filteredOptions" :key="opt.id">
+                                            <li @click="selectOption(opt)" class="px-3 py-2 hover:bg-primary/10 cursor-pointer rounded-md text-sm text-on-surface" :class="{'bg-primary/5 font-semibold text-primary': selectedValue === opt.id}" x-text="opt.text"></li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-label-md font-bold text-on-surface mb-1">Status</label>
                                 <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" required>
                                     <option value="present">Hadir</option>
                                     <option value="sick">Sakit</option>
-                                    <option value="permitted">Izin</option>
+                                    <option value="permission">Izin</option>
                                     <option value="absent">Alpa</option>
                                     <option value="late">Terlambat</option>
                                 </select>
@@ -422,7 +455,7 @@
                                 <select name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-white" x-model="selectedAttendance.status" required>
                                     <option value="present">Hadir</option>
                                     <option value="sick">Sakit</option>
-                                    <option value="permitted">Izin</option>
+                                    <option value="permission">Izin</option>
                                     <option value="absent">Alpa</option>
                                     <option value="late">Terlambat</option>
                                 </select>
@@ -486,10 +519,10 @@
                                       'bg-tertiary-container text-on-tertiary-container': selectedAttendance?.status === 'present',
                                       'bg-error-container text-on-error-container': selectedAttendance?.status === 'absent',
                                       'bg-surface-variant text-on-surface-variant': selectedAttendance?.status === 'sick',
-                                      'bg-primary-container text-on-primary-container': selectedAttendance?.status === 'permitted',
+                                      'bg-primary-container text-on-primary-container': selectedAttendance?.status === 'permission',
                                       'bg-[#F59E0B]/10 text-[#F59E0B]': selectedAttendance?.status === 'late'
                                   }"
-                                  x-text="selectedAttendance?.status === 'present' ? 'Hadir' : (selectedAttendance?.status === 'absent' ? 'Alpa' : (selectedAttendance?.status === 'sick' ? 'Sakit' : (selectedAttendance?.status === 'permitted' ? 'Izin' : 'Terlambat')))">
+                                  x-text="selectedAttendance?.status === 'present' ? 'Hadir' : (selectedAttendance?.status === 'absent' ? 'Alpa' : (selectedAttendance?.status === 'sick' ? 'Sakit' : (selectedAttendance?.status === 'permission' ? 'Izin' : 'Terlambat')))">
                             </span>
                         </div>
                         <div class="flex justify-between items-center border-b border-outline-variant pb-2">
