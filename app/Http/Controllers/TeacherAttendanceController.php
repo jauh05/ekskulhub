@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class TeacherAttendanceController extends Controller
@@ -104,27 +105,35 @@ class TeacherAttendanceController extends Controller
             ]
         );
 
-        // Check if attendance already exists
-        $exists = Attendance::where('attendance_session_id', $session->id)
-            ->where('student_id', $request->student_id)
-            ->exists();
-            
-        if ($exists) {
-            return back()->with('error', 'Siswa tersebut sudah memiliki riwayat presensi pada jadwal ini.');
-        }
-
-        Attendance::create([
+        $identity = [
             'attendance_session_id' => $session->id,
             'student_id' => $request->student_id,
+        ];
+        $existingAttendance = Attendance::where($identity)->first();
+
+        Attendance::updateOrCreate($identity, [
             'status' => $request->status,
             'method' => 'manual',
             'checked_at' => now(),
             'notes' => $request->notes,
+            'selfie_path' => null,
+            'selfie_status' => null,
+            'selfie_rejection_reason' => null,
+            'proof_file' => null,
+            'latitude' => null,
+            'longitude' => null,
+            'is_verified_by_teacher' => true,
             'verified_by' => Auth::id(),
             'verified_at' => now(),
         ]);
 
-        return back()->with('success', 'Data presensi berhasil ditambahkan.');
+        foreach ([$existingAttendance?->selfie_path, $existingAttendance?->proof_file] as $oldFile) {
+            if ($oldFile) {
+                Storage::disk('public')->delete($oldFile);
+            }
+        }
+
+        return back()->with('success', 'Data presensi berhasil disimpan.');
     }
 
     public function update(Request $request, Attendance $attendance)
@@ -134,13 +143,31 @@ class TeacherAttendanceController extends Controller
             'notes' => 'nullable|string'
         ]);
 
+        $oldSelfiePath = $attendance->selfie_path;
+        $oldProofFile = $attendance->proof_file;
+        $wasExcused = in_array($attendance->status, ['permission', 'sick'], true);
+        $isExcused = in_array($request->status, ['permission', 'sick'], true);
+        $isExistingSelfie = $attendance->method === 'selfie'
+            && in_array($request->status, ['present', 'late'], true);
+
         $attendance->update([
             'status' => $request->status,
+            'method' => $isExistingSelfie ? 'selfie' : 'manual',
             'notes' => $request->notes,
+            'selfie_path' => $isExistingSelfie ? $oldSelfiePath : null,
+            'selfie_status' => $isExistingSelfie ? $attendance->selfie_status : null,
+            'selfie_rejection_reason' => $isExistingSelfie ? $attendance->selfie_rejection_reason : null,
+            'proof_file' => $isExcused && $wasExcused ? $oldProofFile : null,
             'is_verified_by_teacher' => true,
             'verified_by' => Auth::id(),
             'verified_at' => now(),
         ]);
+
+        foreach ([$oldSelfiePath, $oldProofFile] as $oldFile) {
+            if ($oldFile && !in_array($oldFile, [$attendance->selfie_path, $attendance->proof_file], true)) {
+                Storage::disk('public')->delete($oldFile);
+            }
+        }
         
         return redirect()->back()->with('success', 'Data presensi berhasil diperbarui.');
     }

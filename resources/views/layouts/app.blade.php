@@ -19,8 +19,6 @@
             backdrop-filter: blur(10px);
         }
     </style>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         window.confirmAction = function(event, message, formElement = null) {
             event.preventDefault();

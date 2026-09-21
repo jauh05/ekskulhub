@@ -8,14 +8,8 @@
         <title>{{ $title ?? 'EkskulHub' }}</title>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             window.confirmAction = function(event, message, formElement = null) {
                 event.preventDefault();

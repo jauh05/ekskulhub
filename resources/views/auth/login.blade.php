@@ -122,8 +122,7 @@
             },
         }
     </script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background font-body-md text-on-background min-h-screen flex items-center justify-center">
 <main class="w-full max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop">

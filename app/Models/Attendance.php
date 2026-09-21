@@ -17,6 +17,7 @@ class Attendance extends Model
         return [
             'checked_at' => 'datetime',
             'verified_at' => 'datetime',
+            'is_verified_by_teacher' => 'boolean',
         ];
     }
 

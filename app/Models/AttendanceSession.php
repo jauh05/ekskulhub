@@ -68,7 +68,9 @@ class AttendanceSession extends Model
         }
         
         if (count($absentRecords) > 0) {
-            \App\Models\Attendance::insert($absentRecords);
+            // The unique student/session index makes this safe when a student
+            // submits attendance at the same moment the session is closing.
+            \App\Models\Attendance::insertOrIgnore($absentRecords);
         }
 
         $this->update([

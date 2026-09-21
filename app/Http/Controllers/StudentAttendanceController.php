@@ -7,6 +7,7 @@ use App\Models\AttendanceSession;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StudentAttendanceController extends Controller
 {
@@ -57,22 +58,41 @@ class StudentAttendanceController extends Controller
             return redirect()->route('student.dashboard')->with('error', 'Sesi absensi belum dibuka atau sudah ditutup');
         }
         
-        $attendance = Attendance::firstOrNew([
+        $identity = [
             'student_id' => $user->id,
             'attendance_session_id' => $attendanceSession->id
-        ]);
+        ];
+        $existingAttendance = Attendance::where($identity)->first();
+        $oldSelfiePath = $existingAttendance?->selfie_path;
+        $oldProofFile = $existingAttendance?->proof_file;
+
+        $latestState = [
+            'checked_at' => now(),
+            'notes' => null,
+            'proof_file' => null,
+            'selfie_path' => null,
+            'selfie_status' => null,
+            'selfie_rejection_reason' => null,
+            'latitude' => null,
+            'longitude' => null,
+            'verified_by' => null,
+            'verified_at' => null,
+        ];
         
         if ($request->type === 'izin') {
-            $attendance->status = 'permission';
-            $attendance->method = 'manual'; // Just default to manual for izin
-            $attendance->notes = $request->reason;
+            $latestState['status'] = 'permission';
+            $latestState['method'] = 'manual';
+            $latestState['notes'] = $request->reason;
             
             if ($request->hasFile('proof')) {
-                $path = $request->file('proof')->store('attendance_proofs', 'public');
-                $attendance->proof_file = $path;
+                $latestState['proof_file'] = $request->file('proof')->store('attendance_proofs', 'public');
+            } elseif ($existingAttendance?->status === 'permission') {
+                $latestState['proof_file'] = $oldProofFile;
             }
         } else {
-            // Type == hadir
+            $latestState['status'] = 'present';
+            $latestState['method'] = $request->method;
+
             if ($request->method === 'qr') {
                 $qrData = json_decode($request->qr_code, true);
                 $secret = $qrData['secret'] ?? $request->qr_code;
@@ -80,23 +100,23 @@ class StudentAttendanceController extends Controller
                 if ($secret !== $attendanceSession->qr_secret_hash) {
                     return back()->with('error', 'QR Code tidak valid atau sudah kedaluwarsa.');
                 }
-                $attendance->method = 'qr';
             } elseif ($request->method === 'manual') {
                 if (strtoupper($request->session_code) !== strtoupper($attendanceSession->session_code)) {
                     return back()->with('error', 'Kode sesi tidak valid.');
                 }
-                $attendance->method = 'manual';
             } elseif ($request->method === 'selfie') {
-                $path = $request->file('selfie')->store('attendance_selfies', 'public');
-                $attendance->selfie_path = $path;
-                $attendance->selfie_status = 'pending';
-                $attendance->method = 'selfie';
+                $latestState['selfie_path'] = $request->file('selfie')->store('attendance_selfies', 'public');
+                $latestState['selfie_status'] = 'pending';
             }
-            $attendance->status = 'present';
         }
-        
-        $attendance->checked_at = now();
-        $attendance->save();
+
+        $attendance = Attendance::updateOrCreate($identity, $latestState);
+
+        foreach ([$oldSelfiePath, $oldProofFile] as $oldFile) {
+            if ($oldFile && !in_array($oldFile, [$attendance->selfie_path, $attendance->proof_file], true)) {
+                Storage::disk('public')->delete($oldFile);
+            }
+        }
 
         return redirect()->route('student.attendances.index')->with('success', 'Data presensi berhasil disimpan.');
     }
@@ -124,6 +144,7 @@ class StudentAttendanceController extends Controller
         foreach ($activeSessions as $session) {
             $alreadyAttended = \App\Models\Attendance::where('attendance_session_id', $session->id)
                 ->where('student_id', $user->id)
+                ->where('status', '!=', 'absent')
                 ->exists();
                 
             $result[] = [

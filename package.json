@@ -18,6 +18,12 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "@tailwindcss/container-queries": "^0.1.1"
+        "@fontsource/inter": "^5.2.6",
+        "@fontsource/plus-jakarta-sans": "^5.2.6",
+        "@tailwindcss/container-queries": "^0.1.1",
+        "html5-qrcode": "^2.3.8",
+        "material-symbols": "^0.40.1",
+        "qrcode": "^1.5.4",
+        "sweetalert2": "^11.22.5"
     }
 }

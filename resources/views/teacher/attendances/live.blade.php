@@ -237,8 +237,6 @@
     </div>
 
     @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('liveAttendance', (sessionId) => ({
@@ -255,19 +253,9 @@
                 timerDisplay: '00:30',
                 timerInterval: null,
                 pollingInterval: null,
-                qrCodeInstance: null,
 
                 init() {
                     this.$nextTick(() => {
-                        this.qrCodeInstance = new QRCode(document.getElementById("qr-container"), {
-                            text: "Loading...",
-                            width: 250,
-                            height: 250,
-                            colorDark : "#000000",
-                            colorLight : "#ffffff",
-                            correctLevel : QRCode.CorrectLevel.H
-                        });
-
                         this.fetchQr();
                         this.fetchData();
 
@@ -293,52 +281,60 @@
                     this.showDeleteModal = true;
                 },
 
-                confirmDelete() {
+                async confirmDelete() {
                     if (!this.selectedAttendanceId) return;
-                    
-                    $.ajax({
-                        url: `/guru/attendances/${this.selectedAttendanceId}`,
-                        method: 'POST',
-                        data: {
-                            _method: 'DELETE',
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: (res) => {
-                            this.showDeleteModal = false;
-                            this.selectedAttendanceId = null;
-                            this.fetchData();
-                        },
-                        error: (err) => {
-                            this.showDeleteModal = false;
-                            Swal.fire('Gagal', 'Gagal membatalkan presensi.', 'error');
-                        }
+
+                    const body = new URLSearchParams({
+                        _method: 'DELETE',
+                        _token: '{{ csrf_token() }}'
                     });
+
+                    try {
+                        const response = await fetch(`/guru/attendances/${this.selectedAttendanceId}`, {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json' },
+                            body
+                        });
+                        if (!response.ok) throw new Error('Delete failed');
+                        this.selectedAttendanceId = null;
+                        await this.fetchData();
+                    } catch (error) {
+                        Swal.fire('Gagal', 'Gagal membatalkan presensi.', 'error');
+                    } finally {
+                        this.showDeleteModal = false;
+                    }
                 },
 
-                fetchQr() {
-                    $.ajax({
-                        url: `/guru/attendances/session/${this.sessionId}/api/qr`,
-                        method: 'GET',
-                        success: (res) => {
-                            this.qrCodeInstance.clear();
-                            this.qrCodeInstance.makeCode(res.qr_payload);
-                            this.qrHash = res.hash;
-                            if (res.session_code) this.sessionCode = res.session_code;
-                            this.qrExpiresAt = new Date(res.expires_at).getTime();
-                            this.updateTimer();
-                        }
+                async fetchQr() {
+                    const response = await fetch(`/guru/attendances/session/${this.sessionId}/api/qr`, {
+                        headers: { 'Accept': 'application/json' }
                     });
+                    if (!response.ok) return;
+
+                    const res = await response.json();
+                    const container = document.getElementById('qr-container');
+                    container.replaceChildren();
+                    const canvas = document.createElement('canvas');
+                    container.appendChild(canvas);
+                    await QRCodeGenerator.toCanvas(canvas, res.qr_payload, {
+                        width: 250,
+                        margin: 1,
+                        color: { dark: '#000000', light: '#ffffff' },
+                        errorCorrectionLevel: 'H'
+                    });
+                    this.qrHash = res.hash;
+                    if (res.session_code) this.sessionCode = res.session_code;
+                    this.qrExpiresAt = new Date(res.expires_at).getTime();
+                    this.updateTimer();
                 },
 
-                fetchData() {
-                    $.ajax({
-                        url: `/guru/attendances/session/${this.sessionId}/api/data`,
-                        method: 'GET',
-                        success: (res) => {
-                            // Check if new data length is different to play sound (optional)
-                            this.attendances = res.attendances;
-                        }
+                async fetchData() {
+                    const response = await fetch(`/guru/attendances/session/${this.sessionId}/api/data`, {
+                        headers: { 'Accept': 'application/json' }
                     });
+                    if (!response.ok) return;
+                    const res = await response.json();
+                    this.attendances = res.attendances;
                 },
 
                 updateTimer() {

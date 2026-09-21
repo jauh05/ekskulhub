@@ -147,8 +147,6 @@
         </form>
     </div>
 
-    <!-- HTML5 QR Code Scanner Script -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         let html5QrCode = null;
 
