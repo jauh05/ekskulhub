@@ -54,6 +54,7 @@
         <div class="grid grid-cols-1 gap-8 xl:grid-cols-3">
             <!-- Kolom utama -->
             <div class="space-y-8 xl:col-span-2">
+                @isset($upcomingSchedules)
                 <!-- Jadwal terdekat -->
                 <section>
                     <h4 class="mb-3 text-title-md font-bold text-on-surface">Jadwal terdekat</h4>
@@ -77,6 +78,7 @@
                         </ul>
                     </div>
                 </section>
+                @endisset
 
                 <!-- Pendaftaran terbaru -->
                 <section>
@@ -137,6 +139,7 @@
                     </div>
                 </section>
 
+                @isset($announcements)
                 <!-- Pengumuman terbaru -->
                 <section>
                     <h4 class="mb-3 text-title-md font-bold text-on-surface">Pengumuman terbaru</h4>
@@ -158,6 +161,7 @@
                         </ul>
                     </div>
                 </section>
+                @endisset
             </div>
         </div>
     </div>

@@ -118,6 +118,19 @@
     }
 }
 
+/* Panel "Lainnya" di navbar bawah: tampil saat <details> terbuka, dan tanpa marker bawaan. */
+.nav-lainnya > summary::-webkit-details-marker {
+    display: none;
+}
+
+.nav-lainnya-panel {
+    display: none;
+}
+
+.nav-lainnya[open] > .nav-lainnya-panel {
+    display: block;
+}
+
 /* Tombol SweetAlert mengikuti palet peran yang aktif, bukan warna bawaan library.
    Di luar @layer agar tidak dibuang Tailwind karena kelasnya tidak muncul di view. */
 .swal2-confirm {
