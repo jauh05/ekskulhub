@@ -19,7 +19,7 @@
 
 <x-guest-layout role="teacher" title="Daftar Guru - Ekskul" wide>
     <div class="flex min-h-screen items-center justify-center bg-paper p-4 sm:p-8">
-        <main class="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
+        <main class="w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
             <x-auth-hero
                 role="guru"
                 title="Daftar sebagai guru"
@@ -63,7 +63,7 @@
                             <label for="reg_name" class="{{ $etiket }}">Nama lengkap</label>
                             <input id="reg_name" name="name" type="text" value="{{ old('name') }}" required placeholder="Lengkap beserta gelar" class="{{ $field }}">
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="reg_email" class="{{ $etiket }}">Email aktif</label>
                                 <input id="reg_email" name="email" type="email" value="{{ old('email') }}" required placeholder="contoh@sekolah.sch.id" class="{{ $field }}">
@@ -73,7 +73,7 @@
                                 <input id="reg_whatsapp" name="whatsapp" type="tel" value="{{ old('whatsapp') }}" placeholder="0812..." class="{{ $field }}">
                             </div>
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="password" class="{{ $etiket }}">Kata sandi</label>
                                 <input id="password" name="password" type="password" required autocomplete="new-password" class="{{ $field }}">
@@ -95,7 +95,7 @@
                             <label for="reg_school_name" class="{{ $etiket }}">Nama sekolah</label>
                             <input id="reg_school_name" name="school_name" type="text" value="{{ old('school_name') }}" placeholder="Misal: SMAN 1 Jakarta" class="{{ $field }}">
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="reg_ekskul_name" class="{{ $etiket }}">Nama ekskul</label>
                                 <input id="reg_ekskul_name" name="ekskul_name" type="text" value="{{ old('ekskul_name') }}" placeholder="Misal: Robotik" class="{{ $field }}">

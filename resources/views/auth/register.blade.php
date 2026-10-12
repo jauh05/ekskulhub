@@ -21,7 +21,7 @@
 
 <x-guest-layout role="student" title="Daftar Siswa - Ekskul" wide>
     <div class="flex min-h-screen items-center justify-center bg-paper p-4 sm:p-8">
-        <main class="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
+        <main class="w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
             <x-auth-hero
                 role="siswa"
                 title="Daftar sebagai siswa"
@@ -65,7 +65,7 @@
                             <label for="reg_name" class="{{ $etiket }}">Nama lengkap</label>
                             <input id="reg_name" name="name" type="text" value="{{ old('name') }}" required placeholder="Sesuai raport" class="{{ $field }}">
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="reg_email" class="{{ $etiket }}">Email aktif</label>
                                 <input id="reg_email" name="email" type="email" value="{{ old('email') }}" required placeholder="contoh@sekolah.sch.id" class="{{ $field }}">
@@ -75,7 +75,7 @@
                                 <input id="reg_whatsapp" name="whatsapp" type="tel" value="{{ old('whatsapp') }}" placeholder="0812..." class="{{ $field }}">
                             </div>
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="password" class="{{ $etiket }}">Kata sandi</label>
                                 <input id="password" name="password" type="password" required autocomplete="new-password" class="{{ $field }}">
@@ -105,7 +105,7 @@
                                 <x-icon name="chevron-down" class="pointer-events-none absolute right-4 top-1/2 size-[18px] -translate-y-1/2 text-secondary" />
                             </div>
                         </div>
-                        <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
                             <div>
                                 <label for="reg_class" class="{{ $etiket }}">Kelas</label>
                                 <div class="relative">
@@ -170,7 +170,7 @@
                                     <p id="confirm-subinfo" class="text-body-sm text-secondary">-</p>
                                 </div>
                             </div>
-                            <dl class="mt-5 grid gap-4 border-t border-outline-variant pt-5 sm:grid-cols-2">
+                            <dl class="mt-5 space-y-4 border-t border-outline-variant pt-5">
                                 <div>
                                     <dt class="text-label-xs uppercase text-secondary">Email</dt>
                                     <dd id="confirm-email" class="mt-1 break-all text-body-md text-on-surface">-</dd>
