@@ -4,8 +4,8 @@
 @endphp
 
 <x-guest-layout role="teacher" title="Masuk Guru - Ekskul" wide>
-    <div class="flex min-h-screen items-center justify-center bg-paper p-4 sm:p-8">
-        <main class="w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
+    <div class="flex min-h-screen items-center justify-center bg-surface p-4 sm:p-8">
+        <main class="w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-surface shadow-2xl">
             <x-auth-hero
                 role="guru"
                 title="Masuk sebagai guru"
