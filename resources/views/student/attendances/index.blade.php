@@ -17,7 +17,8 @@
 
     <!-- Daftar riwayat -->
     <section class="flex flex-col gap-3">
-        @forelse($attendances as $att)
+        {{-- Riwayat yang sesi atau jadwalnya sudah dihapus dilewati, supaya halaman tidak error. --}}
+        @forelse($attendances->getCollection()->filter(fn ($a) => $a->attendanceSession?->schedule) as $att)
         @php
             $jadwalAbsen = $att->attendanceSession->schedule;
             $tanggalAbsen = \Carbon\Carbon::parse($jadwalAbsen->activity_date);

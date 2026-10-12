@@ -20,8 +20,8 @@
 @endphp
 
 <x-guest-layout role="student" title="Daftar Siswa - Ekskul" wide>
-    <div class="min-h-screen bg-paper sm:flex sm:items-center sm:justify-center sm:p-6">
-        <main class="mx-auto w-full max-w-md overflow-hidden bg-surface sm:rounded-[2.5rem] sm:shadow-lg">
+    <div class="flex min-h-screen items-center justify-center bg-paper p-4 sm:p-8">
+        <main class="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-surface shadow-xl">
             <x-auth-hero
                 role="siswa"
                 title="Daftar sebagai siswa"
