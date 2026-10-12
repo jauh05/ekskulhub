@@ -10,8 +10,6 @@
                 role="guru"
                 title="Masuk sebagai guru"
                 subtitle="Kelola ekskul, absensi, dan penilaian dari satu tempat."
-                image="/images/landing/fitur-penilaian.png"
-                alt="Laporan dengan grafik batang dan piala"
                 :alt-href="route('register.guru')"
                 alt-label="Daftar" />
 

@@ -10,8 +10,6 @@
                 role="siswa"
                 title="Masuk sebagai siswa"
                 subtitle="Lihat jadwal, catat absensi, dan pantau nilaimu."
-                image="/images/landing/hero-phone.png"
-                alt="Ilustrasi layar absensi QR pada ponsel siswa"
                 :alt-href="route('register')"
                 alt-label="Daftar" />
 

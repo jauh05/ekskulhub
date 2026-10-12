@@ -24,9 +24,6 @@
                 role="guru"
                 title="Daftar sebagai guru"
                 subtitle="Dua langkah singkat untuk mulai mengelola ekskul."
-                image="/images/landing/fitur-jadwal.png"
-                alt="Kalender dengan jam dan ikon kegiatan ekskul"
-                compact
                 :alt-href="route('login.guru')"
                 alt-label="Masuk" />
 

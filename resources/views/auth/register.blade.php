@@ -26,9 +26,6 @@
                 role="siswa"
                 title="Daftar sebagai siswa"
                 subtitle="Empat langkah singkat untuk mulai ikut ekskul."
-                image="/images/landing/fitur-selfie.png"
-                alt="Siswa mengambil selfie sebagai bukti kehadiran"
-                compact
                 :alt-href="route('login')"
                 alt-label="Masuk" />
 
