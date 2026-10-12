@@ -1,78 +1,82 @@
 <x-app-layout>
-    <div class="pt-24 px-8 pb-12">
-        <div class="mb-8">
-            <a href="{{ route('teacher.announcements.index') }}" class="text-primary hover:underline font-label-md flex items-center gap-1 mb-2">
-                <span class="material-symbols-outlined text-[16px]">arrow_back</span> Kembali ke Daftar Pengumuman
+    <x-slot name="title">Buat Pengumuman</x-slot>
+
+    <div class="max-w-3xl space-y-6">
+        <div>
+            <a href="{{ route('teacher.announcements.index') }}" class="inline-flex items-center gap-1 text-label-md text-primary-container hover:underline">
+                <x-icon name="arrow-left" class="size-[18px]" /> Kembali ke Daftar Pengumuman
             </a>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Buat Pengumuman Baru</h3>
-            <p class="text-body-md text-secondary mt-1">Sampaikan informasi penting kepada siswa yang mengikuti ekstrakurikuler Anda.</p>
+            <h3 class="mt-2 text-headline-md font-bold text-on-surface md:text-headline-lg">Buat Pengumuman Baru</h3>
+            <p class="mt-1 text-body-md text-secondary">Sampaikan informasi penting kepada siswa yang mengikuti ekstrakurikuler Anda.</p>
         </div>
 
-        <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden max-w-3xl">
-            <form action="{{ route('teacher.announcements.store') }}" method="POST" class="p-8 space-y-6">
-                @csrf
+        <form action="{{ route('teacher.announcements.store') }}" method="POST" class="space-y-6 rounded-xl border border-outline-variant bg-surface p-6">
+            @csrf
 
-                <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-2">Ekstrakurikuler <span class="text-error">*</span></label>
-                    <select name="extracurricular_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-container-lowest font-body-md" required>
+            <section class="space-y-5">
+                <h4 class="text-title-md font-bold text-on-surface">Isi pengumuman</h4>
+
+                <div class="space-y-1.5">
+                    <label class="block text-label-md text-on-surface-variant">Ekstrakurikuler <span class="text-error">*</span></label>
+                    <select name="extracurricular_id" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" required>
                         <option value="">Pilih Ekstrakurikuler</option>
                         @foreach($ekskuls as $ek)
                             <option value="{{ $ek->id }}" {{ old('extracurricular_id') == $ek->id ? 'selected' : '' }}>{{ $ek->name }}</option>
                         @endforeach
                     </select>
                     @error('extracurricular_id')
-                        <p class="text-error text-body-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-2">Judul Pengumuman <span class="text-error">*</span></label>
-                    <input type="text" name="title" value="{{ old('title') }}" placeholder="Contoh: Perubahan Jadwal Latihan Minggu Ini" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-container-lowest font-body-md" required>
+                <div class="space-y-1.5">
+                    <label class="block text-label-md text-on-surface-variant">Judul Pengumuman <span class="text-error">*</span></label>
+                    <input type="text" name="title" value="{{ old('title') }}" placeholder="Contoh: Perubahan Jadwal Latihan Minggu Ini" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" required>
                     @error('title')
-                        <p class="text-error text-body-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-2">Isi Pengumuman <span class="text-error">*</span></label>
-                    <textarea name="content" rows="6" placeholder="Tulis pesan pengumuman Anda di sini..." class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-container-lowest font-body-md" required>{{ old('content') }}</textarea>
+                <div class="space-y-1.5">
+                    <label class="block text-label-md text-on-surface-variant">Isi Pengumuman <span class="text-error">*</span></label>
+                    <textarea name="content" rows="6" placeholder="Tulis pesan pengumuman Anda di sini..." class="w-full resize-y rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" required>{{ old('content') }}</textarea>
                     @error('content')
-                        <p class="text-error text-body-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
                     @enderror
                 </div>
+            </section>
 
-                <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-2">Status <span class="text-error">*</span></label>
-                    <div class="flex flex-col sm:flex-row gap-4 mt-2">
-                        <label class="flex items-center p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors flex-1">
-                            <input type="radio" name="status" value="published" class="h-4 w-4 text-primary focus:ring-primary border-outline" {{ old('status', 'published') == 'published' ? 'checked' : '' }}>
-                            <div class="ml-3">
-                                <span class="block text-label-lg font-bold text-on-surface">Publish Sekarang</span>
-                                <span class="block text-body-sm text-secondary mt-1">Siswa akan langsung melihat pengumuman ini.</span>
-                            </div>
-                        </label>
-                        <label class="flex items-center p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors flex-1">
-                            <input type="radio" name="status" value="draft" class="h-4 w-4 text-primary focus:ring-primary border-outline" {{ old('status') == 'draft' ? 'checked' : '' }}>
-                            <div class="ml-3">
-                                <span class="block text-label-lg font-bold text-on-surface">Simpan sebagai Draft</span>
-                                <span class="block text-body-sm text-secondary mt-1">Simpan sementara tanpa ditayangkan ke siswa.</span>
-                            </div>
-                        </label>
-                    </div>
-                    @error('status')
-                        <p class="text-error text-body-sm mt-1">{{ $message }}</p>
-                    @enderror
+            <section class="space-y-3 border-t border-outline-variant pt-6">
+                <h4 class="text-title-md font-bold text-on-surface">Status penayangan</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/40">
+                        <input type="radio" name="status" value="published" class="mt-1 accent-primary" {{ old('status', 'published') == 'published' ? 'checked' : '' }}>
+                        <span class="block">
+                            <span class="block text-label-lg text-on-surface">Publish Sekarang</span>
+                            <span class="mt-1 block text-body-sm text-secondary">Siswa akan langsung melihat pengumuman ini.</span>
+                        </span>
+                    </label>
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/40">
+                        <input type="radio" name="status" value="draft" class="mt-1 accent-primary" {{ old('status') == 'draft' ? 'checked' : '' }}>
+                        <span class="block">
+                            <span class="block text-label-lg text-on-surface">Simpan sebagai Draft</span>
+                            <span class="mt-1 block text-body-sm text-secondary">Simpan sementara tanpa ditayangkan ke siswa.</span>
+                        </span>
+                    </label>
                 </div>
+                @error('status')
+                    <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
+                @enderror
+            </section>
 
-                <div class="pt-4 border-t border-outline-variant flex justify-end gap-3">
-                    <a href="{{ route('teacher.announcements.index') }}" class="px-6 py-2.5 rounded-lg font-label-md font-bold text-secondary border border-outline-variant hover:bg-surface-container-low transition-colors">
-                        Batal
-                    </a>
-                    <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-lg font-label-md font-bold hover:bg-primary/90 transition-colors shadow-md">
-                        Simpan Pengumuman
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="flex flex-col-reverse gap-3 border-t border-outline-variant pt-5 sm:flex-row sm:justify-end">
+                <a href="{{ route('teacher.announcements.index') }}" class="inline-flex w-full items-center justify-center rounded-lg border sm:w-auto border-outline-variant bg-surface px-4 py-2.5 text-label-lg text-on-surface transition-colors hover:bg-surface-container">
+                    Batal
+                </a>
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-container sm:w-auto px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="save" class="size-[18px]" /> Simpan Pengumuman
+                </button>
+            </div>
+        </form>
     </div>
 </x-app-layout>

@@ -1,390 +1,289 @@
 <x-app-layout>
     <x-slot name="title">Dashboard Guru</x-slot>
-    <div class="pt-6 px-8 pb-12">
-        <!-- Welcome Header -->
-        <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-start md:items-center gap-4">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                    <span class="material-symbols-outlined text-[24px] md:text-[32px] text-white">waving_hand</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-sm md:font-headline-lg text-headline-sm md:text-headline-lg font-bold text-on-surface">Selamat Datang, {{ explode(' ', auth()->user()->name ?? 'Guru')[0] }}!</h3>
-                    <p class="text-body-sm md:text-body-lg text-secondary flex items-start md:items-center gap-1 md:gap-2 mt-1">
-                        <span class="material-symbols-outlined text-[16px] md:text-[18px] mt-0.5 md:mt-0 shrink-0">insights</span>
-                        <span>Pantau perkembangan siswa dan jadwal kegiatan hari ini.</span>
-                    </p>
-                </div>
+    @php
+        $statistikGrafik = [
+            ['label' => 'Peserta', 'value' => (int) ($totalParticipants ?? 0)],
+            ['label' => 'Sesi bulan ini', 'value' => (int) ($schedulesThisMonth ?? 0)],
+            ['label' => 'Hadir hari ini', 'value' => (int) ($presentToday ?? 0)],
+            ['label' => 'Sesi aktif', 'value' => (int) ($pendingSessions ?? 0)],
+        ];
+        $nilaiMaksGrafik = max(1, max(array_column($statistikGrafik, 'value')));
+    @endphp
+
+    <div class="space-y-8">
+        <!-- Header -->
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+                <p class="text-body-md text-secondary">Pantau perkembangan siswa dan jadwal kegiatan hari ini.</p>
+                <h3 class="mt-1 text-headline-md font-bold text-on-surface md:text-headline-lg">Selamat datang, {{ explode(' ', auth()->user()->name ?? 'Guru')[0] }}</h3>
             </div>
-            <div class="flex gap-2 w-full md:w-auto">
-                <a href="{{ route('teacher.schedules.create') }}" class="w-full md:w-auto justify-center bg-primary text-on-primary px-5 py-2.5 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-md">
-                    <span class="material-symbols-outlined text-[20px]">add_task</span>
-                    Buat Jadwal Baru
-                </a>
+            <a href="{{ route('teacher.schedules.create') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-container px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90 md:w-auto">
+                <x-icon name="list-plus" class="size-[20px]" />
+                Buat Jadwal Baru
+            </a>
+        </div>
+
+        <!-- Statistik -->
+        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div class="flex flex-col justify-between gap-8 rounded-xl bg-primary-container p-5 text-on-primary-container">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-label-md opacity-90">Total peserta</span>
+                    <span class="flex size-9 items-center justify-center rounded-lg bg-on-primary-container/15">
+                        <x-icon name="users" class="size-[18px]" />
+                    </span>
+                </div>
+                <p class="text-headline-md font-bold">{{ $totalParticipants ?? 0 }}</p>
+            </div>
+
+            <div class="flex flex-col justify-between gap-8 rounded-xl border border-outline-variant bg-surface p-5">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-label-md text-secondary">Sesi bulan ini</span>
+                    <span class="flex size-9 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container">
+                        <x-icon name="calendar-check" class="size-[18px]" />
+                    </span>
+                </div>
+                <p class="text-headline-md font-bold text-on-surface">{{ $schedulesThisMonth ?? 0 }}</p>
+            </div>
+
+            <div class="flex flex-col justify-between gap-8 rounded-xl border border-outline-variant bg-surface p-5">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-label-md text-secondary">Hadir hari ini</span>
+                    <span class="flex size-9 items-center justify-center rounded-lg bg-tertiary-container text-on-tertiary-container">
+                        <x-icon name="user-check" class="size-[18px]" />
+                    </span>
+                </div>
+                <p class="text-headline-md font-bold text-on-surface">{{ $presentToday ?? 0 }}</p>
+            </div>
+
+            <div class="flex flex-col justify-between gap-8 rounded-xl border border-outline-variant bg-surface p-5">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-label-md text-secondary">Sesi presensi aktif</span>
+                    <span class="flex size-9 items-center justify-center rounded-lg bg-primary-fixed text-on-primary-fixed">
+                        <x-icon name="radio" class="size-[18px]" />
+                    </span>
+                </div>
+                <p class="text-headline-md font-bold text-on-surface">{{ $pendingSessions ?? 0 }}</p>
             </div>
         </div>
 
-        <!-- Ringkasan Statistik (Grid Cards) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            
-            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[24px]">group</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-md text-secondary font-medium">Total Peserta:</span>
-                    <div class="flex items-center gap-2">
-                        <span class="text-title-lg font-bold text-on-surface leading-none">{{ $totalParticipants ?? 0 }}</span>
-                        <span class="text-label-sm text-tertiary flex items-center font-bold bg-tertiary/10 px-1.5 py-0.5 rounded text-[10px]">
-                            <span class="material-symbols-outlined text-[12px] mr-0.5">trending_up</span> 12%
-                        </span>
+        <div class="grid grid-cols-1 gap-8 xl:grid-cols-3">
+            <!-- Kolom utama -->
+            <div class="space-y-8 xl:col-span-2">
+                <!-- Ringkasan -->
+                <section class="rounded-xl border border-outline-variant bg-surface p-5">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h4 class="text-title-md font-bold text-on-surface">Ringkasan presensi</h4>
+                            <p class="text-label-sm text-secondary">Perbandingan angka utama presensi Anda</p>
+                        </div>
                     </div>
-                </div>
-            </div>
+                    <div class="mt-6 grid grid-cols-4 gap-3 sm:gap-6">
+                        @foreach($statistikGrafik as $item)
+                        <div class="flex flex-col items-center gap-2">
+                            <span class="text-title-sm font-bold text-on-surface">{{ $item['value'] }}</span>
+                            <div class="flex h-36 w-full max-w-16 items-end rounded-md bg-surface-container-low">
+                                <div class="w-full rounded-md bg-primary" style="height: {{ max(4, round($item['value'] / $nilaiMaksGrafik * 100)) }}%"></div>
+                            </div>
+                            <span class="text-center text-label-xs leading-tight text-secondary">{{ $item['label'] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </section>
 
-            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
-                <div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[24px]">event_available</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-md text-secondary font-medium">Sesi Bulan Ini:</span>
-                    <span class="text-title-lg font-bold text-on-surface leading-none">{{ $schedulesThisMonth ?? 0 }}</span>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
-                <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-full flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[24px]">how_to_reg</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-md text-secondary font-medium">Hadir Hari Ini:</span>
-                    <span class="text-title-lg font-bold text-on-surface leading-none">{{ $presentToday }}</span>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-outline-variant card-shadow p-4 flex items-center gap-4">
-                <div class="w-12 h-12 bg-error/10 text-error rounded-full flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[24px]">warning</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-md text-error font-bold">Sesi Presensi Aktif:</span>
-                    <span class="text-title-lg font-bold text-error leading-none">{{ $pendingSessions }}</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Layout Grid: Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column: Jadwal Terdekat & Peserta -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Jadwal Terdekat -->
+                <!-- Jadwal terdekat -->
                 <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">event_upcoming</span>
-                            Jadwal Terdekat
-                        </h4>
-                        <a class="text-primary font-label-md font-bold hover:underline flex items-center gap-1" href="{{ route('teacher.schedules.index') }}">
-                            Lihat Semua <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <div class="mb-3 flex items-center justify-between">
+                        <h4 class="text-title-md font-bold text-on-surface">Jadwal terdekat</h4>
+                        <a href="{{ route('teacher.schedules.index') }}" class="inline-flex items-center gap-1 text-label-md font-bold text-primary-container hover:underline">
+                            Lihat semua <x-icon name="arrow-right" class="size-[16px]" />
                         </a>
                     </div>
-                    
+
                     @forelse($upcomingSchedules as $jadwal)
-                    <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden mb-6">
-                        <div class="p-8">
-                            <div class="flex flex-col md:flex-row justify-between gap-6">
-                                <div class="space-y-4">
-                                    <div>
-                                        <span class="px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-label-sm font-bold flex items-center gap-1 inline-flex">
-                                            <span class="material-symbols-outlined text-[14px]">schedule</span> SESI MENDATANG
-                                        </span>
-                                        <h5 class="font-headline-md text-headline-md font-bold text-on-surface mt-3">{{ $jadwal->title }}</h5>
-                                        <p class="text-body-lg text-secondary">{{ $jadwal->extracurricular->name }}</p>
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                        <div class="flex items-center gap-3 text-on-surface-variant">
-                                            <div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-primary">calendar_month</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-label-sm text-secondary">Tanggal</p>
-                                                <p class="font-body-md font-semibold">{{ \Carbon\Carbon::parse($jadwal->activity_date)->translatedFormat('l, d M Y') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3 text-on-surface-variant">
-                                            <div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-primary">schedule</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-label-sm text-secondary">Waktu</p>
-                                                <p class="font-body-md font-semibold">{{ \Carbon\Carbon::parse($jadwal->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->end_time)->format('H:i') }} WIB</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3 text-on-surface-variant">
-                                            <div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-primary">location_on</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-label-sm text-secondary">Lokasi</p>
-                                                <p class="font-body-md font-semibold">{{ $jadwal->location ?? '-' }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3 text-on-surface-variant">
-                                            <div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-primary">menu_book</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-label-sm text-secondary">Materi</p>
-                                                <p class="font-body-md font-semibold">{{ $jadwal->material ?? '-' }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w-full md:w-64 h-48 rounded-xl overflow-hidden border border-outline-variant shrink-0 bg-surface-container flex flex-col items-center justify-center text-primary/30">
-                                    <span class="material-symbols-outlined text-6xl">event</span>
-                                </div>
+                    @php $tanggalJadwal = \Carbon\Carbon::parse($jadwal->activity_date); @endphp
+                    <article class="flex flex-col gap-5 rounded-xl border border-outline-variant bg-surface p-5 sm:flex-row">
+                        <div class="flex w-full shrink-0 flex-row items-center justify-center gap-3 rounded-xl bg-primary-container px-4 py-3 text-on-primary-container sm:w-20 sm:flex-col sm:gap-0 sm:py-4">
+                            <span class="text-label-xs font-bold uppercase tracking-wider">{{ $tanggalJadwal->translatedFormat('M') }}</span>
+                            <span class="text-headline-md font-bold">{{ $tanggalJadwal->format('d') }}</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-flex rounded-full bg-primary-fixed px-2.5 py-0.5 text-label-xs font-bold text-on-primary-fixed">Sesi mendatang</span>
+                            <h5 class="mt-2 text-title-lg font-bold text-on-surface">{{ $jadwal->title }}</h5>
+                            <p class="text-body-sm text-secondary">{{ $jadwal->extracurricular->name }}</p>
+                            <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-body-sm text-on-surface-variant">
+                                <span class="inline-flex items-center gap-1.5"><x-icon name="clock" class="size-[16px] text-secondary" />{{ \Carbon\Carbon::parse($jadwal->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->end_time)->format('H:i') }} WIB</span>
+                                <span class="inline-flex items-center gap-1.5"><x-icon name="map-pin" class="size-[16px] text-secondary" />{{ $jadwal->location ?? '-' }}</span>
+                                @if($jadwal->material)
+                                <span class="inline-flex items-center gap-1.5"><x-icon name="book-open" class="size-[16px] text-secondary" />{{ $jadwal->material }}</span>
+                                @endif
                             </div>
-                            <div class="flex flex-col sm:flex-row flex-wrap gap-4 mt-8 pt-6 border-t border-outline-variant">
-                                <a href="{{ route('teacher.attendances.index') }}" class="flex-1 justify-center bg-primary text-white px-8 py-3 rounded-lg font-body-md font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span> Buka Absensi
+                            <div class="mt-5 flex flex-wrap items-center gap-2">
+                                <a href="{{ route('teacher.attendances.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-primary-container px-4 py-2 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                                    <x-icon name="clipboard-check" class="size-[18px]" /> Buka absensi
                                 </a>
-                                <a href="{{ route('teacher.schedules.edit', $jadwal->id) }}" class="flex-1 justify-center bg-surface-container-low text-primary px-8 py-3 rounded-lg font-body-md font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2 border border-primary/10">
-                                    <span class="material-symbols-outlined text-[20px]">edit</span> Edit Jadwal
+                                <a href="{{ route('teacher.schedules.edit', $jadwal->id) }}" class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 py-2 text-label-lg text-on-surface transition-colors hover:bg-surface-container">
+                                    <x-icon name="pencil" class="size-[18px]" /> Edit
                                 </a>
-                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="confirmAction(event, 'Hapus jadwal ini?');">
+                                <form action="{{ route('teacher.schedules.destroy', $jadwal->id) }}" method="POST" onsubmit="confirmAction(event, 'Hapus jadwal ini?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="w-full justify-center bg-error/10 text-error px-4 py-3 rounded-lg font-body-md font-bold hover:bg-error/20 transition-all active:scale-95 flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[20px]">delete</span>
-                                        <span class="sm:hidden">Hapus Jadwal</span>
+                                    <button type="submit" aria-label="Hapus jadwal" class="inline-flex size-9 items-center justify-center rounded-lg text-error transition-colors hover:bg-error-container/50">
+                                        <x-icon name="trash-2" class="size-[18px]" />
                                     </button>
                                 </form>
                             </div>
                         </div>
-                    </div>
+                    </article>
                     @empty
-                    <div class="bg-white rounded-xl border border-outline-variant card-shadow p-8 text-center flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-outline mb-4">
-                            <span class="material-symbols-outlined text-3xl">event_busy</span>
-                        </div>
-                        <h5 class="text-title-md font-bold text-on-surface mb-2">Belum ada jadwal terdekat</h5>
-                        <p class="text-body-md text-secondary max-w-md">Anda belum membuat jadwal latihan untuk waktu dekat. Silakan buat jadwal baru terlebih dahulu.</p>
-                        <a href="{{ route('teacher.schedules.create') }}" class="mt-6 bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[20px]">add</span> Buat Jadwal
+                    <div class="flex flex-col items-start gap-2 rounded-xl border border-dashed border-outline-variant bg-surface p-6">
+                        <p class="text-title-sm font-bold text-on-surface">Belum ada jadwal terdekat</p>
+                        <p class="text-body-sm text-secondary">Buat jadwal latihan untuk membuka sesi absensi.</p>
+                        <a href="{{ route('teacher.schedules.create') }}" class="mt-2 inline-flex items-center gap-2 text-label-lg text-primary-container hover:underline">
+                            <x-icon name="plus" class="size-[18px]" /> Buat jadwal
                         </a>
                     </div>
                     @endforelse
                 </section>
 
-                <!-- Peserta Terbaru -->
+                <!-- Peserta terbaru -->
                 <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">recent_actors</span>
-                            Peserta Terdaftar Terbaru
-                        </h4>
-                        <button class="text-on-surface-variant hover:text-primary p-1 rounded-full transition-colors">
-                            <span class="material-symbols-outlined">more_horiz</span>
-                        </button>
+                    <div class="mb-3 flex items-center justify-between">
+                        <h4 class="text-title-md font-bold text-on-surface">Peserta terbaru</h4>
+                        <a href="{{ route('teacher.participants.index') }}" class="inline-flex items-center gap-1 text-label-md font-bold text-primary-container hover:underline">
+                            Lihat semua <x-icon name="arrow-right" class="size-[16px]" />
+                        </a>
                     </div>
-                    <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-max">
-                                <thead>
-                                    <tr class="bg-surface-container-low border-b border-outline-variant">
-                                        <th class="px-6 py-4 text-label-sm font-bold text-secondary uppercase tracking-wider">Nama Siswa</th>
-                                        <th class="px-6 py-4 text-label-sm font-bold text-secondary uppercase tracking-wider">Ekskul</th>
-                                        <th class="px-6 py-4 text-label-sm font-bold text-secondary uppercase tracking-wider">Bergabung</th>
-                                        <th class="px-6 py-4 text-label-sm font-bold text-secondary uppercase tracking-wider text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-outline-variant">
-                                    @forelse($recentParticipants as $participant)
-                                    <tr class="hover:bg-surface-container-low transition-colors group">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-on-primary-fixed">
-                                                    {{ strtoupper(substr($participant->student->name ?? 'A', 0, 1)) }}
-                                                </div>
-                                                <div>
-                                                    <p class="font-body-md font-bold text-on-surface">{{ $participant->student->name ?? '-' }}</p>
-                                                    <p class="text-label-sm text-secondary">ID: {{ $participant->student->id ?? '-' }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 font-body-md text-on-surface-variant">{{ $participant->extracurricular->name ?? '-' }}</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-center gap-2">
-                                                    @if($participant->status === 'approved')
-                                                        <span class="px-2 py-1 bg-[#10B981]/10 text-[#10B981] text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                                                    @elseif($participant->status === 'pending')
-                                                        <span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded-full uppercase">Pending</span>
-                                                    @else
-                                                        <span class="px-2 py-1 bg-error/10 text-error text-[10px] font-bold rounded-full uppercase">Ditolak</span>
-                                                    @endif
-                                                    <span class="text-label-sm text-secondary">{{ $participant->created_at->diffForHumans() }}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            @if($participant->status === 'pending')
-                                                <div class="flex items-center justify-end gap-2">
-                                                    <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <input type="hidden" name="status" value="approved">
-                                                        <button type="submit" class="bg-[#10B981]/10 text-[#10B981] p-2 hover:bg-[#10B981]/20 rounded-full transition-colors flex items-center justify-center" title="Terima Siswa">
-                                                            <span class="material-symbols-outlined text-[18px]">check</span>
-                                                        </button>
-                                                    </form>
-                                                    <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <input type="hidden" name="status" value="rejected">
-                                                        <button type="submit" class="bg-error/10 text-error p-2 hover:bg-error/20 rounded-full transition-colors flex items-center justify-center" title="Tolak Siswa">
-                                                            <span class="material-symbols-outlined text-[18px]">close</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            @else
-                                                <a href="{{ route('teacher.participants.index') }}" class="text-primary p-2 hover:bg-primary-container/10 rounded-full transition-colors inline-block">
-                                                    <span class="material-symbols-outlined">chevron_right</span>
-                                                </a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-8 text-center text-secondary font-body-md">Belum ada siswa yang mendaftar ke ekstrakurikuler Anda.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="p-4 text-center border-t border-outline-variant">
-                            <a href="{{ route('teacher.participants.index') }}" class="text-primary font-label-md font-bold hover:underline flex items-center justify-center gap-1 mx-auto">
-                                <span class="material-symbols-outlined text-[18px]">group_add</span> Lihat Semua Peserta
-                            </a>
-                        </div>
+                    <div class="overflow-hidden rounded-xl border border-outline-variant bg-surface">
+                        <ul class="divide-y divide-outline-variant">
+                            @forelse($recentParticipants as $participant)
+                            <li class="flex items-center gap-4 px-5 py-4">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-label-md font-bold text-on-primary-fixed">
+                                    {{ strtoupper(substr($participant->student->name ?? 'A', 0, 1)) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-body-md font-semibold text-on-surface">{{ $participant->student->name ?? '-' }}</p>
+                                    <p class="truncate text-body-xs text-secondary">{{ $participant->extracurricular->name ?? '-' }} &middot; {{ $participant->created_at->diffForHumans() }}</p>
+                                </div>
+                                @if($participant->status === 'approved')
+                                    <span class="shrink-0 rounded-full bg-tertiary-container px-2.5 py-0.5 text-label-xs font-bold text-on-tertiary-container">Aktif</span>
+                                @elseif($participant->status === 'pending')
+                                    <div class="flex shrink-0 items-center gap-2">
+                                        <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="approved">
+                                            <button type="submit" title="Terima siswa" aria-label="Terima siswa" class="flex size-9 items-center justify-center rounded-full bg-tertiary-container text-on-tertiary-container transition-opacity hover:opacity-90">
+                                                <x-icon name="check" class="size-[18px]" />
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('teacher.participants.update', $participant->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" title="Tolak siswa" aria-label="Tolak siswa" class="flex size-9 items-center justify-center rounded-full bg-error-container text-on-error-container transition-opacity hover:opacity-90">
+                                                <x-icon name="x" class="size-[18px]" />
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="shrink-0 rounded-full bg-error-container px-2.5 py-0.5 text-label-xs font-bold text-on-error-container">Ditolak</span>
+                                @endif
+                            </li>
+                            @empty
+                            <li class="px-5 py-8 text-center text-body-md text-secondary">Belum ada siswa yang mendaftar ke ekstrakurikuler Anda.</li>
+                            @endforelse
+                        </ul>
                     </div>
                 </section>
             </div>
 
-            <!-- Right Column: Quick Actions & Updates -->
+            <!-- Kolom samping -->
             <div class="space-y-8">
-                <!-- Manajemen Kode Kelas -->
-                <section class="mb-8">
-                    <h4 class="font-title-lg text-title-lg font-bold text-on-surface mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">pin</span> Manajemen Kode Kelas
+                <!-- Kode kelas -->
+                <section class="space-y-4">
+                    <h4 class="flex items-center gap-2 text-title-md font-bold text-on-surface">
+                        <x-icon name="pin" class="size-[18px] text-primary-container" /> Kode kelas
                     </h4>
                     @foreach($extracurriculars as $ekskul)
-                    <div class="bg-white rounded-xl border border-outline-variant card-shadow p-6 mb-4">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h5 class="font-headline-sm font-bold text-on-surface flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-[20px]">sports_soccer</span> {{ $ekskul->name }}
-                                </h5>
-                                <p class="text-label-sm text-secondary">Bagikan kode ini ke siswa</p>
+                    <div class="overflow-hidden rounded-xl border border-outline-variant bg-surface">
+                        <div class="flex items-center gap-3 bg-primary-fixed px-5 py-4 text-on-primary-fixed">
+                            <x-icon name="trophy" class="size-[20px] shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-title-sm font-bold">{{ $ekskul->name }}</p>
+                                <p class="text-label-xs opacity-80">Bagikan kode ini ke siswa</p>
                             </div>
-                            <div class="bg-primary-container text-on-primary-container px-3 py-1 rounded-md font-mono font-bold tracking-wider">
-                                {{ $ekskul->class_code ?? 'BELUM DIATUR' }}
-                            </div>
+                            <span class="shrink-0 rounded-md bg-surface px-2.5 py-1 font-mono text-label-md font-bold tracking-wider text-on-surface">{{ $ekskul->class_code ?? 'BELUM DIATUR' }}</span>
                         </div>
-                        
-                        <form action="{{ route('teacher.class_code.update', $ekskul->id) }}" method="POST" class="flex flex-col sm:flex-row gap-2">
+                        <form action="{{ route('teacher.class_code.update', $ekskul->id) }}" method="POST" class="flex flex-col gap-2 p-4 sm:flex-row">
                             @csrf
-                            <input type="text" name="class_code" value="{{ $ekskul->class_code }}" placeholder="Kode Baru" class="flex-grow h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all font-mono uppercase" required>
-                            <button type="submit" class="w-full sm:w-auto justify-center bg-primary text-on-primary px-6 h-11 rounded-lg font-label-md hover:bg-primary/90 transition-colors flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">save</span> Simpan
+                            <input type="text" name="class_code" value="{{ $ekskul->class_code }}" placeholder="Kode baru" required class="min-w-0 flex-1 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 font-mono text-body-md uppercase text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-container px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                                <x-icon name="save" class="size-[18px]" /> Simpan
                             </button>
                         </form>
                         @error('class_code')
-                            <p class="text-error text-[12px] mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">error</span> {{ $message }}</p>
+                            <p class="flex items-center gap-1 px-4 pb-4 text-body-xs text-error"><x-icon name="circle-alert" class="size-[14px]" /> {{ $message }}</p>
                         @enderror
                     </div>
                     @endforeach
                 </section>
 
-                <!-- Aksi Cepat -->
+                <!-- Aksi cepat -->
                 <section>
-                    <h4 class="font-title-lg text-title-lg font-bold text-on-surface mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">bolt</span> Aksi Cepat
+                    <h4 class="mb-3 flex items-center gap-2 text-title-md font-bold text-on-surface">
+                        <x-icon name="zap" class="size-[18px] text-primary-container" /> Aksi cepat
                     </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <a href="{{ route('teacher.schedules.create') }}" class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex flex-col items-center justify-center gap-3 text-center group hover:border-primary transition-all active:scale-95">
-                            <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined">add_circle</span>
-                            </div>
-                            <span class="text-label-md font-bold text-on-surface">Buat Jadwal</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="{{ route('teacher.schedules.create') }}" class="flex flex-col gap-3 rounded-xl border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low">
+                            <span class="flex size-9 items-center justify-center rounded-lg bg-primary-fixed text-on-primary-fixed"><x-icon name="circle-plus" class="size-[18px]" /></span>
+                            <span class="text-label-md font-semibold text-on-surface">Buat jadwal</span>
                         </a>
-                        <a href="{{ route('teacher.attendances.index') }}" class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex flex-col items-center justify-center gap-3 text-center group hover:border-primary transition-all active:scale-95">
-                            <div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined">checklist</span>
-                            </div>
-                            <span class="text-label-md font-bold text-on-surface">Buka Absensi</span>
+                        <a href="{{ route('teacher.attendances.index') }}" class="flex flex-col gap-3 rounded-xl border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low">
+                            <span class="flex size-9 items-center justify-center rounded-lg bg-tertiary-container text-on-tertiary-container"><x-icon name="list-checks" class="size-[18px]" /></span>
+                            <span class="text-label-md font-semibold text-on-surface">Buka absensi</span>
                         </a>
-                        <a href="{{ route('teacher.grading.index') }}" class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex flex-col items-center justify-center gap-3 text-center group hover:border-primary transition-all active:scale-95">
-                            <div class="w-12 h-12 bg-surface-container-highest text-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined">edit_note</span>
-                            </div>
-                            <span class="text-label-md font-bold text-on-surface">Input Nilai</span>
+                        <a href="{{ route('teacher.grading.index') }}" class="flex flex-col gap-3 rounded-xl border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low">
+                            <span class="flex size-9 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container"><x-icon name="notebook-pen" class="size-[18px]" /></span>
+                            <span class="text-label-md font-semibold text-on-surface">Input nilai</span>
                         </a>
-                        <a href="#" class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex flex-col items-center justify-center gap-3 text-center group hover:border-primary transition-all active:scale-95">
-                            <div class="w-12 h-12 bg-error-container text-on-error-container rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined">notification_add</span>
-                            </div>
-                            <span class="text-label-md font-bold text-on-surface">Pengumuman</span>
+                        <a href="{{ route('teacher.announcements.create') }}" class="flex flex-col gap-3 rounded-xl border border-outline-variant bg-surface p-4 transition-colors hover:bg-surface-container-low">
+                            <span class="flex size-9 items-center justify-center rounded-lg bg-warning-container text-on-warning-container"><x-icon name="bell-plus" class="size-[18px]" /></span>
+                            <span class="text-label-md font-semibold text-on-surface">Pengumuman</span>
                         </a>
                     </div>
                 </section>
 
-                <!-- Update Terbaru -->
+                <!-- Pengumuman terbaru -->
                 <section>
-                    <h4 class="font-title-lg text-title-lg font-bold text-on-surface mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">notifications_active</span> Update Terbaru
-                    </h4>
-                    <div class="bg-white rounded-xl border border-outline-variant card-shadow p-6 space-y-6">
-                        <div class="space-y-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h4 class="text-title-md font-bold text-on-surface">Pengumuman terbaru</h4>
+                        <a href="{{ route('teacher.announcements.index') }}" class="text-label-md font-bold text-primary-container hover:underline">Semua</a>
+                    </div>
+                    <div class="overflow-hidden rounded-xl border border-outline-variant bg-surface">
+                        <ul class="divide-y divide-outline-variant">
                             @forelse($announcements as $announcement)
-                            <div class="flex gap-4">
-                                <div class="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-primary">campaign</span>
+                            <li class="flex gap-3 px-4 py-4">
+                                <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-on-primary-fixed"><x-icon name="megaphone" class="size-[16px]" /></span>
+                                <div class="min-w-0">
+                                    <p class="truncate text-label-md font-semibold text-on-surface">{{ $announcement->title }}</p>
+                                    <p class="line-clamp-2 text-body-xs text-secondary">{{ $announcement->content }}</p>
+                                    <p class="mt-1 text-label-xs text-outline">{{ $announcement->created_at->diffForHumans() }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-body-md font-bold text-on-surface">{{ $announcement->title }}</p>
-                                    <p class="text-label-sm text-secondary line-clamp-2">{{ $announcement->content }}</p>
-                                    <p class="text-[10px] text-outline mt-1 font-bold">{{ strtoupper($announcement->created_at->diffForHumans()) }}</p>
-                                </div>
-                            </div>
+                            </li>
                             @empty
-                            <div class="flex items-center gap-3 text-secondary p-4 bg-surface-container-lowest rounded-lg border border-outline-variant">
-                                <span class="material-symbols-outlined text-[20px]">notifications_paused</span>
-                                <p class="text-label-sm">Belum ada pengumuman terbaru.</p>
-                            </div>
+                            <li class="flex items-center gap-3 px-4 py-6 text-body-sm text-secondary">
+                                <x-icon name="bell-off" class="size-[18px]" /> Belum ada pengumuman.
+                            </li>
                             @endforelse
-                        </div>
-                        <button class="w-full py-2.5 rounded-lg border border-outline-variant text-label-md font-bold text-secondary hover:bg-surface-container-low transition-colors flex justify-center items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">history</span> Lihat Semua
-                        </button>
+                        </ul>
                     </div>
                 </section>
-                
-                <!-- Profile Quick View -->
-                <section>
-                    <div class="bg-primary rounded-xl p-6 text-white relative overflow-hidden shadow-xl shadow-primary/30">
-                        <div class="relative z-10">
-                            <p class="text-label-sm font-bold opacity-80 uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">stars</span> Status Akun</p>
-                            <h5 class="text-title-lg font-bold mt-1">Pembina Senior</h5>
-                            <div class="flex items-center gap-2 mt-4">
-                                <span class="material-symbols-outlined text-[18px]">verified</span>
-                                <p class="text-label-md font-semibold">Tervalidasi Kemdikbud</p>
-                            </div>
-                        </div>
-                        <!-- Atmospheric Background Shape -->
-                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
-                        <div class="absolute -top-6 -right-2 w-20 h-20 bg-white opacity-5 rounded-full"></div>
-                    </div>
+
+                <!-- Akun -->
+                <section class="rounded-xl bg-primary-container p-5 text-on-primary-container">
+                    <p class="text-label-xs font-bold uppercase tracking-wider opacity-80">Akun guru</p>
+                    <p class="mt-1 text-title-lg font-bold">{{ auth()->user()->name }}</p>
+                    <p class="mt-3 text-body-sm opacity-90">NIP: {{ auth()->user()->teacherProfile?->nip ?? '-' }}</p>
                 </section>
             </div>
         </div>

@@ -1,10 +1,3 @@
-@import 'material-symbols/outlined.css';
-@import '@fontsource/inter/latin-400.css';
-@import '@fontsource/inter/latin-500.css';
-@import '@fontsource/inter/latin-600.css';
-@import '@fontsource/inter/latin-700.css';
-@import '@fontsource/inter/latin-800.css';
-@import '@fontsource/plus-jakarta-sans/latin-300.css';
 @import '@fontsource/plus-jakarta-sans/latin-400.css';
 @import '@fontsource/plus-jakarta-sans/latin-500.css';
 @import '@fontsource/plus-jakarta-sans/latin-600.css';
@@ -14,3 +7,158 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Palet per peran. Nilai berupa RGB terpisah spasi, dibaca oleh tailwind.config.js.
+ * Peran dipasang lewat data-role pada <html> atau pada section tertentu.
+ * Default (tanpa data-role) = guru.
+ */
+/* Guru: hijau yang sedikit berbeda dari landing (lebih sejuk, mint dan tosca). */
+:root,
+[data-role="teacher"] {
+    --c-primary: 132 214 84;
+    --c-primary-container: 22 78 46;
+    --c-on-primary: 10 30 18;
+    --c-on-primary-container: 255 255 255;
+    --c-primary-fixed: 222 246 212;
+    --c-primary-fixed-dim: 180 234 150;
+    --c-on-primary-fixed: 22 78 46;
+    --c-dark: 16 52 34;
+    --c-accent: 132 214 84;
+    --c-on-accent: 10 30 18;
+}
+
+/* Siswa: nuansa mengikuti contoh referensi 10 (header gelap, biru, kuning). */
+/* Landing: palet hijau mengikuti referensi (lime, hijau hutan, krem). */
+[data-role="landing"] {
+    --c-primary: 184 241 46;
+    --c-primary-container: 15 61 31;
+    --c-on-primary: 14 26 15;
+    --c-on-primary-container: 255 255 255;
+    --c-primary-fixed: 236 250 207;
+    --c-primary-fixed-dim: 214 245 150;
+    --c-on-primary-fixed: 15 61 31;
+    --c-dark: 14 42 24;
+    --c-accent: 184 241 46;
+    --c-on-accent: 14 26 15;
+}
+
+/* Siswa: palet mengikuti landing (lime, hijau hutan, krem). */
+[data-role="student"] {
+    --c-primary: 184 241 46;
+    --c-primary-container: 15 61 31;
+    --c-on-primary: 14 26 15;
+    --c-on-primary-container: 255 255 255;
+    --c-primary-fixed: 236 250 207;
+    --c-primary-fixed-dim: 214 245 150;
+    --c-on-primary-fixed: 15 61 31;
+    --c-dark: 14 42 24;
+    --c-accent: 184 241 46;
+    --c-on-accent: 14 26 15;
+}
+
+/* Admin: palet mengikuti landing (lime, hijau hutan, krem). */
+[data-role="admin"] {
+    --c-primary: 184 241 46;
+    --c-primary-container: 15 61 31;
+    --c-on-primary: 14 26 15;
+    --c-on-primary-container: 255 255 255;
+    --c-primary-fixed: 236 250 207;
+    --c-primary-fixed-dim: 214 245 150;
+    --c-on-primary-fixed: 15 61 31;
+    --c-dark: 14 42 24;
+    --c-accent: 184 241 46;
+    --c-on-accent: 14 26 15;
+}
+
+@layer base {
+    body {
+        font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+        background-color: #F6F7F9;
+        color: #0F172A;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    ::selection {
+        background-color: rgb(var(--c-primary) / 0.2);
+    }
+
+    /* Alpine: sembunyikan elemen sebelum Alpine siap */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* SweetAlert mengikuti font dan radius aplikasi */
+    .swal2-popup {
+        font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+        border-radius: 1rem;
+    }
+
+    /* Ukuran default ikon Lucide (24px). Kelas Tailwind tetap menang karena :where(). */
+    :where(svg.lucide) {
+        width: 1.5rem;
+        height: 1.5rem;
+        flex-shrink: 0;
+    }
+}
+
+@layer components {
+    .card-shadow,
+    .soft-shadow {
+        box-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+/* Tombol SweetAlert mengikuti palet peran yang aktif, bukan warna bawaan library.
+   Di luar @layer agar tidak dibuang Tailwind karena kelasnya tidak muncul di view. */
+.swal2-confirm {
+    background-color: rgb(var(--c-primary-container)) !important;
+    color: rgb(var(--c-on-primary-container)) !important;
+}
+
+/* Landing: judul 3D sungguhan (lapisan dengan translateZ) yang bisa digeser.
+   Di luar @layer karena hanya dipakai di welcome. */
+.title-stage {
+    perspective: 900px;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    outline-offset: 8px;
+}
+
+.title-stage:active {
+    cursor: grabbing;
+}
+
+.title-3d {
+    position: relative;
+    display: inline-block;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.title-layer {
+    display: block;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.title-layer.is-extrude {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.title-front {
+    color: #B8F12E;
+    text-shadow: 0 10px 24px rgb(15 23 42 / 0.35);
+}

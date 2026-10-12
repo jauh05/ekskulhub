@@ -1,46 +1,63 @@
 <x-student-layout>
-    <div class="mb-6">
-        <h3 class="font-headline-lg text-headline-lg text-on-surface">Data Penilaian</h3>
-    </div>
+<div class="flex w-full flex-col gap-6">
+    <x-student-page-header title="Data Penilaian" subtitle="Hasil penilaian kamu" />
 
-    <div class="bg-white rounded-xl border border-outline-variant soft-shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-outline-variant bg-surface-container-lowest">
-                        <th class="p-4 font-label-md text-secondary">EKSKUL</th>
-                        <th class="p-4 font-label-md text-secondary">PERIODE</th>
-                        <th class="p-4 font-label-md text-secondary">NILAI ANGKA</th>
-                        <th class="p-4 font-label-md text-secondary">PREDIKAT</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-outline-variant">
-                    @forelse($assessments as $val)
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-4 font-body-md text-on-surface font-semibold">{{ $val->registration->extracurricular->name ?? '-' }}</td>
-                        <td class="p-4 font-body-md text-on-surface-variant">{{ $val->period_name }}</td>
-                        <td class="p-4 font-headline-md text-primary font-bold">{{ $val->final_score }}</td>
-                        <td class="p-4">
-                            @php
-                                $color = 'bg-surface-container-high';
-                                if($val->predicate == 'A' || $val->predicate == 'Sangat Baik') $color = 'bg-tertiary-container text-on-tertiary-container';
-                                elseif($val->predicate == 'B' || $val->predicate == 'Baik') $color = 'bg-primary-container text-on-primary-container';
-                                elseif($val->predicate == 'C' || $val->predicate == 'Cukup') $color = 'bg-[#FEF08A] text-[#854D0E]';
-                                else $color = 'bg-error-container text-on-error-container';
-                            @endphp
-                            <span class="px-4 py-1 {{ $color }} text-label-md font-bold rounded-lg">{{ $val->predicate }}</span>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="p-4 text-center text-on-surface-variant">Belum ada data penilaian</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    @php
+        $penilaianTerbaru = $assessments->getCollection()->first();
+    @endphp
+
+    @if($penilaianTerbaru)
+    <!-- Nilai terbaru -->
+    <section class="flex items-center justify-between gap-4 rounded-2xl bg-primary-container p-5 text-on-primary-container">
+        <div class="min-w-0">
+            <p class="text-label-md opacity-90">Nilai terbaru</p>
+            <p class="mt-1 text-display-md font-bold">{{ $penilaianTerbaru->final_score }}</p>
+            <p class="mt-1 truncate text-body-sm opacity-90">{{ $penilaianTerbaru->registration->extracurricular->name ?? '-' }} &middot; {{ $penilaianTerbaru->period_name }}</p>
         </div>
-        <div class="p-4 border-t border-outline-variant">
+        <span class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-surface/20 text-headline-md font-bold">{{ $penilaianTerbaru->predicate ?? '-' }}</span>
+    </section>
+    @endif
+
+    <!-- Daftar penilaian -->
+    <section class="flex flex-col gap-3">
+        @forelse($assessments as $val)
+        @php
+            $tanggalNilai = \Carbon\Carbon::parse($val->assessed_at);
+            if ($val->predicate == 'A' || $val->predicate == 'Sangat Baik') $color = 'bg-tertiary-container text-on-tertiary-container';
+            elseif ($val->predicate == 'B' || $val->predicate == 'Baik') $color = 'bg-primary-fixed text-on-primary-fixed';
+            elseif ($val->predicate == 'C' || $val->predicate == 'Cukup') $color = 'bg-warning-container text-on-warning-container';
+            else $color = 'bg-error-container text-on-error-container';
+        @endphp
+        <article class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-3 pr-4">
+            <div class="flex w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-container py-2.5 text-on-primary-container">
+                <span class="text-label-xs uppercase">{{ $tanggalNilai->translatedFormat('M') }}</span>
+                <span class="text-title-md font-bold leading-tight">{{ $tanggalNilai->format('d') }}</span>
+            </div>
+
+            <div class="min-w-0 flex-1">
+                <p class="truncate text-title-sm font-bold text-on-surface">{{ $val->registration->extracurricular->name ?? '-' }}</p>
+                <p class="mt-0.5 truncate text-body-xs text-secondary">{{ $val->period_name }}</p>
+            </div>
+
+            <div class="flex shrink-0 flex-col items-end gap-1.5">
+                <span class="text-headline-sm font-bold text-primary-container">{{ $val->final_score }}</span>
+                <span class="rounded-full px-2.5 py-0.5 text-label-xs font-bold {{ $color }}">{{ $val->predicate ?? '-' }}</span>
+            </div>
+        </article>
+        @empty
+        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-outline-variant bg-surface p-8 text-center">
+            <span class="flex size-12 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                <x-icon name="award" class="size-[22px]" />
+            </span>
+            <p class="text-body-md text-secondary">Belum ada data penilaian</p>
+        </div>
+        @endforelse
+
+        @if($assessments->hasPages())
+        <div class="pt-2">
             {{ $assessments->links() }}
         </div>
-    </div>
+        @endif
+    </section>
+</div>
 </x-student-layout>

@@ -1,186 +1,196 @@
 <x-student-layout>
-<div class="flex flex-col w-full gap-6 pb-4">
+<div class="flex w-full flex-col gap-6">
     <x-student-active-session-poller />
-    <!-- Welcome Greeting -->
-    <section class="mt-2">
-        <div class="flex flex-col">
-            <span class="text-sm font-medium text-secondary">Semangat pagi!</span>
-            <h2 class="text-2xl font-bold text-on-surface">Halo, {{ explode(' ', Auth::user()->name)[0] }}! 👋</h2>
+
+    @php
+        $namaDepan = explode(' ', trim(Auth::user()->name))[0];
+        $inisial = strtoupper(substr(Auth::user()->name, 0, 1));
+        $persenHadir = min(100, max(0, (float) ($attendancePercentage ?? 0)));
+        $hariIni = \Carbon\Carbon::now();
+        $awalMinggu = $hariIni->copy()->startOfWeek(\Carbon\Carbon::MONDAY);
+        $ekskulAktif = $ekskulTerdaftar->where('status', 'approved');
+    @endphp
+
+    <!-- Header gelap: sapaan dan kalender minggu ini -->
+    <section class="-mx-4 rounded-b-[2rem] bg-dark px-5 pb-10 pt-6 text-surface md:mx-0 md:rounded-2xl md:px-8">
+        <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <p class="text-body-sm text-surface/70">Semangat!</p>
+                <h2 class="mt-0.5 truncate text-headline-md font-bold">Halo, {{ $namaDepan }}!</h2>
+            </div>
+            <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-title-md font-bold text-on-primary">{{ $inisial }}</span>
+        </div>
+
+        <p class="mt-6 text-label-md text-surface/70">{{ $hariIni->translatedFormat('F Y') }}</p>
+        <div class="mt-2 grid grid-cols-7 gap-1.5 text-center">
+            @for ($i = 0; $i < 7; $i++)
+                @php
+                    $tanggal = $awalMinggu->copy()->addDays($i);
+                    $adalahHariIni = $tanggal->isSameDay($hariIni);
+                @endphp
+                <div class="flex flex-col items-center gap-1 rounded-xl py-2 {{ $adalahHariIni ? 'bg-primary text-on-primary' : 'border border-surface/15 text-surface' }}">
+                    <span class="text-label-xs {{ $adalahHariIni ? 'opacity-90' : 'text-surface/70' }}">{{ $tanggal->translatedFormat('D') }}</span>
+                    <span class="text-title-sm font-bold">{{ $tanggal->format('d') }}</span>
+                </div>
+            @endfor
         </div>
     </section>
 
-    <!-- Quick Stats Row -->
-    <section class="grid grid-cols-2 gap-4">
-        <div class="bg-surface-container-low p-4 rounded-xl flex flex-col gap-1 shadow-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">exercise</span>
-            </div>
-            <span class="text-xs font-medium text-secondary uppercase tracking-wider">Ekskul Aktif</span>
-            <span class="text-xl font-bold text-on-surface">{{ $totalEkskul }}</span>
+    <!-- Kartu ringkas (sedikit menindih header) -->
+    <section class="-mt-6 grid grid-cols-2 gap-3 md:mt-0">
+        <div class="flex flex-col items-center rounded-2xl border border-outline-variant bg-surface p-4 shadow-md">
+            <svg viewBox="0 0 40 24" class="h-auto w-full max-w-[9rem]" aria-hidden="true">
+                <path d="M4 20 A16 16 0 0 1 36 20" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" class="text-surface-container-high"></path>
+                <path d="M4 20 A16 16 0 0 1 36 20" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="{{ $persenHadir }} 100" class="text-primary-container"></path>
+            </svg>
+            <p class="mt-2 text-headline-sm font-bold text-on-surface">{{ $attendancePercentage ?? 0 }}%</p>
+            <p class="text-label-sm text-secondary">Kehadiran</p>
         </div>
-        <div class="bg-surface-container-low p-4 rounded-xl flex flex-col gap-1 shadow-sm">
-            <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center mb-1">
-                <span class="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+
+        <div class="flex flex-col justify-between gap-6 rounded-2xl border border-outline-variant bg-surface p-4 shadow-md">
+            <div class="flex items-center justify-between gap-2">
+                <span class="min-w-0 truncate text-label-sm text-secondary">Ekskul aktif</span>
+                <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-fixed text-on-primary-fixed">
+                    <x-icon name="dumbbell" class="size-[18px]" />
+                </span>
             </div>
-            <span class="text-xs font-medium text-secondary uppercase tracking-wider">Kehadiran</span>
-            <span class="text-xl font-bold text-on-surface">{{ $attendancePercentage }}%</span>
+            <p class="text-headline-md font-bold text-on-surface">{{ $totalEkskul }}</p>
         </div>
     </section>
 
-    <!-- Jadwal Hari Ini Card -->
-    <section class="flex flex-col gap-2">
-        <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold text-on-surface">Jadwal Hari Ini</h3>
-            <a href="{{ route('student.attendances.index') }}" class="text-sm font-medium text-primary">Lihat Kalender</a>
+    <!-- Jadwal hari ini -->
+    <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3">
+            <h3 class="text-title-md font-bold text-on-surface">Jadwal hari ini</h3>
+            <a href="{{ route('student.attendances.index') }}" class="shrink-0 text-label-md font-semibold text-primary-container hover:underline">Riwayat</a>
         </div>
-        
-        @forelse($jadwalHariIni as $jadwal)
-        <div class="relative overflow-hidden bg-primary p-6 rounded-2xl shadow-xl mb-4">
-            <!-- Decorative Background Pattern -->
-            <div class="absolute top-0 right-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/4">
-                <span class="material-symbols-outlined text-[120px]">sports_basketball</span>
-            </div>
-            <div class="relative z-10 flex flex-col gap-4">
-                <div class="flex justify-between items-start">
-                    <div class="bg-white/20 backdrop-blur-md px-2 py-1 rounded-full">
-                        <span class="text-xs font-medium text-white">Hari Ini</span>
-                    </div>
-                    <span class="material-symbols-outlined text-white">more_vert</span>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            @forelse($jadwalHariIni as $jadwal)
+            <article class="flex min-h-40 flex-col justify-between gap-4 rounded-2xl p-5 {{ $loop->even ? 'bg-accent text-on-accent' : 'bg-primary-container text-on-primary-container' }}">
+                <div class="min-w-0">
+                    <p class="text-label-xs uppercase tracking-wider opacity-80">Hari ini</p>
+                    <h4 class="mt-1 truncate text-title-md font-bold">{{ $jadwal->extracurricular->name }}</h4>
+                    <p class="mt-1 flex items-center gap-1 text-body-xs opacity-90">
+                        <x-icon name="map-pin" class="size-[14px] shrink-0" />
+                        <span class="truncate">{{ $jadwal->location ?? '-' }}</span>
+                    </p>
                 </div>
-                <div>
-                    <h4 class="text-2xl font-bold text-white">{{ $jadwal->extracurricular->name }}</h4>
-                    <div class="flex items-center gap-1 text-white/80 mt-1">
-                        <span class="material-symbols-outlined text-[18px]">location_on</span>
-                        <span class="text-sm font-medium">{{ $jadwal->location }}</span>
+                <div class="flex items-end justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-headline-sm font-bold leading-none">{{ \Carbon\Carbon::parse($jadwal->start_time)->format('H:i') }}</p>
+                        <p class="mt-1 text-body-xs opacity-90">s/d {{ \Carbon\Carbon::parse($jadwal->end_time)->format('H:i') }} WIB</p>
                     </div>
-                </div>
-                <div class="flex items-center justify-between pt-2">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-white">schedule</span>
-                        <span class="text-lg font-semibold text-white">{{ \Carbon\Carbon::parse($jadwal->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->end_time)->format('H:i') }}</span>
-                    </div>
-                    <a href="{{ route('student.attendances.create', ['schedule_id' => $jadwal->id]) }}" class="bg-white text-primary px-6 py-2 rounded-full text-sm font-bold shadow-lg active:scale-95 transition-transform block">
-                        Presensi
+                    <a href="{{ route('student.attendances.create', ['schedule_id' => $jadwal->id]) }}" aria-label="Presensi {{ $jadwal->extracurricular->name }}"
+                       class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-primary-container transition-opacity hover:opacity-90">
+                        <x-icon name="arrow-right" class="size-[20px]" />
                     </a>
                 </div>
+            </article>
+            @empty
+            <div class="rounded-2xl border border-dashed border-outline-variant bg-surface p-5 sm:col-span-2">
+                <p class="text-title-sm font-bold text-on-surface">Tidak ada jadwal hari ini</p>
+                <p class="mt-1 text-body-sm text-secondary">Jadwal ekskul yang berlangsung hari ini akan muncul di sini.</p>
             </div>
+            @endforelse
         </div>
-        @empty
-        <div class="p-8 bg-surface-container-low rounded-2xl text-center border border-dashed border-outline-variant/50 flex flex-col items-center justify-center shadow-sm">
-            <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-2">event_busy</span>
-            <p class="text-lg font-semibold text-on-surface mb-1">Tidak ada jadwal</p>
-        </div>
-        @endforelse
     </section>
 
-    <!-- Pengumuman Terbaru List -->
-    @if(isset($pengumuman) && $pengumuman->count() > 0)
-    <section class="flex flex-col gap-2 mt-4">
-        <h3 class="text-lg font-semibold text-on-surface mb-1 flex items-center gap-1">
-            <span class="material-symbols-outlined text-primary text-[20px]">campaign</span> Pengumuman Terbaru
-        </h3>
-        <div class="flex flex-col gap-3">
-            @foreach($pengumuman as $p)
-            <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 relative overflow-hidden group">
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary group-hover:w-1.5 transition-all"></div>
-                <div class="pl-2">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-full">{{ $p->extracurricular->name }}</span>
-                        <span class="text-xs text-secondary">{{ \Carbon\Carbon::parse($p->published_at)->diffForHumans() }}</span>
+    <!-- Ekskul saya -->
+    <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3">
+            <h3 class="text-title-md font-bold text-on-surface">Ekskul saya</h3>
+            <a href="{{ route('student.extracurriculars.index') }}" class="shrink-0 text-label-md font-semibold text-primary-container hover:underline">Lihat semua</a>
+        </div>
+        <ul class="flex flex-col gap-3">
+            @forelse($ekskulAktif as $reg)
+            <li>
+                <a href="{{ route('student.extracurriculars.index') }}" class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-3 pr-4 transition-colors hover:bg-surface-container-low">
+                    <span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                        <x-icon name="trophy" class="size-[22px]" />
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-title-sm font-bold text-on-surface">{{ $reg->extracurricular->name }}</p>
+                        <p class="mt-0.5 flex items-center gap-1 text-body-xs text-secondary">
+                            <x-icon name="calendar-days" class="size-[14px] shrink-0" />
+                            <span class="truncate">{{ $reg->extracurricular->regular_day ?? 'Jadwal rutin' }}</span>
+                        </p>
                     </div>
-                    <h5 class="text-base font-bold text-on-surface mb-1">{{ $p->title }}</h5>
-                    <p class="text-sm text-on-surface-variant line-clamp-2 leading-relaxed">{{ $p->content }}</p>
-                </div>
-            </div>
-            @endforeach
-        </div>
+                    <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
+                        <x-icon name="chevron-right" class="size-[18px]" />
+                    </span>
+                </a>
+            </li>
+            @empty
+            <li class="rounded-2xl border border-dashed border-outline-variant bg-surface p-5 text-body-md text-secondary">Belum mengikuti ekskul aktif.</li>
+            @endforelse
+        </ul>
     </section>
-    @endif
 
-    <!-- Aktivitas Terbaru List -->
-    <section class="flex flex-col gap-2 mt-4">
-        <h3 class="text-lg font-semibold text-on-surface mb-1">Status Registrasi</h3>
-        <div class="flex flex-col gap-2">
+    <!-- Status registrasi -->
+    <section class="flex flex-col gap-3">
+        <h3 class="text-title-md font-bold text-on-surface">Status registrasi</h3>
+        <ul class="flex flex-col gap-3">
             @forelse($ekskulTerdaftar as $reg)
-            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 shadow-sm border border-outline-variant/30">
-                <div class="w-12 h-12 rounded-full shrink-0 {{ $reg->status == 'approved' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-variant text-on-surface-variant' }} flex items-center justify-center">
-                    <span class="material-symbols-outlined">{{ $reg->status == 'approved' ? 'music_note' : 'edit_note' }}</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h5 class="text-sm font-bold text-on-surface truncate">{{ $reg->extracurricular->name }}</h5>
-                    <p class="text-xs font-medium text-secondary">{{ $reg->status == 'approved' ? 'Pendaftaran Berhasil' : ($reg->status == 'pending' ? 'Menunggu Verifikasi' : 'Ditolak') }}</p>
+            <li class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-4">
+                <span class="flex size-11 shrink-0 items-center justify-center rounded-xl {{ $reg->status == 'approved' ? 'bg-tertiary-container text-on-tertiary-container' : ($reg->status == 'pending' ? 'bg-surface-container text-on-surface-variant' : 'bg-error-container text-on-error-container') }}">
+                    <x-icon :name="$reg->status == 'approved' ? 'circle-check' : ($reg->status == 'pending' ? 'hourglass' : 'circle-x')" class="size-[20px]" />
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate text-title-sm font-bold text-on-surface">{{ $reg->extracurricular->name }}</p>
+                    <p class="truncate text-body-xs text-secondary">{{ $reg->status == 'approved' ? 'Pendaftaran disetujui' : ($reg->status == 'pending' ? 'Menunggu verifikasi' : 'Pendaftaran ditolak') }}</p>
                 </div>
                 @if($reg->status == 'approved')
-                    <div class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-green-200 shrink-0">Disetujui</div>
+                    <span class="shrink-0 rounded-full bg-tertiary-container px-2.5 py-1 text-label-xs font-bold text-on-tertiary-container">Disetujui</span>
                 @elseif($reg->status == 'pending')
-                    <div class="bg-surface-container text-on-surface-variant px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-surface-variant shrink-0">Pending</div>
+                    <span class="shrink-0 rounded-full bg-surface-container px-2.5 py-1 text-label-xs font-bold text-on-surface-variant">Pending</span>
                 @else
-                    <div class="bg-error-container text-on-error-container px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-error/20 shrink-0">Ditolak</div>
+                    <span class="shrink-0 rounded-full bg-error-container px-2.5 py-1 text-label-xs font-bold text-on-error-container">Ditolak</span>
                 @endif
-            </div>
+            </li>
             @empty
-            <div class="p-4 bg-surface-container-low rounded-xl text-center text-on-surface-variant text-sm font-medium">
-                Belum ada pendaftaran ekskul.
-            </div>
+            <li class="rounded-2xl border border-dashed border-outline-variant bg-surface p-5 text-center text-body-md text-secondary">Belum ada pendaftaran ekskul.</li>
             @endforelse
-        </div>
+        </ul>
     </section>
 
-    <!-- Rekomendasi Ekskul Horizontal Scroll -->
-    <section class="flex flex-col gap-2 mt-4">
-        <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold text-on-surface">Ekskul Yang Diikuti</h3>
-            <a href="{{ route('student.extracurriculars.index') }}" class="text-sm font-medium text-primary">Lihat Semua</a>
-        </div>
-        <div class="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
-            @forelse($ekskulTerdaftar->where('status', 'approved') as $reg)
-            <div class="w-[200px] bg-surface-container-low rounded-2xl overflow-hidden shadow-sm flex-shrink-0 group cursor-pointer border border-outline-variant/30 flex flex-col">
-                <div class="h-24 w-full relative overflow-hidden bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[48px] opacity-50 group-hover:scale-110 transition-transform duration-500">sports_volleyball</span>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                </div>
-                <div class="p-4 flex flex-col gap-1 flex-1">
-                    <div class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-primary text-[18px]">sports_esports</span>
-                        <h5 class="text-sm font-bold text-on-surface line-clamp-1">{{ $reg->extracurricular->name }}</h5>
+    <!-- Pengumuman terbaru -->
+    @if(isset($pengumuman) && $pengumuman->count() > 0)
+    <section class="flex flex-col gap-3">
+        <h3 class="text-title-md font-bold text-on-surface">Pengumuman terbaru</h3>
+        <ul class="flex flex-col gap-3">
+            @foreach($pengumuman as $p)
+            <li class="flex gap-3 overflow-hidden rounded-2xl border border-outline-variant bg-surface p-4">
+                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-label-md font-bold text-on-primary-fixed">{{ strtoupper(substr($p->extracurricular->name, 0, 1)) }}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="truncate text-label-sm font-semibold text-primary-container">{{ $p->extracurricular->name }}</span>
+                        <span class="shrink-0 text-label-xs text-outline">{{ \Carbon\Carbon::parse($p->published_at)->diffForHumans() }}</span>
                     </div>
-                    <p class="text-xs text-secondary line-clamp-1">{{ $reg->extracurricular->regular_day ?? 'Jadwal Rutin' }}</p>
+                    <p class="mt-0.5 truncate text-title-sm font-bold text-on-surface">{{ $p->title }}</p>
+                    <p class="mt-1 line-clamp-2 text-body-sm text-on-surface-variant">{{ $p->content }}</p>
                 </div>
-            </div>
-            @empty
-            <div class="w-[200px] bg-surface-container-low rounded-2xl overflow-hidden shadow-sm flex-shrink-0 flex items-center justify-center h-32 p-4 text-center border-2 border-dashed border-outline-variant">
-                <span class="text-sm text-on-surface-variant font-medium">Belum mengikuti ekskul aktif.</span>
-            </div>
-            @endforelse
-        </div>
+            </li>
+            @endforeach
+        </ul>
     </section>
+    @endif
 
     <!-- Interactive Script for Micro-interactions -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.bg-surface-container-low, .bg-surface-container-lowest, .bg-primary');
-            
+
             cards.forEach(card => {
                 card.addEventListener('touchstart', () => {
                     card.style.transform = 'scale(0.98)';
                     card.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
                 }, {passive: true});
-                
+
                 card.addEventListener('touchend', () => {
                     card.style.transform = 'scale(1)';
                 }, {passive: true});
             });
-            
-            // Horizontal scroll bounce effect hint
-            const scrollContainer = document.querySelector('.overflow-x-auto');
-            if(scrollContainer) {
-                setTimeout(() => {
-                    scrollContainer.scrollBy({ left: 40, behavior: 'smooth' });
-                    setTimeout(() => {
-                        scrollContainer.scrollBy({ left: -40, behavior: 'smooth' });
-                    }, 600);
-                }, 1000);
-            }
         });
     </script>
 </div>

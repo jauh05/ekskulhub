@@ -1,55 +1,76 @@
 <x-app-layout>
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="font-headline-lg text-headline-lg text-on-surface">Data Ekstrakurikuler</h3>
-        <a href="{{ route('admin.extracurriculars.create') }}" class="bg-primary text-on-primary px-4 py-2 rounded-lg font-title-md hover:bg-primary-container transition-all">
-            + Tambah Ekskul
-        </a>
-    </div>
+    <x-slot name="title">Data Ekstrakurikuler</x-slot>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($extracurriculars as $ekskul)
-        <div class="bg-white rounded-xl border border-outline-variant card-shadow overflow-hidden flex flex-col">
-            <div class="p-6 flex-1">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-2xl">sports_volleyball</span>
-                    </div>
+    <div class="space-y-8">
+        <!-- Header -->
+        <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="text-body-md text-secondary">Kelola kegiatan ekstrakurikuler dan guru pembinanya.</p>
+                <h3 class="mt-1 text-headline-md font-bold text-on-surface md:text-headline-lg">Data Ekstrakurikuler</h3>
+            </div>
+            <a href="{{ route('admin.extracurriculars.create') }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-container px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                <x-icon name="plus" class="size-[18px]" />
+                Tambah Ekskul
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            @forelse($extracurriculars as $ekskul)
+            <div class="flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface">
+                <!-- Header band -->
+                <div class="flex items-center gap-3 bg-primary-fixed px-5 py-4 text-on-primary-fixed">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface/60">
+                        <x-icon name="trophy" class="size-[20px]" />
+                    </span>
+                    <h4 class="min-w-0 flex-1 truncate text-title-md font-bold">{{ $ekskul->name }}</h4>
                     @if($ekskul->status == 'active')
-                        <span class="px-2.5 py-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Aktif</span>
+                        <span class="shrink-0 rounded-full bg-tertiary-container px-2.5 py-0.5 text-label-xs font-bold text-on-tertiary-container">Aktif</span>
                     @else
-                        <span class="px-2.5 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded-full uppercase tracking-wider">Nonaktif</span>
+                        <span class="shrink-0 rounded-full bg-error-container px-2.5 py-0.5 text-label-xs font-bold text-on-error-container">Nonaktif</span>
                     @endif
                 </div>
-                <h4 class="font-title-lg text-title-lg text-on-surface mb-1">{{ $ekskul->name }}</h4>
-                <p class="text-body-md text-secondary line-clamp-2 mb-4">{{ $ekskul->description ?? 'Tidak ada deskripsi' }}</p>
-                
-                <div class="space-y-2 text-on-surface-variant text-label-md">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">person</span>
-                        Pembina: {{ $ekskul->teacher->name ?? 'Belum ada' }}
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">schedule</span>
-                        {{ $ekskul->schedule }}
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">location_on</span>
-                        {{ $ekskul->location }}
+
+                <!-- Isi -->
+                <div class="flex flex-1 flex-col gap-4 p-5">
+                    <p class="line-clamp-2 text-body-md text-on-surface-variant">{{ $ekskul->description ?? 'Tidak ada deskripsi' }}</p>
+
+                    <div class="mt-auto space-y-2 text-label-md text-on-surface-variant">
+                        <div class="flex items-center gap-2">
+                            <x-icon name="user" class="size-[16px] shrink-0 text-secondary" />
+                            <span class="min-w-0 truncate">Pembina: {{ $ekskul->teacher->name ?? 'Belum ada' }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <x-icon name="clock" class="size-[16px] shrink-0 text-secondary" />
+                            <span class="min-w-0 truncate {{ $ekskul->schedule ? '' : 'text-outline' }}">{{ $ekskul->schedule ?: 'Jadwal belum diatur' }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <x-icon name="map-pin" class="size-[16px] shrink-0 text-secondary" />
+                            <span class="min-w-0 truncate {{ $ekskul->location ? '' : 'text-outline' }}">{{ $ekskul->location ?: 'Lokasi belum diatur' }}</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Aksi -->
+                <div class="flex justify-end gap-2 border-t border-outline-variant px-4 py-3">
+                    <a href="{{ route('admin.extracurriculars.edit', $ekskul->id) }}" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-label-md text-primary-container transition-colors hover:bg-primary-fixed">
+                        <x-icon name="pencil" class="size-[16px]" />
+                        Edit
+                    </a>
+                    <form action="{{ route('admin.extracurriculars.destroy', $ekskul->id) }}" method="POST" onsubmit="confirmAction(event, 'Hapus ekskul ini?');">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-label-md text-error transition-colors hover:bg-error-container">
+                            <x-icon name="trash-2" class="size-[16px]" />
+                            Hapus
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="bg-surface-container-lowest border-t border-outline-variant p-4 flex justify-end gap-2">
-                <a href="{{ route('admin.extracurriculars.edit', $ekskul->id) }}" class="text-primary hover:bg-primary-container/20 px-4 py-2 rounded-lg transition-colors font-label-md font-semibold">
-                    Edit
-                </a>
-                <form action="{{ route('admin.extracurriculars.destroy', $ekskul->id) }}" method="POST" onsubmit="confirmAction(event, 'Hapus ekskul ini?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="text-error hover:bg-error-container/20 px-4 py-2 rounded-lg transition-colors font-label-md font-semibold">
-                        Hapus
-                    </button>
-                </form>
+            @empty
+            <div class="col-span-full rounded-xl border border-dashed border-outline-variant bg-surface p-6 text-center">
+                <p class="text-title-sm font-bold text-on-surface">Belum ada ekstrakurikuler</p>
+                <p class="mt-1 text-body-sm text-secondary">Tambahkan ekskul pertama untuk mulai mengelola pendaftaran siswa.</p>
             </div>
+            @endforelse
         </div>
-        @endforeach
     </div>
 </x-app-layout>

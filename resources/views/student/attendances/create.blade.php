@@ -1,23 +1,13 @@
 <x-student-layout>
-    <div class="mb-6">
-        <a href="{{ route('student.dashboard') }}" class="text-primary hover:underline flex items-center gap-1 font-label-md mb-2">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali
-        </a>
-        <h3 class="font-headline-lg text-headline-lg text-on-surface">Presensi Ekskul</h3>
-    </div>
-
-    @if(session('error'))
-    <div class="mb-4 bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg flex items-center gap-2">
-        <span class="material-symbols-outlined text-[20px]">error</span> {{ session('error') }}
-    </div>
-    @endif
+<div class="flex w-full flex-col gap-6">
+    <x-student-page-header title="Presensi Ekskul" back="{{ route('student.dashboard') }}" />
 
     @if ($errors->any())
-    <div class="mb-4 bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg">
-        <div class="flex items-center gap-2 mb-2 font-bold">
-            <span class="material-symbols-outlined text-[20px]">warning</span> Terdapat Kesalahan:
+    <div class="rounded-2xl bg-error-container px-4 py-3 text-on-error-container">
+        <div class="mb-2 flex items-center gap-2 text-label-md">
+            <x-icon name="triangle-alert" class="size-[20px]" /> Terdapat kesalahan:
         </div>
-        <ul class="list-disc list-inside text-sm">
+        <ul class="list-inside list-disc text-body-sm">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -25,189 +15,216 @@
     </div>
     @endif
 
-    <div class="bg-white p-6 md:p-8 rounded-xl border border-outline-variant soft-shadow max-w-lg mx-auto" x-data="{ step: 'main', method: '' }">
-        <h4 class="font-title-lg text-on-surface text-center mb-2">{{ $schedule->extracurricular->name }}</h4>
-        <p class="text-secondary text-center mb-6">{{ \Carbon\Carbon::parse($schedule->activity_date)->format('d F Y') }} | {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} WIB</p>
-        
-        <form action="{{ route('student.attendances.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="attendanceForm">
+    <div class="flex flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface" x-data="{ step: 'main', method: '' }">
+        <!-- Jadwal -->
+        <div class="flex flex-col gap-4 bg-dark p-5 text-surface">
+            <div class="min-w-0">
+                <p class="text-label-xs uppercase tracking-wider text-surface/70">Jadwal ekskul</p>
+                <h3 class="mt-1 truncate text-title-lg font-bold">{{ $schedule->extracurricular->name }}</h3>
+            </div>
+            <div class="flex flex-wrap items-end justify-between gap-3">
+                <p class="text-display-md font-bold leading-none">
+                    {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
+                    <span class="ml-1 text-title-md font-semibold text-surface/80">WIB</span>
+                </p>
+                <p class="text-body-sm text-surface/80">{{ \Carbon\Carbon::parse($schedule->activity_date)->translatedFormat('d F Y') }}</p>
+            </div>
+        </div>
+
+        <form action="{{ route('student.attendances.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-5 p-5" id="attendanceForm">
             @csrf
             <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
             <input type="hidden" name="type" :value="step === 'izin' ? 'izin' : 'hadir'">
             <input type="hidden" name="method" x-model="method">
-            
-            <!-- STEP 1: MAIN OPTIONS (HADIR vs IZIN) -->
-            <div x-show="step === 'main'" x-transition.opacity class="flex flex-col gap-4">
-                <button @click="step = 'hadir'" type="button" class="w-full bg-primary text-white py-4 rounded-xl font-title-lg font-bold hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
-                    <span class="material-symbols-outlined text-[28px]">how_to_reg</span> HADIR
+
+            <!-- Langkah 1: pilihan utama (hadir atau izin) -->
+            <div x-show="step === 'main'" x-transition.opacity class="flex flex-col gap-3">
+                <button @click="step = 'hadir'" type="button" class="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary-container px-4 py-4 text-title-md text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="user-check" class="size-[22px]" /> Hadir
                 </button>
-                
-                <button @click="step = 'izin'" type="button" class="w-full bg-surface-container-high text-on-surface py-4 rounded-xl font-title-lg font-bold border border-outline-variant hover:bg-surface-container-highest active:scale-95 transition-all flex items-center justify-center gap-3 shadow-sm">
-                    <span class="material-symbols-outlined text-[28px]">edit_document</span> IZIN / SAKIT
+
+                <button @click="step = 'izin'" type="button" class="flex w-full items-center justify-center gap-3 rounded-2xl border border-outline-variant bg-surface px-4 py-4 text-title-md text-on-surface transition-colors hover:bg-surface-container">
+                    <x-icon name="file-pen" class="size-[22px]" /> Izin / Sakit
                 </button>
             </div>
 
-            <!-- STEP 2: IZIN FORM -->
-            <div x-show="step === 'izin'" x-transition.opacity style="display: none;" class="space-y-6">
-                <button @click="step = 'main'" type="button" class="text-secondary hover:text-primary flex items-center gap-1 font-label-md mb-2">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Pilih Kembali
+            <!-- Langkah 2: form izin -->
+            <div x-show="step === 'izin'" x-transition.opacity style="display: none;" class="flex flex-col gap-5">
+                <button @click="step = 'main'" type="button" class="inline-flex items-center gap-1 text-label-md text-secondary hover:text-on-surface">
+                    <x-icon name="arrow-left" class="size-[18px]" /> Kembali
                 </button>
-                
-                <div class="space-y-2">
-                    <label class="font-label-md font-bold text-on-surface block">Alasan Izin / Sakit <span class="text-error">*</span></label>
-                    <textarea name="reason" rows="3" class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 bg-white" placeholder="Sebutkan alasan dengan jelas..." :required="step === 'izin'"></textarea>
-                </div>
-                
-                <div class="space-y-2">
-                    <label class="font-label-md font-bold text-on-surface block">Lampirkan Bukti (Opsional)</label>
-                    <input type="file" name="proof" accept="image/*,.pdf" class="w-full px-4 py-3 border border-outline-variant rounded-xl bg-white text-body-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
-                    <p class="text-xs text-secondary mt-1">Maks 1MB. Format: JPG, PNG, PDF (Misal: Surat Dokter).</p>
+
+                <div class="space-y-1.5">
+                    <label class="block text-label-md text-on-surface-variant">Alasan izin / sakit <span class="text-error">*</span></label>
+                    <textarea name="reason" rows="3" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Sebutkan alasan dengan jelas..." :required="step === 'izin'"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-title-md hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-sm">
-                    <span class="material-symbols-outlined text-[20px]">send</span> Kirim Pengajuan Izin
+                <div class="space-y-1.5">
+                    <label class="block text-label-md text-on-surface-variant">Lampirkan bukti (opsional)</label>
+                    <input type="file" name="proof" accept="image/*,.pdf" class="block w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-body-md text-on-surface file:mr-4 file:rounded-full file:border-0 file:bg-primary-fixed file:px-4 file:py-2 file:text-label-md file:text-on-primary-fixed hover:file:bg-primary-fixed-dim">
+                    <p class="text-body-xs text-secondary">Maks 1MB. Format: JPG, PNG, PDF (contoh: surat dokter).</p>
+                </div>
+
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-4 py-3 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="send" class="size-[20px]" /> Kirim pengajuan izin
                 </button>
             </div>
 
-            <!-- STEP 2: HADIR OPTIONS -->
-            <div x-show="step === 'hadir'" x-transition.opacity style="display: none;" class="space-y-4">
-                <button @click="step = 'main'" type="button" class="text-secondary hover:text-primary flex items-center gap-1 font-label-md mb-4">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Batal
+            <!-- Langkah 2: pilih metode hadir -->
+            <div x-show="step === 'hadir'" x-transition.opacity style="display: none;" class="flex flex-col gap-3">
+                <button @click="step = 'main'" type="button" class="inline-flex items-center gap-1 text-label-md text-secondary hover:text-on-surface">
+                    <x-icon name="arrow-left" class="size-[18px]" /> Batal
                 </button>
-                
-                <p class="text-center font-bold text-on-surface mb-2">Pilih Metode Kehadiran:</p>
-                
-                <button @click="step = 'qr'; method = 'qr'; startQRScanner();" type="button" class="w-full bg-[#10B981] text-white py-3 rounded-xl font-title-md font-bold hover:bg-[#10B981]/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
-                    <span class="material-symbols-outlined">qr_code_scanner</span> Scan QR
+
+                <p class="text-title-sm text-on-surface">Pilih metode kehadiran</p>
+
+                <button @click="step = 'qr'; method = 'qr'; startQRScanner();" type="button" class="flex w-full items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-4 text-left transition-colors hover:bg-surface-container">
+                    <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                        <x-icon name="scan-qr-code" class="size-[22px]" />
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-title-sm text-on-surface">Scan QR</span>
+                    <x-icon name="chevron-right" class="size-[18px] text-outline" />
                 </button>
-                
-                <button @click="step = 'manual'; method = 'manual'" type="button" class="w-full bg-primary text-white py-3 rounded-xl font-title-md font-bold hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
-                    <span class="material-symbols-outlined">keyboard</span> Manual Kode PIN
+
+                <button @click="step = 'manual'; method = 'manual'" type="button" class="flex w-full items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-4 text-left transition-colors hover:bg-surface-container">
+                    <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                        <x-icon name="keyboard" class="size-[22px]" />
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-title-sm text-on-surface">Kode PIN manual</span>
+                    <x-icon name="chevron-right" class="size-[18px] text-outline" />
                 </button>
-                
-                <button @click="step = 'selfie'; method = 'selfie'" type="button" class="w-full bg-[#F59E0B] text-gray-900 py-3 rounded-xl font-title-md font-bold hover:bg-[#F59E0B]/90 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-md">
-                    <span class="material-symbols-outlined">add_a_photo</span> Foto Selfie
+
+                <button @click="step = 'selfie'; method = 'selfie'" type="button" class="flex w-full items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-4 text-left transition-colors hover:bg-surface-container">
+                    <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                        <x-icon name="camera" class="size-[22px]" />
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-title-sm text-on-surface">Foto selfie</span>
+                    <x-icon name="chevron-right" class="size-[18px] text-outline" />
                 </button>
             </div>
 
-            <!-- STEP 3: QR SCANNER -->
-            <div x-show="step === 'qr'" x-transition.opacity style="display: none;" class="space-y-6 text-center">
-                <button @click="step = 'hadir'; method = ''; stopQRScanner();" type="button" class="text-secondary hover:text-primary flex items-center gap-1 font-label-md mb-2">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Ganti Metode
+            <!-- Langkah 3: scanner QR -->
+            <div x-show="step === 'qr'" x-transition.opacity style="display: none;" class="flex flex-col gap-5">
+                <button @click="step = 'hadir'; method = ''; stopQRScanner();" type="button" class="inline-flex items-center gap-1 text-label-md text-secondary hover:text-on-surface">
+                    <x-icon name="arrow-left" class="size-[18px]" /> Ganti metode
                 </button>
-                
-                <h5 class="font-bold text-on-surface">Scan QR di Layar Guru</h5>
-                <div id="reader" class="mx-auto w-full max-w-[300px] overflow-hidden rounded-xl border-2 border-primary"></div>
+
+                <div class="flex flex-col items-center gap-2 text-center">
+                    <h5 class="text-title-sm text-on-surface">Scan QR di layar guru</h5>
+                    <p class="text-body-xs text-secondary">Arahkan kamera ke QR yang ditampilkan guru.</p>
+                </div>
+
+                <div class="mx-auto w-full max-w-[300px] rounded-2xl bg-primary-fixed/40 p-3">
+                    <div id="reader" class="mx-auto w-full overflow-hidden rounded-xl border-2 border-primary bg-surface"></div>
+                </div>
                 <input type="hidden" name="qr_code" id="qr_code_input">
-                <p class="text-xs text-secondary mt-2">Arahkan kamera ke QR Code yang ditampilkan oleh guru Anda.</p>
             </div>
 
-            <!-- STEP 3: MANUAL KODE -->
-            <div x-show="step === 'manual'" x-transition.opacity style="display: none;" class="space-y-6">
-                <button @click="step = 'hadir'; method = ''" type="button" class="text-secondary hover:text-primary flex items-center gap-1 font-label-md mb-2">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Ganti Metode
+            <!-- Langkah 3: kode PIN manual -->
+            <div x-show="step === 'manual'" x-transition.opacity style="display: none;" class="flex flex-col gap-5">
+                <button @click="step = 'hadir'; method = ''" type="button" class="inline-flex items-center gap-1 text-label-md text-secondary hover:text-on-surface">
+                    <x-icon name="arrow-left" class="size-[18px]" /> Ganti metode
                 </button>
-                
-                <div class="space-y-2 text-center">
-                    <label class="font-label-lg font-bold text-on-surface block">Masukkan 6-Digit PIN</label>
-                    <p class="text-xs text-secondary mb-4">Tanyakan kode PIN sesi kepada guru ekskul Anda.</p>
-                    <input type="text" name="session_code" class="w-full max-w-[250px] mx-auto text-center text-2xl tracking-[0.3em] font-mono font-bold px-4 py-3 border-2 border-primary rounded-xl focus:ring-4 focus:ring-primary/20 bg-white uppercase" maxlength="6" placeholder="------" :required="method === 'manual'">
+
+                <div class="flex flex-col gap-2 text-center">
+                    <label class="block text-title-sm text-on-surface">Masukkan PIN 6 digit</label>
+                    <p class="text-body-xs text-secondary">Tanyakan kode PIN sesi kepada guru ekskulmu.</p>
+                    <input type="text" name="session_code" class="mx-auto mt-3 block w-full max-w-[250px] rounded-xl border-2 border-primary bg-surface px-4 py-3 text-center font-mono text-headline-md uppercase tracking-[0.3em] text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/20" maxlength="6" placeholder="------" :required="method === 'manual'">
                 </div>
 
-                <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-title-md hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-sm mt-4">
-                    <span class="material-symbols-outlined text-[20px]">check_circle</span> Konfirmasi Kehadiran
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-4 py-3 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="circle-check" class="size-[20px]" /> Konfirmasi kehadiran
                 </button>
             </div>
 
-            <!-- STEP 3: SELFIE -->
-            <div x-show="step === 'selfie'" x-transition.opacity style="display: none;" class="space-y-6">
-                <button @click="step = 'hadir'; method = ''" type="button" class="text-secondary hover:text-primary flex items-center gap-1 font-label-md mb-2">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Ganti Metode
+            <!-- Langkah 3: selfie -->
+            <div x-show="step === 'selfie'" x-transition.opacity style="display: none;" class="flex flex-col gap-5">
+                <button @click="step = 'hadir'; method = ''" type="button" class="inline-flex items-center gap-1 text-label-md text-secondary hover:text-on-surface">
+                    <x-icon name="arrow-left" class="size-[18px]" /> Ganti metode
                 </button>
-                
-                <div class="space-y-2">
-                    <label class="font-label-md font-bold text-on-surface block text-center">Ambil Foto Bukti Kehadiran</label>
-                    <div class="flex items-center justify-center w-full">
-                        <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-primary border-dashed rounded-xl cursor-pointer bg-primary/5 hover:bg-primary/10 transition-colors relative overflow-hidden">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-primary z-10" id="selfie-placeholder">
-                                <span class="material-symbols-outlined text-[40px] mb-2">photo_camera</span>
-                                <p class="mb-2 text-sm font-bold">Buka Kamera</p>
-                            </div>
-                            <img id="selfie-preview" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                            <input type="file" name="selfie" accept="image/*" capture="user" class="hidden" id="selfie-input" :required="method === 'selfie'" onchange="previewSelfie(event)" />
-                        </label>
-                    </div>
-                    <p class="text-xs text-center text-secondary">Pastikan wajah dan lingkungan terlihat jelas (Max 5MB).</p>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block text-center text-title-sm text-on-surface">Ambil foto bukti kehadiran</label>
+                    <label class="relative flex h-48 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-primary bg-primary-fixed/40 transition-colors hover:bg-primary-fixed">
+                        <div class="z-10 flex flex-col items-center justify-center gap-2 py-5" id="selfie-placeholder">
+                            <x-icon name="camera" class="size-[40px] text-primary-container" />
+                            <p class="text-label-md text-primary-container">Buka kamera</p>
+                        </div>
+                        <img id="selfie-preview" class="absolute inset-0 z-20 hidden h-full w-full object-cover">
+                        <input type="file" name="selfie" accept="image/*" capture="user" class="hidden" id="selfie-input" :required="method === 'selfie'" onchange="previewSelfie(event)" />
+                    </label>
+                    <p class="text-center text-body-xs text-secondary">Pastikan wajah dan lingkungan terlihat jelas (maks 5MB).</p>
                 </div>
 
-                <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-title-md hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-sm">
-                    <span class="material-symbols-outlined text-[20px]">upload</span> Kirim Foto Kehadiran
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-4 py-3 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="upload" class="size-[20px]" /> Kirim foto kehadiran
                 </button>
             </div>
-
         </form>
     </div>
+</div>
 
-    <script>
-        let html5QrCode = null;
+<script>
+    let html5QrCode = null;
 
-        function startQRScanner() {
-            if (html5QrCode) return; // already started
-            
-            html5QrCode = new Html5Qrcode("reader");
-            
-            // Start scanning directly using the back camera
-            html5QrCode.start(
-                { facingMode: "environment" }, 
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                    aspectRatio: 1.0
-                },
-                onScanSuccess,
-                onScanFailure
-            ).catch((err) => {
-                console.error("Camera access error:", err);
-                Swal.fire('Akses Ditolak', 'Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera pada browser Anda.', 'error');
+    function startQRScanner() {
+        if (html5QrCode) return; // already started
+
+        html5QrCode = new Html5Qrcode("reader");
+
+        // Start scanning directly using the back camera
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            },
+            onScanSuccess,
+            onScanFailure
+        ).catch((err) => {
+            console.error("Camera access error:", err);
+            Swal.fire('Akses Ditolak', 'Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera pada browser Anda.', 'error');
+        });
+    }
+
+    function stopQRScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                html5QrCode = null;
+            }).catch(error => {
+                console.error("Failed to stop scanner. ", error);
             });
         }
-        
-        function stopQRScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    html5QrCode = null;
-                }).catch(error => {
-                    console.error("Failed to stop scanner. ", error);
-                });
-            }
-        }
+    }
 
-        function onScanSuccess(decodedText, decodedResult) {
-            // Stop scanning and set the hidden input
-            stopQRScanner();
-            document.getElementById('qr_code_input').value = decodedText;
-            
-            // Automatically submit the form
-            document.getElementById('attendanceForm').submit();
-        }
+    function onScanSuccess(decodedText, decodedResult) {
+        // Stop scanning and set the hidden input
+        stopQRScanner();
+        document.getElementById('qr_code_input').value = decodedText;
 
-        function onScanFailure(error) {
-            // handle scan failure silently
-        }
-        
-        function previewSelfie(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('selfie-preview');
-                    const placeholder = document.getElementById('selfie-placeholder');
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
+        // Automatically submit the form
+        document.getElementById('attendanceForm').submit();
+    }
+
+    function onScanFailure(error) {
+        // handle scan failure silently
+    }
+
+    function previewSelfie(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('selfie-preview');
+                const placeholder = document.getElementById('selfie-placeholder');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
             }
+            reader.readAsDataURL(file);
         }
-    </script>
+    }
+</script>
 </x-student-layout>

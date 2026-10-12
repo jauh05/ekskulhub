@@ -1,56 +1,33 @@
+@php
+    // wide: halaman mengatur layoutnya sendiri (mis. login dengan panel samping).
+    $wide = $attributes->has('wide');
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ $title ?? 'EkskulHub' }}</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script>
-            window.confirmAction = function(event, message, formElement = null) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Konfirmasi',
-                    text: message,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#10B981',
-                    cancelButtonColor: '#F43F5E',
-                    confirmButtonText: 'Ya, Lanjutkan!',
-                    cancelButtonText: 'Batal',
-                    reverseButtons: true,
-                    customClass: {
-                        container: 'font-sans'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        if (formElement) {
-                            formElement.submit();
-                        } else if (event.target.closest('form')) {
-                            event.target.closest('form').submit();
-                        } else if (event.target.closest('a')) {
-                            window.location.href = event.target.closest('a').href;
-                        }
-                    }
-                });
-            }
-        </script>
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-role="{{ $attributes->get('role', 'teacher') }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $attributes->get('title', 'Ekskul') }}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="min-h-screen bg-background font-sans text-on-surface antialiased">
+@if ($wide)
+    {{ $slot }}
+@else
+    <div class="flex min-h-screen flex-col items-center justify-center px-4 py-10">
+        <a href="/" class="mb-8 flex items-center gap-3">
+            <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-on-primary">
+                <x-icon name="graduation-cap" class="size-[22px]" />
+            </span>
+            <span class="text-title-lg font-bold text-on-surface">Ekskul</span>
+        </a>
+        <div class="w-full max-w-md rounded-2xl border border-outline-variant bg-surface p-6 shadow-sm sm:p-8">
+            {{ $slot }}
         </div>
-    </body>
+    </div>
+@endif
+@stack('scripts')
+</body>
 </html>

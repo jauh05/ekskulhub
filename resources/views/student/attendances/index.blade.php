@@ -1,50 +1,73 @@
 <x-student-layout>
-    <x-student-active-session-poller />
-    
-    <div class="mb-6">
-        <h3 class="font-headline-lg text-headline-lg text-on-surface">Riwayat Absensi</h3>
-    </div>
+<x-student-active-session-poller />
 
-    <div class="bg-white rounded-xl border border-outline-variant soft-shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-outline-variant bg-surface-container-lowest">
-                        <th class="p-4 font-label-md text-secondary">TANGGAL & WAKTU</th>
-                        <th class="p-4 font-label-md text-secondary">EKSKUL</th>
-                        <th class="p-4 font-label-md text-secondary">STATUS</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-outline-variant">
-                    @forelse($attendances as $att)
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-4 font-body-md text-on-surface-variant">
-                            <span class="font-bold text-on-surface">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->activity_date)->format('d M Y') }}</span><br>
-                            <span class="text-label-sm">{{ \Carbon\Carbon::parse($att->attendanceSession->schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($att->attendanceSession->schedule->end_time)->format('H:i') }}</span>
-                        </td>
-                        <td class="p-4 font-body-md text-on-surface font-semibold">{{ $att->attendanceSession->schedule->extracurricular->name ?? '-' }}</td>
-                        <td class="p-4">
-                            @if($att->status == 'present')
-                                <span class="px-3 py-1 bg-tertiary-container text-on-tertiary-container text-label-sm font-bold rounded-full">Hadir</span>
-                            @elseif($att->status == 'absent')
-                                <span class="px-3 py-1 bg-error-container text-on-error-container text-label-sm font-bold rounded-full">Alpa</span>
-                            @elseif($att->status == 'sick')
-                                <span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-label-sm font-bold rounded-full">Sakit</span>
-                            @else
-                                <span class="px-3 py-1 bg-primary-container text-on-primary-container text-label-sm font-bold rounded-full">Izin</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="p-4 text-center text-on-surface-variant">Belum ada data absensi</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+<div class="flex w-full flex-col gap-6">
+    <x-student-page-header title="Riwayat Absensi" subtitle="Kehadiran kamu" />
+
+    <!-- Ringkasan -->
+    <section class="flex items-center justify-between gap-4 rounded-2xl bg-dark p-5 text-surface">
+        <div class="min-w-0">
+            <p class="text-label-md text-surface/70">Total presensi tercatat</p>
+            <p class="mt-1 text-display-md font-bold">{{ $attendances->total() }}</p>
         </div>
-        <div class="p-4 border-t border-outline-variant">
+        <span class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary">
+            <x-icon name="clipboard-check" class="size-[24px]" />
+        </span>
+    </section>
+
+    <!-- Daftar riwayat -->
+    <section class="flex flex-col gap-3">
+        @forelse($attendances as $att)
+        @php
+            $jadwalAbsen = $att->attendanceSession->schedule;
+            $tanggalAbsen = \Carbon\Carbon::parse($jadwalAbsen->activity_date);
+        @endphp
+        <article class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-3 pr-4">
+            <div class="flex w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-container py-2.5 text-on-primary-container">
+                <span class="text-label-xs uppercase">{{ $tanggalAbsen->translatedFormat('M') }}</span>
+                <span class="text-title-md font-bold leading-tight">{{ $tanggalAbsen->format('d') }}</span>
+            </div>
+
+            <div class="min-w-0 flex-1">
+                <p class="truncate text-title-sm font-bold text-on-surface">{{ $jadwalAbsen->extracurricular->name ?? '-' }}</p>
+                <p class="mt-1 flex items-center gap-1.5 text-body-xs text-secondary">
+                    <x-icon name="clock" class="size-[14px] shrink-0 text-primary-container" />
+                    <span class="truncate">{{ \Carbon\Carbon::parse($jadwalAbsen->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwalAbsen->end_time)->format('H:i') }} WIB</span>
+                </p>
+            </div>
+
+            @if($att->status == 'present')
+                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-tertiary-container px-2.5 py-1 text-label-xs font-bold text-on-tertiary-container">
+                    <x-icon name="circle-check" class="size-[14px]" /> Hadir
+                </span>
+            @elseif($att->status == 'absent')
+                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-error-container px-2.5 py-1 text-label-xs font-bold text-on-error-container">
+                    <x-icon name="circle-x" class="size-[14px]" /> Alpa
+                </span>
+            @elseif($att->status == 'sick')
+                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface-container px-2.5 py-1 text-label-xs font-bold text-on-surface-variant">
+                    <x-icon name="thermometer" class="size-[14px]" /> Sakit
+                </span>
+            @else
+                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary-fixed px-2.5 py-1 text-label-xs font-bold text-on-primary-fixed">
+                    <x-icon name="file-pen" class="size-[14px]" /> Izin
+                </span>
+            @endif
+        </article>
+        @empty
+        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-outline-variant bg-surface p-8 text-center">
+            <span class="flex size-12 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+                <x-icon name="calendar-x" class="size-[22px]" />
+            </span>
+            <p class="text-body-md text-secondary">Belum ada data absensi</p>
+        </div>
+        @endforelse
+
+        @if($attendances->hasPages())
+        <div class="pt-2">
             {{ $attendances->links() }}
         </div>
-    </div>
+        @endif
+    </section>
+</div>
 </x-student-layout>

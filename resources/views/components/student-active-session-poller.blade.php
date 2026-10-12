@@ -1,31 +1,26 @@
 <div x-data="activeSessionPoller()" x-init="initPoller()" class="w-full">
-    <!-- Polling Indicator -->
-    <div x-show="isPolling" x-transition.opacity.duration.300ms class="flex items-center gap-2 text-secondary text-xs mb-2">
-        <span class="material-symbols-outlined text-[14px] animate-spin">sync</span>
+    <!-- Indikator Polling -->
+    <div x-show="isPolling" x-transition.opacity.duration.300ms class="mb-2 flex items-center gap-2 text-body-xs text-secondary">
+        <x-icon name="refresh-cw" class="animate-spin size-[14px]" />
         Memeriksa sesi presensi...
     </div>
 
     <template x-for="session in activeSessions" :key="session.id">
         <div x-show="!session.already_attended" x-transition.opacity.duration.500ms
-             class="mb-6 relative overflow-hidden bg-primary p-6 rounded-2xl shadow-xl border border-primary-container">
-            <!-- Decorative Background Pattern -->
-            <div class="absolute top-0 right-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/4">
-                <span class="material-symbols-outlined text-[120px]">podcasts</span>
-            </div>
-            
-            <div class="relative z-10 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="material-symbols-outlined text-white text-[20px] animate-bounce">fiber_manual_record</span>
-                        <span class="text-sm font-bold text-white tracking-widest uppercase">Sesi Live Presensi Berjalan</span>
+             class="mb-6 rounded-xl bg-primary p-5 text-on-primary shadow-md">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0">
+                    <div class="mb-1 flex items-center gap-2">
+                        <x-icon name="radio" class="size-[16px]" />
+                        <span class="text-label-xs font-bold uppercase tracking-widest">Sesi Live Presensi Berjalan</span>
                     </div>
-                    <h4 class="text-2xl font-bold text-white mb-1" x-text="'Ekskul: ' + session.extracurricular_name"></h4>
-                    <p class="text-white/90 text-sm">Guru Anda telah membuka sesi presensi. Segera presensi untuk mencatat kehadiran Anda!</p>
+                    <h4 class="text-headline-sm font-bold" x-text="'Ekskul: ' + session.extracurricular_name"></h4>
+                    <p class="mt-1 text-body-sm opacity-80">Guru Anda telah membuka sesi presensi. Segera presensi untuk mencatat kehadiran Anda!</p>
                 </div>
-                
-                <a :href="'{{ url('siswa/absensi/scan') }}?schedule_id=' + session.schedule_id" 
-                   class="bg-white text-primary px-6 py-3 rounded-full text-label-lg font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-2 whitespace-nowrap group animate-pulse">
-                    <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">how_to_reg</span> Presensi Sekarang
+
+                <a :href="'{{ url('siswa/absensi/scan') }}?schedule_id=' + session.schedule_id"
+                   class="inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-primary-container px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90">
+                    <x-icon name="user-check" class="size-[18px]" /> Presensi Sekarang
                 </a>
             </div>
         </div>

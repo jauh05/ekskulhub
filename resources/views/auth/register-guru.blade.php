@@ -1,339 +1,174 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Ekskul - Registrasi Guru</title>
-<style>
-        @layer base {
-            html, body {
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                overscroll-behavior: none;
-            }
-            main > :first-child {
-                margin-top: 0 !important;
-            }
-            main > :last-child {
-                margin-bottom: 0 !important;
-            }
-        }
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "tertiary-container": "#b090ff",
-                        "secondary-fixed": "#dbe4ea",
-                        "secondary-fixed-dim": "#bfc8ce",
-                        "outline-variant": "#c1c7d3",
-                        "primary": "#10b981",
-                        "surface-container": "#e5eeff",
-                        "error-container": "#ffdad6",
-                        "surface-container-highest": "#d3e4fe",
-                        "tertiary-fixed-dim": "#d0bcff",
-                        "tertiary": "#6d3bd7",
-                        "primary-fixed": "#a7f3d0",
-                        "inverse-on-surface": "#eaf1ff",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-low": "#eff4ff",
-                        "primary-container": "#059669",
-                        "on-error": "#ffffff",
-                        "on-secondary-fixed-variant": "#3f484d",
-                        "on-primary-fixed": "#001c39",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary": "#ffffff",
-                        "inverse-surface": "#213145",
-                        "on-tertiary-fixed": "#23005c",
-                        "secondary": "#576065",
-                        "primary-fixed-dim": "#a4c9ff",
-                        "surface-tint": "#0060ac",
-                        "on-tertiary-fixed-variant": "#5516be",
-                        "surface-bright": "#f8f9ff",
-                        "on-secondary-container": "#5d666b",
-                        "on-primary": "#ffffff",
-                        "on-background": "#0b1c30",
-                        "error": "#ba1a1a",
-                        "tertiary-fixed": "#e9ddff",
-                        "on-primary-container": "#ffffff",
-                        "inverse-primary": "#6ee7b7",
-                        "secondary-container": "#dbe4ea",
-                        "surface-variant": "#d3e4fe",
-                        "surface-dim": "#cbdbf5",
-                        "on-tertiary-container": "#4600a7",
-                        "on-error-container": "#93000a",
-                        "outline": "#717783",
-                        "background": "#f8f9ff",
-                        "on-secondary-fixed": "#141d21",
-                        "on-surface": "#0b1c30",
-                        "surface-container-high": "#dce9ff",
-                        "surface": "#f8f9ff",
-                        "on-surface-variant": "#414751",
-                        "on-primary-fixed-variant": "#004883"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "lg": "24px",
-                        "2xl": "48px",
-                        "md": "16px",
-                        "sm": "8px",
-                        "3xl": "64px",
-                        "xl": "32px",
-                        "margin-desktop": "40px",
-                        "margin-mobile": "16px",
-                        "base": "4px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Inter"],
-                        "title-md": ["Plus Jakarta Sans"],
-                        "headline-lg": ["Plus Jakarta Sans"],
-                        "label-sm": ["Inter"],
-                        "headline-lg-mobile": ["Plus Jakarta Sans"],
-                        "display-lg": ["Plus Jakarta Sans"],
-                        "label-md": ["Inter"],
-                        "body-lg": ["Inter"]
-                    },
-                    "fontSize": {
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
-                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
-                    }
-                },
-            },
-        }
-    </script>
-@vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-background font-body-md text-on-background">
-<header class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl transition-all duration-300 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-<div class="h-16 max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
-<div class="flex items-center gap-md">
-<span class="material-symbols-outlined text-primary text-[32px]">school</span>
-</div>
-<nav class="hidden lg:flex items-center gap-lg">
-<a aria-current="page" class="transition-colors text-primary font-bold" data-path="beranda" href="{{ url('/') }}">Beranda</a>
-<a class="font-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="tentang" href="#">Tentang</a>
-<a class="font-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="kontak" href="#">Kontak</a>
-</nav>
-<div class="flex items-center gap-md">
-<a class="hidden sm:block font-label-md text-on-surface-variant hover:text-on-surface" data-path="login-siswa" href="{{ route('login') }}">Login Siswa</a>
-<a href="{{ route('login.guru') }}" class="bg-primary text-on-primary px-lg py-2 rounded-full font-label-md hover:scale-[1.02] transition-transform flex items-center justify-center">Masuk Guru</a>
-<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
-</div>
-</div>
-</div>
-</header>
-<main class="w-full pt-16">
-<div class="flex flex-col w-full">
-<!-- Main Form Section -->
-<section class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop py-xl w-full" id="registration-container">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<!-- Left Column: Progress & Context -->
-<div class="lg:col-span-4 flex flex-col gap-xl">
-<div class="flex flex-col gap-md">
-<span class="font-label-md text-primary uppercase tracking-widest">Registrasi Guru</span>
-<h1 class="font-headline-lg text-on-surface">Kelola Ekstrakurikuler dengan Mudah</h1>
-<p class="font-body-md text-on-surface-variant">Bergabunglah sebagai pembina ekstrakurikuler sekolah dan kelola presensi serta penilaian siswa secara efisien.</p>
-</div>
-<!-- Progress Indicator -->
-<div class="relative flex flex-row lg:flex-col gap-lg lg:gap-lg overflow-x-auto lg:overflow-visible hide-scrollbar snap-x pb-4 lg:pb-0 w-full">
-<div class="absolute left-[15px] top-0 bottom-0 w-[2px] bg-surface-container-high hidden lg:block"></div>
-<div class="absolute top-[15px] left-0 right-0 h-[2px] bg-surface-container-high lg:hidden z-0"></div>
-<div class="step-indicator relative flex flex-col lg:flex-row items-center lg:items-center text-center lg:text-left gap-2 lg:gap-md group min-w-[100px] lg:min-w-0 snap-center shrink-0 z-10" data-step="1">
-<div class="step-dot w-8 h-8 rounded-full border-2 border-primary bg-primary text-on-primary flex items-center justify-center z-10 transition-all duration-300 mx-auto lg:mx-0">
-<span class="material-symbols-outlined text-[18px]">person_add</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-sm text-primary">Langkah 1</span>
-<span class="font-title-md text-on-surface text-[14px] lg:text-[20px] whitespace-nowrap">Akun Pengguna</span>
-</div>
-</div>
-<div class="step-indicator relative flex flex-col lg:flex-row items-center lg:items-center text-center lg:text-left gap-2 lg:gap-md group min-w-[100px] lg:min-w-0 snap-center shrink-0 z-10 opacity-40" data-step="2">
-<div class="step-dot w-8 h-8 rounded-full border-2 border-outline-variant bg-surface-container-lowest text-on-surface-variant flex items-center justify-center z-10 transition-all duration-300 mx-auto lg:mx-0">
-<span class="material-symbols-outlined text-[18px]">badge</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-sm text-on-surface-variant">Langkah 2</span>
-<span class="font-title-md text-on-surface text-[14px] lg:text-[20px] whitespace-nowrap">Data Diri</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Form Multi-step -->
-<div class="lg:col-span-8">
-<div class="bg-surface-container-lowest p-xl rounded-xl shadow-xl min-h-[600px] flex flex-col border border-surface-container-high">
+<x-guest-layout role="teacher" wide>
+    <x-slot name="title">Registrasi Guru - Ekskul</x-slot>
 
-@if ($errors->any())
-    <div class="mb-6 bg-error-container text-on-error-container p-4 rounded-lg">
-        <div class="font-bold mb-2">Registrasi Gagal:</div>
-        <ul class="list-disc list-inside text-sm">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="grid min-h-screen lg:grid-cols-2">
+        <!-- Panel peran -->
+        <section class="flex flex-col justify-between gap-10 bg-primary p-8 text-on-primary sm:p-12">
+            <a href="{{ url('/') }}" class="flex items-center gap-3 self-start">
+                <span class="flex size-10 items-center justify-center rounded-lg bg-on-primary text-primary">
+                    <x-icon name="graduation-cap" class="size-[22px]" />
+                </span>
+                <span class="text-title-lg font-bold">Ekskul</span>
+            </a>
+
+            <div class="max-w-md">
+                <p class="text-label-md uppercase tracking-wide">Registrasi Guru</p>
+                <h1 class="mt-3 text-headline-lg-mobile sm:text-headline-lg">Kelola Ekstrakurikuler dengan Mudah</h1>
+                <p class="mt-4 text-body-lg">Bergabunglah sebagai pembina ekstrakurikuler sekolah dan kelola presensi serta penilaian siswa secara efisien.</p>
+
+                <div class="mt-8">
+                    <p class="text-label-md uppercase tracking-wide">Siapkan data berikut</p>
+                    <ul class="mt-3 space-y-3 text-body-md">
+                        <li class="flex gap-3">
+                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
+                            <span>Nama lengkap dan email aktif</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
+                            <span>Nomor WhatsApp</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
+                            <span>Kata sandi untuk akun</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
+                            <span>Nama sekolah, nama ekskul, dan jadwal ekskul</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-body-md">
+                <p>Sudah punya akun?</p>
+                <div class="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
+                    <a href="{{ route('login.guru') }}" class="underline underline-offset-4">Masuk sebagai guru</a>
+                    <a href="{{ route('login') }}" class="underline underline-offset-4">Masuk sebagai siswa</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form -->
+        <section class="flex items-start justify-center bg-background p-6 sm:p-12 lg:items-center">
+            <div class="w-full max-w-2xl" id="registration-container">
+                <div class="rounded-xl border border-outline-variant bg-surface p-6 shadow-sm sm:p-8">
+                    <!-- Indikator langkah -->
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-outline-variant pb-6">
+                        <div class="step-indicator flex items-center gap-3" data-step="1">
+                            <div class="step-dot flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary text-on-primary transition-all duration-300">
+                                <x-icon name="user-plus" class="size-[18px]" />
+                            </div>
+                            <div class="flex min-w-0 flex-col">
+                                <span class="step-label text-label-xs font-bold uppercase text-secondary">Langkah 1</span>
+                                <span class="text-title-sm text-on-surface">Akun Pengguna</span>
+                            </div>
+                        </div>
+                        <div class="step-indicator flex items-center gap-3 opacity-60" data-step="2">
+                            <div class="step-dot flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-outline-variant bg-surface text-on-surface-variant transition-all duration-300">
+                                <x-icon name="id-card" class="size-[18px]" />
+                            </div>
+                            <div class="flex min-w-0 flex-col">
+                                <span class="step-label text-label-xs uppercase text-secondary">Langkah 2</span>
+                                <span class="text-title-sm text-on-surface">Data Diri</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if ($errors->any())
+                        <div class="mt-6 rounded-lg bg-error-container p-4 text-body-md text-on-error-container">
+                            <p class="mb-2 font-bold">Registrasi Gagal:</p>
+                            <ul class="list-inside list-disc text-body-md">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('register.guru') }}" id="regForm" class="mt-8">
+                        @csrf
+                        <!-- STEP 1: AKUN -->
+                        <div class="step-content space-y-5" id="step-1-content">
+                            <div class="grid gap-5 xl:grid-cols-2">
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_name" class="text-label-md text-on-surface-variant">Nama Lengkap</label>
+                                    <input id="reg_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="name" placeholder="Masukkan nama lengkap beserta gelar" type="text" value="{{ old('name') }}" required/>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_email" class="text-label-md text-on-surface-variant">Email Aktif</label>
+                                    <input id="reg_email" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="email" placeholder="contoh@sekolah.sch.id" type="email" value="{{ old('email') }}" required/>
+                                </div>
+                            </div>
+                            <div class="grid gap-5 xl:grid-cols-2">
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_whatsapp" class="text-label-md text-on-surface-variant">Nomor WhatsApp</label>
+                                    <input id="reg_whatsapp" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="whatsapp" placeholder="0812..." type="tel"/>
+                                </div>
+                            </div>
+                            <div class="grid gap-5 xl:grid-cols-2">
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="password" class="text-label-md text-on-surface-variant">Kata Sandi</label>
+                                    <input id="password" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="password" type="password" required/>
+                                    <div class="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-container-high">
+                                        <div class="h-full w-1/3 bg-error transition-all duration-500" id="strength-bar"></div>
+                                    </div>
+                                    <span class="text-body-xs text-on-surface-variant" id="strength-text">Kekuatan: Lemah</span>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_password_confirmation" class="text-label-md text-on-surface-variant">Konfirmasi Kata Sandi</label>
+                                    <input id="reg_password_confirmation" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="password_confirmation" type="password" required/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: DATA DIRI -->
+                        <div class="step-content hidden space-y-5" id="step-2-content">
+                            <div class="grid gap-5 xl:grid-cols-2">
+                                <div class="flex flex-col gap-1.5 xl:col-span-2">
+                                    <label for="reg_school_name" class="text-label-md text-on-surface-variant">Nama Sekolah</label>
+                                    <input id="reg_school_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="school_name" placeholder="Misal: SMAN 1 Jakarta" type="text"/>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_ekskul_name" class="text-label-md text-on-surface-variant">Nama Ekskul</label>
+                                    <input id="reg_ekskul_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="ekskul_name" placeholder="Misal: Robotik" type="text"/>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="reg_schedule" class="text-label-md text-on-surface-variant">Jadwal Ekskul</label>
+                                    <input id="reg_schedule" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="schedule" placeholder="Misal: Jumat, 14:00" type="text"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Tombol navigasi -->
+                    <div class="mt-8 flex items-center justify-between gap-3 border-t border-outline-variant pt-6">
+                        <button class="hidden inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 py-2.5 text-label-lg text-on-surface transition-colors hover:bg-surface-container" id="prevBtn" type="button">
+                            <x-icon name="arrow-left" class="size-[18px]" />
+                            Kembali
+                        </button>
+                        <div class="flex-grow"></div>
+                        <button class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-container px-5 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90" id="nextBtn" type="button">
+                            Lanjut
+                            <x-icon name="arrow-right" class="size-[18px]" />
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </div>
-@endif
 
-<form method="POST" action="{{ route('register.guru') }}" class="flex-grow" id="regForm">
-@csrf
-<!-- STEP 1: AKUN -->
-<div class="step-content space-y-lg animate-in fade-in slide-in-from-right-4 duration-500" id="step-1-content">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Nama Lengkap</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest border border-outline-variant transition-all" name="name" placeholder="Masukkan nama lengkap beserta gelar" type="text" value="{{ old('name') }}" required/>
-</div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Email Aktif</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest border border-outline-variant transition-all" name="email" placeholder="contoh@sekolah.sch.id" type="email" value="{{ old('email') }}" required/>
-</div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Nomor WhatsApp</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest border border-outline-variant transition-all" name="whatsapp" placeholder="0812..." type="tel"/>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Kata Sandi</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest border border-outline-variant transition-all" id="password" name="password" type="password" required/>
-<div class="h-1 w-full bg-surface-container-high rounded-full mt-2 overflow-hidden">
-<div class="h-full w-1/3 bg-error transition-all duration-500" id="strength-bar"></div>
-</div>
-<span class="text-[12px] text-on-surface-variant" id="strength-text">Kekuatan: Lemah</span>
-</div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Konfirmasi Kata Sandi</label>
-<input class="w-full h-11 px-4 bg-surface-container-low rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest border border-outline-variant transition-all" name="password_confirmation" type="password" required/>
-</div>
-</div>
-</div>
-<!-- STEP 2: DATA DIRI -->
-<div class="step-content hidden space-y-lg animate-in fade-in slide-in-from-right-4 duration-500" id="step-2-content">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+    <script>
+        // Ikon Lucide inline untuk string JS (sumber: resources/svg/lucide)
+        const lucideSvg = (inner) => `<svg class="lucide size-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+        const STEP_ICONS = [
+            lucideSvg('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>'),
+            lucideSvg('<path d="M13 19a4 4 0 00-8 0"/><path d="M16 10h2"/><path d="M16 14h2"/><circle cx="9" cy="12" r="3"/><rect x="2" y="5" width="20" height="14" rx="2"/>'),
+        ];
+        const ICON_CHECK = lucideSvg('<path d="M20 6 9 17l-5-5"/>');
+        const ICON_SEND = lucideSvg('<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>');
+        const ICON_ARROW_RIGHT = lucideSvg('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>');
 
-<div class="flex flex-col gap-xs md:col-span-2">
-<label class="font-label-md text-on-surface-variant">Nama Sekolah</label>
-<input class="w-full h-11 px-4 bg-surface-container-lowest rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all" name="school_name" placeholder="Misal: SMAN 1 Jakarta" type="text"/>
-</div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Nama Ekskul</label>
-<input class="w-full h-11 px-4 bg-surface-container-lowest rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all" name="ekskul_name" placeholder="Misal: Robotik" type="text"/>
-</div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-on-surface-variant">Jadwal Ekskul</label>
-<input class="w-full h-11 px-4 bg-surface-container-lowest rounded-lg outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant transition-all" name="schedule" placeholder="Misal: Jumat, 14:00" type="text"/>
-</div>
-</div>
-</div>
-
-</form>
-<!-- Navigation Buttons -->
-<div class="flex items-center justify-between mt-xl pt-lg border-t border-outline-variant">
-<button class="hidden font-label-md text-on-surface-variant hover:text-primary flex items-center gap-sm transition-colors" id="prevBtn">
-<span class="material-symbols-outlined">arrow_back</span>
-                                    Kembali
-                                </button>
-<div class="flex-grow"></div>
-<button class="bg-primary text-on-primary px-xl py-3 rounded-full font-label-md hover:scale-[1.02] transition-all flex items-center gap-sm shadow-md" id="nextBtn" type="button">
-                                    Lanjut
-                                    <span class="material-symbols-outlined">arrow_forward</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Success Screen (Hidden by default) -->
-<section class="hidden max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop py-xl w-full" id="success-screen">
-<div class="max-w-[600px] mx-auto text-center flex flex-col items-center gap-lg py-xl animate-in zoom-in-95 duration-700">
-<div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-md relative">
-<div class="absolute inset-0 rounded-full border-4 border-primary/20 animate-ping"></div>
-<span class="material-symbols-outlined text-[64px]">verified</span>
-</div>
-<div class="space-y-sm">
-<h1 class="font-display-lg text-on-surface">Pendaftaran Berhasil!</h1>
-<p class="font-body-lg text-on-surface-variant">Data pendaftaran telah berhasil disimpan. Anda kini dapat mengelola kegiatan ekstrakurikuler melalui dashboard.</p>
-</div>
-<div class="w-full bg-surface-container-low p-lg rounded-2xl flex flex-col gap-md border border-primary/10">
-<div class="flex justify-between items-center px-md">
-<span class="text-on-surface-variant font-label-md">ID PENDAFTARAN</span>
-<span class="font-title-md text-primary font-mono tracking-widest">REG-2024-0892</span>
-</div>
-<div class="h-[1px] bg-outline-variant/30"></div>
-<div class="flex justify-between items-center px-md">
-<span class="text-on-surface-variant font-label-md">EKSKUL</span>
-<span class="font-body-md text-on-surface font-bold">Robotik</span>
-</div>
-<div class="flex justify-between items-center px-md">
-<span class="text-on-surface-variant font-label-md">STATUS</span>
-<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[12px] font-bold">MENUNGGU VERIFIKASI</span>
-</div>
-</div>
-<div class="flex flex-col sm:flex-row gap-md w-full pt-md">
-<a href="{{ route('login') }}" class="flex-1 bg-primary text-on-primary py-3 rounded-full font-label-md hover:bg-primary/90 transition-colors inline-flex justify-center items-center">Masuk ke Akun</a>
-<a href="{{ url('/') }}" class="flex-1 border border-outline-variant text-on-surface py-3 rounded-full font-label-md hover:bg-surface-container-low transition-colors inline-flex justify-center items-center">Kembali ke Beranda</a>
-</div>
-</div>
-</section>
-</div>
-</main>
-<footer class="w-full bg-surface-container-low py-xl">
-<div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-xl">
-<div class="flex items-center gap-2 mb-4">
-<span class="material-symbols-outlined text-[#0ea5e9] text-[32px]">school</span>
-</div>
-<p class="text-on-surface-variant font-label-sm">Kelola kegiatan sekolah lebih mudah dan terorganisir bersama Ekskul.</p>
-</div>
-<div class="flex flex-col gap-sm">
-<span class="font-label-md text-on-surface mb-xs">Akses Utama</span>
-<a class="text-on-surface-variant hover:text-[#0ea5e9] transition-colors font-label-sm" data-path="login-siswa" href="{{ route('login') }}">Login Siswa</a>
-<a class="text-on-surface-variant hover:text-[#0ea5e9] transition-colors font-label-sm" data-path="login-guru" href="{{ route('login.guru') }}">Login Guru</a>
-</div>
-<div class="flex flex-col gap-sm">
-<span class="font-label-md text-on-surface mb-xs">Informasi</span>
-<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" data-path="kebijakan-privasi" href="#">Kebijakan Privasi</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm" data-path="syarat-ketentuan" href="#">Syarat &amp; Ketentuan</a>
-</div>
-<div class="flex flex-col gap-sm">
-<span class="font-label-md text-on-surface mb-xs">Ikuti Kami</span>
-<div class="flex gap-md">
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">public</span>
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">mail</span>
-</div>
-</div>
-</div>
-<div class="border-t border-outline-variant pt-md flex flex-col md:flex-row justify-between items-center gap-md text-on-surface-variant font-label-sm">
-<span>© 2024 Ekskul. Seluruh hak cipta dilindungi.</span>
-<div class="flex gap-md">
-<span class="material-symbols-outlined text-[20px]">verified</span>
-<span>Partner Sekolah Resmi</span>
-</div>
-</div>
-</div>
-</footer>
-<script>
         let currentStep = 1;
         const totalSteps = 2;
         const form = document.getElementById('regForm');
@@ -341,8 +176,6 @@
         const prevBtn = document.getElementById('prevBtn');
         const indicators = document.querySelectorAll('.step-indicator');
         const contents = document.querySelectorAll('.step-content');
-        const regContainer = document.getElementById('registration-container');
-        const successScreen = document.getElementById('success-screen');
 
         function updateUI() {
             // Update contents
@@ -358,41 +191,40 @@
             indicators.forEach((ind, idx) => {
                 const step = idx + 1;
                 const dot = ind.querySelector('.step-dot');
-                const labelSm = ind.querySelector('.font-label-sm');
+                const labelSm = ind.querySelector('.step-label');
 
                 if (step === currentStep) {
-                    ind.classList.remove('opacity-40');
+                    ind.classList.remove('opacity-60');
+                    dot.classList.remove('bg-surface', 'text-on-surface-variant', 'border-outline-variant', 'bg-tertiary', 'text-on-tertiary', 'border-tertiary');
                     dot.classList.add('bg-primary', 'text-on-primary', 'border-primary');
-                    dot.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant', 'border-outline-variant', 'bg-tertiary');
                     dot.innerHTML = getInitialIcon(step);
-                    if(labelSm) labelSm.classList.add('text-primary');
+                    if (labelSm) labelSm.classList.add('font-bold');
                 } else if (step < currentStep) {
-                    ind.classList.remove('opacity-40');
+                    ind.classList.remove('opacity-60');
+                    dot.classList.remove('bg-primary', 'text-on-primary', 'border-primary', 'bg-surface', 'text-on-surface-variant', 'border-outline-variant');
                     dot.classList.add('bg-tertiary', 'text-on-tertiary', 'border-tertiary');
-                    dot.classList.remove('bg-primary');
-                    dot.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
-                    if(labelSm) labelSm.classList.remove('text-primary');
+                    dot.innerHTML = ICON_CHECK;
+                    if (labelSm) labelSm.classList.remove('font-bold');
                 } else {
-                    ind.classList.add('opacity-40');
+                    ind.classList.add('opacity-60');
                     dot.classList.remove('bg-primary', 'bg-tertiary', 'text-on-primary', 'text-on-tertiary', 'border-primary', 'border-tertiary');
-                    dot.classList.add('bg-surface-container-lowest', 'text-on-surface-variant', 'border-outline-variant');
+                    dot.classList.add('bg-surface', 'text-on-surface-variant', 'border-outline-variant');
                     dot.innerHTML = getInitialIcon(step);
-                    if(labelSm) labelSm.classList.remove('text-primary');
+                    if (labelSm) labelSm.classList.remove('font-bold');
                 }
             });
 
             // Update Buttons
             prevBtn.classList.toggle('hidden', currentStep === 1);
             if (currentStep === totalSteps) {
-                nextBtn.innerHTML = 'Kirim Pendaftaran <span class="material-symbols-outlined">send</span>';
+                nextBtn.innerHTML = 'Kirim Pendaftaran ' + ICON_SEND;
             } else {
-                nextBtn.innerHTML = 'Lanjut <span class="material-symbols-outlined">arrow_forward</span>';
+                nextBtn.innerHTML = 'Lanjut ' + ICON_ARROW_RIGHT;
             }
         }
 
         function getInitialIcon(step) {
-            const icons = ['person_add', 'badge'];
-            return `<span class="material-symbols-outlined text-[18px]">${icons[step-1]}</span>`;
+            return STEP_ICONS[step - 1];
         }
 
         nextBtn.addEventListener('click', () => {
@@ -427,7 +259,7 @@
                 strengthText.innerText = 'Kekuatan: Lemah';
             } else if (val.length < 8) {
                 strengthBar.style.width = '50%';
-                strengthBar.className = 'h-full bg-tertiary-container transition-all duration-500';
+                strengthBar.className = 'h-full bg-warning transition-all duration-500';
                 strengthText.innerText = 'Kekuatan: Sedang';
             } else {
                 strengthBar.style.width = '100%';
@@ -436,5 +268,4 @@
             }
         });
     </script>
-</body>
-</html>
+</x-guest-layout>
