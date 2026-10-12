@@ -1,271 +1,137 @@
-<x-guest-layout role="teacher" wide>
-    <x-slot name="title">Registrasi Guru - Ekskul</x-slot>
+@php
+    $field = 'w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3.5 text-body-md text-on-surface placeholder:text-outline transition-colors focus:border-primary-container focus:bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30';
+    $etiket = 'mb-2 block text-label-md text-on-surface-variant';
+    $judulLangkah = ['Akun Pengguna', 'Data Ekskul'];
 
-    <div class="grid min-h-screen lg:grid-cols-2">
-        <!-- Panel peran -->
-        <section class="flex flex-col justify-between gap-10 bg-primary p-8 text-on-primary sm:p-12">
-            <a href="{{ url('/') }}" class="flex items-center gap-3 self-start">
-                <span class="flex size-10 items-center justify-center rounded-lg bg-on-primary text-primary">
-                    <x-icon name="graduation-cap" class="size-[22px]" />
-                </span>
-                <span class="text-title-lg font-bold">Ekskul</span>
-            </a>
+    // Langkah yang memuat kolom bermasalah, supaya form terbuka di sana setelah server menolak data.
+    $grupLangkah = [
+        1 => ['name', 'email', 'whatsapp', 'password', 'password_confirmation'],
+        2 => ['school_name', 'ekskul_name', 'schedule'],
+    ];
+    $langkahAwal = 1;
+    foreach ($grupLangkah as $nomor => $kolom) {
+        if (collect($kolom)->contains(fn ($k) => $errors->has($k))) {
+            $langkahAwal = $nomor;
+            break;
+        }
+    }
+@endphp
 
-            <div class="max-w-md">
-                <p class="text-label-md uppercase tracking-wide">Registrasi Guru</p>
-                <h1 class="mt-3 text-headline-lg-mobile sm:text-headline-lg">Kelola Ekstrakurikuler dengan Mudah</h1>
-                <p class="mt-4 text-body-lg">Bergabunglah sebagai pembina ekstrakurikuler sekolah dan kelola presensi serta penilaian siswa secara efisien.</p>
+<x-guest-layout role="teacher" title="Daftar Guru - Ekskul" wide>
+    <div class="min-h-screen bg-paper sm:flex sm:items-center sm:justify-center sm:p-6">
+        <main class="mx-auto w-full max-w-md overflow-hidden bg-surface sm:rounded-[2.5rem] sm:shadow-lg">
+            <x-auth-hero
+                role="guru"
+                title="Daftar sebagai guru"
+                subtitle="Dua langkah singkat untuk mulai mengelola ekskul."
+                image="/images/landing/fitur-jadwal.png"
+                alt="Kalender dengan jam dan ikon kegiatan ekskul"
+                compact
+                :alt-href="route('login.guru')"
+                alt-label="Masuk" />
 
-                <div class="mt-8">
-                    <p class="text-label-md uppercase tracking-wide">Siapkan data berikut</p>
-                    <ul class="mt-3 space-y-3 text-body-md">
-                        <li class="flex gap-3">
-                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
-                            <span>Nama lengkap dan email aktif</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
-                            <span>Nomor WhatsApp</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
-                            <span>Kata sandi untuk akun</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <x-icon name="check" class="mt-0.5 size-[18px] shrink-0" />
-                            <span>Nama sekolah, nama ekskul, dan jadwal ekskul</span>
-                        </li>
-                    </ul>
+            <section class="relative -mt-10 rounded-t-[2.5rem] bg-surface px-6 pb-10 pt-8 sm:px-10">
+                <!-- Progres langkah -->
+                <div class="flex items-center justify-between gap-4">
+                    <p class="text-label-md text-secondary">Langkah <span id="stepNumber">1</span> dari {{ count($judulLangkah) }}</p>
+                    <p id="stepTitle" class="text-title-sm text-on-surface">{{ $judulLangkah[0] }}</p>
                 </div>
-            </div>
-
-            <div class="space-y-3 text-body-md">
-                <p>Sudah punya akun?</p>
-                <div class="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
-                    <a href="{{ route('login.guru') }}" class="underline underline-offset-4">Masuk sebagai guru</a>
-                    <a href="{{ route('login') }}" class="underline underline-offset-4">Masuk sebagai siswa</a>
+                <div class="mt-3 grid grid-cols-2 gap-2" aria-hidden="true">
+                    @foreach ($judulLangkah as $judul)
+                        <span data-step-bar class="h-1.5 rounded-full bg-surface-container-high transition-colors duration-300"></span>
+                    @endforeach
                 </div>
-            </div>
-        </section>
 
-        <!-- Form -->
-        <section class="flex items-start justify-center bg-background p-6 sm:p-12 lg:items-center">
-            <div class="w-full max-w-2xl" id="registration-container">
-                <div class="rounded-xl border border-outline-variant bg-surface p-6 shadow-sm sm:p-8">
-                    <!-- Indikator langkah -->
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-outline-variant pb-6">
-                        <div class="step-indicator flex items-center gap-3" data-step="1">
-                            <div class="step-dot flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary text-on-primary transition-all duration-300">
-                                <x-icon name="user-plus" class="size-[18px]" />
+                @if ($errors->any())
+                    <div role="alert" class="mt-6 rounded-2xl border border-error/20 bg-error-container px-4 py-3 text-body-md text-on-error-container">
+                        <p class="font-semibold">Registrasi gagal</p>
+                        <ul class="mt-1 list-disc pl-5 text-body-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('register.guru') }}" id="regForm"
+                      data-titles="{{ json_encode($judulLangkah) }}" data-start="{{ $langkahAwal }}" class="mt-8">
+                    @csrf
+
+                    <!-- Langkah 1: akun -->
+                    <div class="step-content space-y-5" data-step="1">
+                        <div>
+                            <label for="reg_name" class="{{ $etiket }}">Nama lengkap</label>
+                            <input id="reg_name" name="name" type="text" value="{{ old('name') }}" required placeholder="Lengkap beserta gelar" class="{{ $field }}">
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div>
+                                <label for="reg_email" class="{{ $etiket }}">Email aktif</label>
+                                <input id="reg_email" name="email" type="email" value="{{ old('email') }}" required placeholder="contoh@sekolah.sch.id" class="{{ $field }}">
                             </div>
-                            <div class="flex min-w-0 flex-col">
-                                <span class="step-label text-label-xs font-bold uppercase text-secondary">Langkah 1</span>
-                                <span class="text-title-sm text-on-surface">Akun Pengguna</span>
+                            <div>
+                                <label for="reg_whatsapp" class="{{ $etiket }}">Nomor WhatsApp</label>
+                                <input id="reg_whatsapp" name="whatsapp" type="tel" value="{{ old('whatsapp') }}" placeholder="0812..." class="{{ $field }}">
                             </div>
                         </div>
-                        <div class="step-indicator flex items-center gap-3 opacity-60" data-step="2">
-                            <div class="step-dot flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-outline-variant bg-surface text-on-surface-variant transition-all duration-300">
-                                <x-icon name="id-card" class="size-[18px]" />
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div>
+                                <label for="password" class="{{ $etiket }}">Kata sandi</label>
+                                <input id="password" name="password" type="password" required autocomplete="new-password" class="{{ $field }}">
+                                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
+                                    <div id="strength-bar" class="h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                                <p id="strength-text" class="mt-1.5 text-body-xs text-secondary">Minimal 8 karakter</p>
                             </div>
-                            <div class="flex min-w-0 flex-col">
-                                <span class="step-label text-label-xs uppercase text-secondary">Langkah 2</span>
-                                <span class="text-title-sm text-on-surface">Data Diri</span>
+                            <div>
+                                <label for="reg_password_confirmation" class="{{ $etiket }}">Konfirmasi kata sandi</label>
+                                <input id="reg_password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" class="{{ $field }}">
                             </div>
                         </div>
                     </div>
 
-                    @if ($errors->any())
-                        <div class="mt-6 rounded-lg bg-error-container p-4 text-body-md text-on-error-container">
-                            <p class="mb-2 font-bold">Registrasi Gagal:</p>
-                            <ul class="list-inside list-disc text-body-md">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                    <!-- Langkah 2: data ekskul -->
+                    <div class="step-content hidden space-y-5" data-step="2">
+                        <div>
+                            <label for="reg_school_name" class="{{ $etiket }}">Nama sekolah</label>
+                            <input id="reg_school_name" name="school_name" type="text" value="{{ old('school_name') }}" placeholder="Misal: SMAN 1 Jakarta" class="{{ $field }}">
                         </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('register.guru') }}" id="regForm" class="mt-8">
-                        @csrf
-                        <!-- STEP 1: AKUN -->
-                        <div class="step-content space-y-5" id="step-1-content">
-                            <div class="grid gap-5 xl:grid-cols-2">
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_name" class="text-label-md text-on-surface-variant">Nama Lengkap</label>
-                                    <input id="reg_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="name" placeholder="Masukkan nama lengkap beserta gelar" type="text" value="{{ old('name') }}" required/>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_email" class="text-label-md text-on-surface-variant">Email Aktif</label>
-                                    <input id="reg_email" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="email" placeholder="contoh@sekolah.sch.id" type="email" value="{{ old('email') }}" required/>
-                                </div>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div>
+                                <label for="reg_ekskul_name" class="{{ $etiket }}">Nama ekskul</label>
+                                <input id="reg_ekskul_name" name="ekskul_name" type="text" value="{{ old('ekskul_name') }}" placeholder="Misal: Robotik" class="{{ $field }}">
                             </div>
-                            <div class="grid gap-5 xl:grid-cols-2">
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_whatsapp" class="text-label-md text-on-surface-variant">Nomor WhatsApp</label>
-                                    <input id="reg_whatsapp" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="whatsapp" placeholder="0812..." type="tel"/>
-                                </div>
-                            </div>
-                            <div class="grid gap-5 xl:grid-cols-2">
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="password" class="text-label-md text-on-surface-variant">Kata Sandi</label>
-                                    <input id="password" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="password" type="password" required/>
-                                    <div class="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-container-high">
-                                        <div class="h-full w-1/3 bg-error transition-all duration-500" id="strength-bar"></div>
-                                    </div>
-                                    <span class="text-body-xs text-on-surface-variant" id="strength-text">Kekuatan: Lemah</span>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_password_confirmation" class="text-label-md text-on-surface-variant">Konfirmasi Kata Sandi</label>
-                                    <input id="reg_password_confirmation" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="password_confirmation" type="password" required/>
-                                </div>
+                            <div>
+                                <label for="reg_schedule" class="{{ $etiket }}">Jadwal ekskul</label>
+                                <input id="reg_schedule" name="schedule" type="text" value="{{ old('schedule') }}" placeholder="Misal: Jumat, 14:00" class="{{ $field }}">
                             </div>
                         </div>
-
-                        <!-- STEP 2: DATA DIRI -->
-                        <div class="step-content hidden space-y-5" id="step-2-content">
-                            <div class="grid gap-5 xl:grid-cols-2">
-                                <div class="flex flex-col gap-1.5 xl:col-span-2">
-                                    <label for="reg_school_name" class="text-label-md text-on-surface-variant">Nama Sekolah</label>
-                                    <input id="reg_school_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="school_name" placeholder="Misal: SMAN 1 Jakarta" type="text"/>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_ekskul_name" class="text-label-md text-on-surface-variant">Nama Ekskul</label>
-                                    <input id="reg_ekskul_name" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="ekskul_name" placeholder="Misal: Robotik" type="text"/>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label for="reg_schedule" class="text-label-md text-on-surface-variant">Jadwal Ekskul</label>
-                                    <input id="reg_schedule" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" name="schedule" placeholder="Misal: Jumat, 14:00" type="text"/>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Tombol navigasi -->
-                    <div class="mt-8 flex items-center justify-between gap-3 border-t border-outline-variant pt-6">
-                        <button class="hidden inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 py-2.5 text-label-lg text-on-surface transition-colors hover:bg-surface-container" id="prevBtn" type="button">
-                            <x-icon name="arrow-left" class="size-[18px]" />
-                            Kembali
-                        </button>
-                        <div class="flex-grow"></div>
-                        <button class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-container px-5 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90" id="nextBtn" type="button">
-                            Lanjut
-                            <x-icon name="arrow-right" class="size-[18px]" />
-                        </button>
                     </div>
+                </form>
+
+                <!-- Tombol navigasi -->
+                <div class="mt-8 flex items-center justify-between gap-3 border-t border-outline-variant pt-6">
+                    <button id="prevBtn" type="button"
+                            class="invisible inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface px-5 py-3 text-label-lg text-on-surface transition-colors hover:bg-surface-container">
+                        <x-icon name="arrow-left" class="size-[18px]" />
+                        Kembali
+                    </button>
+                    <button id="nextBtn" type="button"
+                            class="inline-flex items-center justify-center gap-2 rounded-full bg-primary-container px-6 py-3 text-label-lg text-on-primary-container transition-opacity hover:opacity-90 disabled:opacity-60">
+                        <span data-next-label>Lanjut</span>
+                        <x-icon name="arrow-right" class="size-[18px]" data-next-icon />
+                        <x-icon name="send" class="hidden size-[18px]" data-send-icon />
+                    </button>
                 </div>
 
-            </div>
-        </section>
+                <p class="mt-6 text-center text-body-md text-secondary">
+                    Sudah punya akun?
+                    <a href="{{ route('login.guru') }}" class="font-semibold text-primary-container hover:underline">Masuk sebagai guru</a>
+                </p>
+            </section>
+        </main>
     </div>
 
-    <script>
-        // Ikon Lucide inline untuk string JS (sumber: resources/svg/lucide)
-        const lucideSvg = (inner) => `<svg class="lucide size-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
-        const STEP_ICONS = [
-            lucideSvg('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>'),
-            lucideSvg('<path d="M13 19a4 4 0 00-8 0"/><path d="M16 10h2"/><path d="M16 14h2"/><circle cx="9" cy="12" r="3"/><rect x="2" y="5" width="20" height="14" rx="2"/>'),
-        ];
-        const ICON_CHECK = lucideSvg('<path d="M20 6 9 17l-5-5"/>');
-        const ICON_SEND = lucideSvg('<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>');
-        const ICON_ARROW_RIGHT = lucideSvg('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>');
-
-        let currentStep = 1;
-        const totalSteps = 2;
-        const form = document.getElementById('regForm');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const indicators = document.querySelectorAll('.step-indicator');
-        const contents = document.querySelectorAll('.step-content');
-
-        function updateUI() {
-            // Update contents
-            contents.forEach((content, idx) => {
-                if (idx + 1 === currentStep) {
-                    content.classList.remove('hidden');
-                } else {
-                    content.classList.add('hidden');
-                }
-            });
-
-            // Update indicators
-            indicators.forEach((ind, idx) => {
-                const step = idx + 1;
-                const dot = ind.querySelector('.step-dot');
-                const labelSm = ind.querySelector('.step-label');
-
-                if (step === currentStep) {
-                    ind.classList.remove('opacity-60');
-                    dot.classList.remove('bg-surface', 'text-on-surface-variant', 'border-outline-variant', 'bg-tertiary', 'text-on-tertiary', 'border-tertiary');
-                    dot.classList.add('bg-primary', 'text-on-primary', 'border-primary');
-                    dot.innerHTML = getInitialIcon(step);
-                    if (labelSm) labelSm.classList.add('font-bold');
-                } else if (step < currentStep) {
-                    ind.classList.remove('opacity-60');
-                    dot.classList.remove('bg-primary', 'text-on-primary', 'border-primary', 'bg-surface', 'text-on-surface-variant', 'border-outline-variant');
-                    dot.classList.add('bg-tertiary', 'text-on-tertiary', 'border-tertiary');
-                    dot.innerHTML = ICON_CHECK;
-                    if (labelSm) labelSm.classList.remove('font-bold');
-                } else {
-                    ind.classList.add('opacity-60');
-                    dot.classList.remove('bg-primary', 'bg-tertiary', 'text-on-primary', 'text-on-tertiary', 'border-primary', 'border-tertiary');
-                    dot.classList.add('bg-surface', 'text-on-surface-variant', 'border-outline-variant');
-                    dot.innerHTML = getInitialIcon(step);
-                    if (labelSm) labelSm.classList.remove('font-bold');
-                }
-            });
-
-            // Update Buttons
-            prevBtn.classList.toggle('hidden', currentStep === 1);
-            if (currentStep === totalSteps) {
-                nextBtn.innerHTML = 'Kirim Pendaftaran ' + ICON_SEND;
-            } else {
-                nextBtn.innerHTML = 'Lanjut ' + ICON_ARROW_RIGHT;
-            }
-        }
-
-        function getInitialIcon(step) {
-            return STEP_ICONS[step - 1];
-        }
-
-        nextBtn.addEventListener('click', () => {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateUI();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                form.submit();
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateUI();
-            }
-        });
-
-        // Password Strength Simulation
-        const passInput = document.getElementById('password');
-        const strengthBar = document.getElementById('strength-bar');
-        const strengthText = document.getElementById('strength-text');
-        passInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val.length === 0) {
-                strengthBar.style.width = '0%';
-                strengthText.innerText = 'Kekuatan: -';
-            } else if (val.length < 4) {
-                strengthBar.style.width = '20%';
-                strengthBar.className = 'h-full bg-error transition-all duration-500';
-                strengthText.innerText = 'Kekuatan: Lemah';
-            } else if (val.length < 8) {
-                strengthBar.style.width = '50%';
-                strengthBar.className = 'h-full bg-warning transition-all duration-500';
-                strengthText.innerText = 'Kekuatan: Sedang';
-            } else {
-                strengthBar.style.width = '100%';
-                strengthBar.className = 'h-full bg-primary transition-all duration-500';
-                strengthText.innerText = 'Kekuatan: Kuat';
-            }
-        });
-    </script>
+    @push('scripts')
+        @include('auth.partials.register-steps')
+    @endpush
 </x-guest-layout>
