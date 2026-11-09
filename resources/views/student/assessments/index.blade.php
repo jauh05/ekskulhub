@@ -2,15 +2,10 @@
 <div class="flex w-full flex-col gap-6">
     <x-student-page-header title="Penilaian" subtitle="Hasil penilaian kamu" />
 
-    @php
-        $keteranganPredikat = collect(\App\Services\PenilaianService::BATAS_PREDIKAT)
-            ->map(fn ($batas, $huruf) => "{$huruf} ≥ {$batas}")
-            ->implode('  ·  ') . '  ·  E < ' . collect(\App\Services\PenilaianService::BATAS_PREDIKAT)->last();
-    @endphp
-
     @forelse($penilaian as $item)
         @php
             $ekskul = $item['ekskul'];
+            $batas = \App\Services\PenilaianService::batasPredikat($ekskul);
             $baris = $item['baris'];
             $komponen = $item['komponen'];
             $nilaiAkhir = $baris['nilai_akhir'];
@@ -83,6 +78,9 @@
                     </tbody>
                 </table>
             </div>
+            <p class="border-t border-outline-variant px-5 py-3 text-body-sm text-secondary">
+                Predikat: A ≥ {{ $batas['A'] + 0 }} · B ≥ {{ $batas['B'] + 0 }} · C ≥ {{ $batas['C'] + 0 }} · D ≥ {{ $batas['D'] + 0 }} · E &lt; {{ $batas['D'] + 0 }}. Lulus untuk A, B, dan C.
+            </p>
         </article>
     @empty
         <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-outline-variant bg-surface p-10 text-center">
@@ -94,11 +92,5 @@
         </div>
     @endforelse
 
-    <!-- Keterangan predikat -->
-    <section class="rounded-2xl border border-outline-variant bg-surface p-5">
-        <p class="text-label-md font-semibold text-on-surface">Keterangan predikat</p>
-        <p class="mt-2 text-body-sm text-secondary">{{ $keteranganPredikat }}</p>
-        <p class="mt-2 text-body-sm text-secondary">Lulus untuk predikat A, B, dan C. Predikat D dan E dinyatakan tidak lulus.</p>
-    </section>
 </div>
 </x-student-layout>

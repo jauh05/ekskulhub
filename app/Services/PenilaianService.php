@@ -28,10 +28,21 @@ class PenilaianService
     /** Predikat yang dinyatakan lulus. D dan E tidak lulus. */
     public const PREDIKAT_LULUS = ['A', 'B', 'C'];
 
-    public static function predikat(float $nilai): string
+    /** Batas predikat milik ekstrakurikuler. Kalau kolom kosong, pakai batas bawaan. */
+    public static function batasPredikat(Extracurricular $ekskul): array
     {
-        foreach (self::BATAS_PREDIKAT as $huruf => $batas) {
-            if ($nilai >= $batas) {
+        return [
+            'A' => (float) ($ekskul->batas_a ?? self::BATAS_PREDIKAT['A']),
+            'B' => (float) ($ekskul->batas_b ?? self::BATAS_PREDIKAT['B']),
+            'C' => (float) ($ekskul->batas_c ?? self::BATAS_PREDIKAT['C']),
+            'D' => (float) ($ekskul->batas_d ?? self::BATAS_PREDIKAT['D']),
+        ];
+    }
+
+    public static function predikat(float $nilai, array $batas = self::BATAS_PREDIKAT): string
+    {
+        foreach ($batas as $huruf => $minimal) {
+            if ($nilai >= $minimal) {
                 return $huruf;
             }
         }
@@ -184,7 +195,9 @@ class PenilaianService
         // Predikat dan status lulus hanya dihitung setelah total bobot tepat 100%.
         // Sebelum itu nilai akhir tetap tampil, tapi belum dinyatakan lulus atau tidak.
         $bobotLengkap = round(self::totalBobot($ekskul, $komponen), 2) === 100.0;
-        $predikat = ($sudahDinilai && $bobotLengkap) ? self::predikat($nilaiAkhir) : null;
+        $predikat = ($sudahDinilai && $bobotLengkap)
+            ? self::predikat($nilaiAkhir, self::batasPredikat($ekskul))
+            : null;
 
         return [
             'registration_id' => $reg->id,

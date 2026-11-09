@@ -67,6 +67,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/report', [\App\Http\Controllers\TeacherReportController::class, 'index'])->name('reports.index');
         Route::get('/report/export', [\App\Http\Controllers\TeacherReportController::class, 'export'])->name('reports.export');
         Route::patch('/report/weights', [\App\Http\Controllers\TeacherReportController::class, 'updateWeights'])->name('reports.weights.update');
+        Route::patch('/report/predicates', [\App\Http\Controllers\TeacherReportController::class, 'updatePredicates'])->name('reports.predicates.update');
         
         Route::resource('announcements', TeacherAnnouncementController::class);
     });

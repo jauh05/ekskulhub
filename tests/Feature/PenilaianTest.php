@@ -231,6 +231,57 @@ class PenilaianTest extends TestCase
         ]);
     }
 
+    public function test_batas_predikat_bisa_diatur_per_ekskul(): void
+    {
+        $guru = $this->guru();
+        $ekskul = $this->ekskul($guru);
+        $ekskul->update(['attendance_weight' => 0]);
+        $nilai1 = $this->kolom($ekskul, 'Nilai 1', 100, 1);
+
+        $siswa = $this->siswa();
+        $reg = $this->pendaftaran($siswa, $ekskul);
+        $assessment = Assessment::create([
+            'registration_id' => $reg->id,
+            'period_name' => PenilaianService::PERIODE,
+            'final_score' => 0,
+            'assessed_by' => $guru->id,
+            'assessed_at' => now(),
+        ]);
+        AssessmentScore::create(['assessment_id' => $assessment->id, 'assessment_component_id' => $nilai1->id, 'score' => 80]);
+
+        // Batas bawaan: 80 masuk B
+        $this->assertSame('B', app(PenilaianService::class)->rekapRegistrasi($reg)['predikat']);
+
+        // Guru menurunkan batas A menjadi 80 lewat halaman Hasil
+        $this->actingAs($guru)->patch(route('teacher.reports.predicates.update'), [
+            'extracurricular_id' => $ekskul->id,
+            'batas_a' => 80,
+            'batas_b' => 70,
+            'batas_c' => 60,
+            'batas_d' => 50,
+        ])->assertSessionHasNoErrors();
+
+        $baris = app(PenilaianService::class)->rekapRegistrasi($reg->fresh(['extracurricular']));
+        $this->assertSame('A', $baris['predikat']);
+        $this->assertTrue($baris['lulus']);
+    }
+
+    public function test_batas_predikat_harus_berurutan(): void
+    {
+        $guru = $this->guru();
+        $ekskul = $this->ekskul($guru);
+
+        $this->actingAs($guru)->patch(route('teacher.reports.predicates.update'), [
+            'extracurricular_id' => $ekskul->id,
+            'batas_a' => 70,
+            'batas_b' => 75,
+            'batas_c' => 65,
+            'batas_d' => 50,
+        ])->assertSessionHasErrors('batas');
+
+        $this->assertSame(85.0, (float) $ekskul->fresh()->batas_a);
+    }
+
     public function test_siswa_hanya_melihat_penilaian_miliknya(): void
     {
         $guru = $this->guru();

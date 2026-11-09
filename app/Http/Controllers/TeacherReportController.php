@@ -32,7 +32,9 @@ class TeacherReportController extends Controller
             'rata_rata' => $baris->whereNotNull('nilai_akhir')->avg('nilai_akhir'),
         ];
 
-        return view('teacher.reports.index', compact('ekskuls', 'ekskul', 'komponen', 'baris', 'totalBobot', 'ringkasan'));
+        $batasPredikat = $ekskul ? PenilaianService::batasPredikat($ekskul) : PenilaianService::BATAS_PREDIKAT;
+
+        return view('teacher.reports.index', compact('ekskuls', 'ekskul', 'komponen', 'baris', 'totalBobot', 'ringkasan', 'batasPredikat'));
     }
 
     /** Simpan pembagian persen: bobot kehadiran dan bobot tiap kolom nilai. Total tidak boleh lebih dari 100. */
@@ -75,6 +77,38 @@ class TeacherReportController extends Controller
         return redirect()
             ->route('teacher.reports.index', ['ekskul_id' => $ekskul->id])
             ->with('success', 'Pembagian nilai disimpan.');
+    }
+
+    /** Simpan batas predikat A, B, C, dan D. Batas harus berurutan: A > B > C > D. */
+    public function updatePredicates(Request $request)
+    {
+        $data = $request->validate([
+            'extracurricular_id' => 'required|integer|exists:extracurriculars,id',
+            'batas_a' => 'required|numeric|min:0|max:100',
+            'batas_b' => 'required|numeric|min:0|max:100',
+            'batas_c' => 'required|numeric|min:0|max:100',
+            'batas_d' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $ekskul = Extracurricular::findOrFail($data['extracurricular_id']);
+        abort_unless(Auth::user()->taughtExtracurriculars()->whereKey($ekskul->id)->exists(), 403);
+
+        if (! ($data['batas_a'] > $data['batas_b'] && $data['batas_b'] > $data['batas_c'] && $data['batas_c'] > $data['batas_d'])) {
+            return back()
+                ->withErrors(['batas' => 'Batas harus berurutan: A lebih besar dari B, B lebih besar dari C, dan C lebih besar dari D.'])
+                ->withInput();
+        }
+
+        $ekskul->update([
+            'batas_a' => $data['batas_a'],
+            'batas_b' => $data['batas_b'],
+            'batas_c' => $data['batas_c'],
+            'batas_d' => $data['batas_d'],
+        ]);
+
+        return redirect()
+            ->route('teacher.reports.index', ['ekskul_id' => $ekskul->id])
+            ->with('success', 'Batas predikat disimpan.');
     }
 
     public function export(Request $request)

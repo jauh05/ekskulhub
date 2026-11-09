@@ -149,6 +149,7 @@
                 </div>
             </section>
 
+            <div class="space-y-6">
             <!-- Pembagian persen -->
             <section class="rounded-2xl border border-outline-variant bg-surface p-5 shadow-sm md:p-6"
                 x-data="bobotForm(@js($bobotAwal))">
@@ -231,6 +232,55 @@
                 <p class="mt-6 text-body-sm text-secondary">Pilih ekstrakurikuler untuk mengatur pembagian persen.</p>
                 @endif
             </section>
+
+            <!-- Batas predikat -->
+            <section class="rounded-2xl border border-outline-variant bg-surface p-5 shadow-sm md:p-6">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <h4 class="text-title-md font-bold text-on-surface">Batas predikat</h4>
+                        <p class="mt-1 text-label-sm text-secondary">Nilai akhir minimal untuk tiap predikat. Di bawah D berarti E.</p>
+                    </div>
+                    <span class="flex size-10 items-center justify-center rounded-xl bg-accent text-on-accent"><x-icon name="award" class="size-[18px]" /></span>
+                </div>
+
+                @if($ekskul)
+                <form method="POST" action="{{ route('teacher.reports.predicates.update') }}" class="mt-6 space-y-4">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="extracurricular_id" value="{{ $ekskul->id }}">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        @foreach(['A' => 'batas_a', 'B' => 'batas_b', 'C' => 'batas_c', 'D' => 'batas_d'] as $huruf => $nama)
+                        <label class="block rounded-xl border border-outline-variant p-3">
+                            <span class="block text-label-md font-bold text-on-surface">Predikat {{ $huruf }}</span>
+                            <span class="mt-2 flex items-center gap-1">
+                                <span class="text-label-md text-secondary">&ge;</span>
+                                <input type="number" name="{{ $nama }}" min="0" max="100" step="0.01" required
+                                    value="{{ old($nama, $batasPredikat[$huruf] + 0) }}"
+                                    class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-right font-semibold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                            </span>
+                        </label>
+                        @endforeach
+                    </div>
+
+                    <p class="rounded-xl bg-surface-container-low px-4 py-3 text-label-md text-secondary">
+                        Predikat E: di bawah {{ $batasPredikat['D'] + 0 }}. Lulus untuk A, B, dan C.
+                    </p>
+
+                    @error('batas')
+                        <p class="rounded-xl bg-error-container px-4 py-3 text-label-md font-semibold text-on-error-container">{{ $message }}</p>
+                    @enderror
+
+                    <button type="submit"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-dark px-5 py-3 text-label-lg text-surface shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
+                        <x-icon name="save" class="size-[18px]" /> Simpan batas predikat
+                    </button>
+                </form>
+                @else
+                <p class="mt-6 text-body-sm text-secondary">Pilih ekstrakurikuler untuk mengatur batas predikat.</p>
+                @endif
+            </section>
+            </div>
         </div>
         @endif
     </div>

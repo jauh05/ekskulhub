@@ -119,7 +119,7 @@
                         <tr class="bg-primary-fixed/60 text-label-md text-on-primary-fixed">
                             <th class="w-14 border-b border-r border-outline-variant px-4 py-3 text-center font-semibold">No</th>
                             <th class="w-24 border-b border-r border-outline-variant px-4 py-3 font-semibold">Kelas</th>
-                            <th class="sticky left-0 z-10 min-w-[14rem] border-b border-r border-outline-variant bg-primary-fixed px-4 py-3 font-semibold">Nama</th>
+                            <th class="sticky left-0 z-10 min-w-[7.5rem] border-b border-r border-outline-variant bg-primary-fixed px-3 py-3 font-semibold sm:min-w-[14rem] sm:px-4">Nama</th>
 
                             <template x-for="k in komponen" :key="k.id">
                                 <th class="min-w-[10rem] border-b border-r border-outline-variant px-4 py-3">
@@ -157,7 +157,10 @@
                             <tr class="group border-b border-outline-variant transition-colors hover:bg-primary-fixed/25">
                                 <td class="border-r border-outline-variant px-4 py-2.5 text-center text-secondary" x-text="idx + 1"></td>
                                 <td class="border-r border-outline-variant px-4 py-2.5 text-secondary" x-text="b.kelas"></td>
-                                <td class="sticky left-0 z-10 border-r border-outline-variant bg-surface px-4 py-2.5 font-semibold text-on-surface group-hover:bg-primary-fixed/25" x-text="b.nama"></td>
+                                <td class="sticky left-0 z-10 border-r border-outline-variant bg-surface px-3 py-2.5 font-semibold text-on-surface group-hover:bg-primary-fixed/25 sm:px-4" :title="b.nama">
+                                    <span class="sm:hidden" x-text="singkat(b.nama)"></span>
+                                    <span class="hidden sm:inline" x-text="b.nama"></span>
+                                </td>
 
                                 <template x-for="k in komponen" :key="k.id">
                                     <td class="border-r border-outline-variant p-1.5 text-center">
@@ -280,6 +283,12 @@
                 sudahAda(b, k) {
                     const v = b.nilai[k.id];
                     return v !== null && v !== undefined;
+                },
+
+                /** Di layar kecil, nama dipotong 6 huruf. */
+                singkat(nama) {
+                    const huruf = [...String(nama)];
+                    return huruf.length > 6 ? huruf.slice(0, 6).join('').trimEnd() + '…' : nama;
                 },
 
                 formatNilai(v) {
