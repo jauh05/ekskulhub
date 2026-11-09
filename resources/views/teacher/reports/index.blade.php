@@ -31,7 +31,7 @@
                 @if($ekskul)
                 <a href="{{ route('teacher.reports.export', ['ekskul_id' => $ekskul->id]) }}"
                     class="inline-flex items-center gap-2 rounded-xl bg-dark px-5 py-2.5 text-label-lg text-surface shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
-                    <x-icon name="download" class="size-[18px]" /> Unduh CSV
+                    <x-icon name="download" class="size-[18px]" /> Unduh Excel
                 </a>
                 @endif
             </div>

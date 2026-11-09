@@ -10,6 +10,7 @@ use App\Models\ExtracurricularRegistration;
 use App\Models\User;
 use App\Services\PenilaianService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Tests\TestCase;
 
 class PenilaianTest extends TestCase
@@ -280,6 +281,47 @@ class PenilaianTest extends TestCase
         ])->assertSessionHasErrors('batas');
 
         $this->assertSame(85.0, (float) $ekskul->fresh()->batas_a);
+    }
+
+    public function test_ekspor_excel_berisi_header_border_dan_warna_status(): void
+    {
+        $guru = $this->guru();
+        $ekskul = $this->ekskul($guru);
+        $ekskul->update(['attendance_weight' => 0]);
+        $nilai1 = $this->kolom($ekskul, 'Nilai 1', 100, 1);
+
+        $siswa = $this->siswa();
+        $reg = $this->pendaftaran($siswa, $ekskul);
+        $assessment = Assessment::create([
+            'registration_id' => $reg->id,
+            'period_name' => PenilaianService::PERIODE,
+            'final_score' => 0,
+            'assessed_by' => $guru->id,
+            'assessed_at' => now(),
+        ]);
+        AssessmentScore::create(['assessment_id' => $assessment->id, 'assessment_component_id' => $nilai1->id, 'score' => 90]);
+
+        $response = $this->actingAs($guru)->get(route('teacher.reports.export', ['ekskul_id' => $ekskul->id]));
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $berkas = tempnam(sys_get_temp_dir(), 'rekap') . '.xlsx';
+        file_put_contents($berkas, $response->streamedContent());
+        $sheet = IOFactory::load($berkas)->getActiveSheet();
+
+        $this->assertSame('Nama', $sheet->getCell('B3')->getValue());
+        $this->assertSame('Nilai 1 (100%)', $sheet->getCell('E3')->getValue());
+        $this->assertSame($siswa->name, $sheet->getCell('B4')->getValue());
+
+        // Header berwarna hijau tua dan isi tabel punya border tipis
+        $this->assertSame('1F7A45', $sheet->getStyle('B3')->getFill()->getStartColor()->getRGB());
+        $this->assertSame('thin', $sheet->getStyle('B4')->getBorders()->getBottom()->getBorderStyle());
+
+        // Status lulus berwarna hijau
+        $this->assertSame('DCFCE7', $sheet->getStyle('H4')->getFill()->getStartColor()->getRGB());
+
+        @unlink($berkas);
     }
 
     public function test_siswa_hanya_melihat_penilaian_miliknya(): void
