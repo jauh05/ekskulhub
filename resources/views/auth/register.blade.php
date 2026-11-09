@@ -108,9 +108,9 @@
                                 <div class="relative">
                                     <select id="reg_class" name="class" required class="{{ $pilihan }}">
                                         <option value="">Pilih kelas</option>
-                                        @foreach (['7', '8', '9'] as $grade)
+                                        @foreach (['7', '8', '9', '10', '11', '12'] as $grade)
                                             <optgroup label="Kelas {{ $grade }}">
-                                                @foreach (['A', 'B', 'C', 'D', 'E', 'F'] as $letter)
+                                                @foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'] as $letter)
                                                     <option value="{{ $grade }} {{ $letter }}" @selected(old('class') === $grade.' '.$letter)>Kelas {{ $grade }} {{ $letter }}</option>
                                                 @endforeach
                                             </optgroup>

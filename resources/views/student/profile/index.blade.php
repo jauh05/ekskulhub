@@ -58,8 +58,8 @@
                         <select id="class_name" name="class_name" required
                             class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2.5 text-body-md text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
                             <option value="">Pilih kelas</option>
-                            @foreach(['7','8','9'] as $grade)
-                                @foreach(['A','B','C','D','E','F'] as $letter)
+                            @foreach(['7','8','9','10','11','12'] as $grade)
+                                @foreach(['A','B','C','D','E','F','G','H','I','J','K','L'] as $letter)
                                     <option value="{{ $grade }} {{ $letter }}" {{ old('class_name', $profile->class_name ?? '') == "$grade $letter" ? 'selected' : '' }}>Kelas {{ $grade }} {{ $letter }}</option>
                                 @endforeach
                             @endforeach
