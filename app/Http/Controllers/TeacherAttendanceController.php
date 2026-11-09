@@ -81,8 +81,13 @@ class TeacherAttendanceController extends Controller
             
         $attendanceSessions = $attendanceSessionsQuery->latest('created_at')->paginate(5, ['*'], 'session_page')->withQueryString();
             
+        // Pertemuan per bulan mengikuti filter ekstrakurikuler yang dipilih
+        $idPertemuan = $ekskulIds->filter(fn ($id) => ! $request->filled('ekskul_id') || (int) $request->ekskul_id === (int) $id)->values();
+        $tahunIni = now()->year;
+        $pertemuanBulanan = \App\Services\PertemuanService::perBulan($idPertemuan, $tahunIni);
+
         return view('teacher.attendances.index', compact(
-            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents', 'activeSession', 'attendanceSessions'
+            'attendances', 'ekskuls', 'totalHadir', 'totalSakit', 'totalIzin', 'totalAlpa', 'persentaseHadir', 'todaySchedules', 'totalActiveStudents', 'allSchedules', 'activeStudents', 'activeSession', 'attendanceSessions', 'pertemuanBulanan', 'tahunIni'
         ));
     }
     

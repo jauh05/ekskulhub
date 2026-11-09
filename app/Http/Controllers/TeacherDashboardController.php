@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ExtracurricularRegistration;
 use App\Models\Schedule;
+use App\Services\PertemuanService;
 use Carbon\Carbon;
 
 class TeacherDashboardController extends Controller
@@ -50,7 +51,10 @@ class TeacherDashboardController extends Controller
             ->take(3)
             ->get();
             
-        return view('teacher.dashboard', compact('totalParticipants', 'schedulesThisMonth', 'extracurriculars', 'upcomingSchedules', 'recentParticipants', 'presentToday', 'pendingSessions', 'announcements'));
+        $tahunIni = Carbon::now()->year;
+        $pertemuanBulanan = PertemuanService::perBulan($ekskulIds, $tahunIni);
+
+        return view('teacher.dashboard', compact('totalParticipants', 'schedulesThisMonth', 'extracurriculars', 'upcomingSchedules', 'recentParticipants', 'presentToday', 'pendingSessions', 'announcements', 'pertemuanBulanan', 'tahunIni'));
     }
 
     public function updateClassCode(Request $request, \App\Models\Extracurricular $extracurricular)

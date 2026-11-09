@@ -23,6 +23,10 @@
             </a>
         </div>
 
+        <!-- Pertemuan per bulan -->
+        <x-pertemuan-bulanan :data="$pertemuanBulanan" :tahun="$tahunIni"
+            keterangan="Pertemuan yang sudah diambil absensinya, dihitung per bulan dari semua ekstrakurikuler Anda." />
+
         <!-- Statistik -->
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <div class="flex flex-col justify-between gap-8 rounded-xl bg-primary-container p-5 text-on-primary-container">
