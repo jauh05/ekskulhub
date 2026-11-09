@@ -58,10 +58,15 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::put('/attendances/session/{session}/update', [TeacherAttendanceController::class, 'updateSession'])->name('attendances.session.update');
         Route::delete('/attendances/session/{session}/delete', [TeacherAttendanceController::class, 'destroySession'])->name('attendances.session.destroy');
         Route::resource('attendances', TeacherAttendanceController::class)->except(['create', 'edit', 'show']);
-        Route::resource('grading', TeacherGradingController::class);
+        Route::get('/grading', [TeacherGradingController::class, 'index'])->name('grading.index');
+        Route::post('/grading/components', [TeacherGradingController::class, 'storeComponent'])->name('grading.components.store');
+        Route::patch('/grading/components/{component}', [TeacherGradingController::class, 'updateComponent'])->name('grading.components.update');
+        Route::delete('/grading/components/{component}', [TeacherGradingController::class, 'destroyComponent'])->name('grading.components.destroy');
+        Route::put('/grading/scores', [TeacherGradingController::class, 'updateScore'])->name('grading.scores.update');
         
         Route::get('/report', [\App\Http\Controllers\TeacherReportController::class, 'index'])->name('reports.index');
         Route::get('/report/export', [\App\Http\Controllers\TeacherReportController::class, 'export'])->name('reports.export');
+        Route::patch('/report/weights', [\App\Http\Controllers\TeacherReportController::class, 'updateWeights'])->name('reports.weights.update');
         
         Route::resource('announcements', TeacherAnnouncementController::class);
     });

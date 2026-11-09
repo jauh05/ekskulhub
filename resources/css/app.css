@@ -138,6 +138,12 @@
     color: rgb(var(--c-on-primary-container)) !important;
 }
 
+/* Tombol konfirmasi berbahaya (hapus) di SweetAlert */
+.swal2-confirm.swal-danger {
+    background-color: #B91C1C !important;
+    color: #FFFFFF !important;
+}
+
 /* Landing: judul 3D sungguhan (lapisan dengan translateZ) yang bisa digeser.
    Di luar @layer karena hanya dipakai di welcome. */
 .title-stage {

@@ -2,125 +2,132 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Extracurricular;
+use App\Services\PenilaianService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ExtracurricularRegistration;
-use App\Models\Assessment;
-use App\Models\AttendanceSession;
-use App\Models\Schedule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class TeacherReportController extends Controller
 {
-    public function index(Request $request)
+    public function __construct(private PenilaianService $penilaian)
     {
-        $teacher = Auth::user();
-        $ekskuls = $teacher->taughtExtracurriculars;
-        $ekskulIds = $ekskuls->pluck('id');
-        
-        $query = ExtracurricularRegistration::with(['student.studentProfile', 'extracurricular'])
-            ->whereIn('extracurricular_id', $ekskulIds)
-            ->where('status', 'approved');
-            
-        if ($request->filled('ekskul_id')) {
-            $query->where('extracurricular_id', $request->ekskul_id);
-        }
-        
-        $registrations = $query->get();
-            
-        $reports = [];
-        $totalKehadiranPercentage = 0;
-        $totalNilai = 0;
-        $countSiswaDinilai = 0;
-        
-        foreach ($registrations as $reg) {
-            // Count total schedules for THIS particular ekskul
-            $totalSchedules = Schedule::where('extracurricular_id', $reg->extracurricular_id)->count();
-            
-            $attendancesCount = \App\Models\Attendance::where('student_id', $reg->student_id)
-                ->whereHas('attendanceSession.schedule', function($q) use ($reg) {
-                    $q->where('extracurricular_id', $reg->extracurricular_id);
-                })
-                ->where('status', 'present')
-                ->count();
-                
-            $attendancePercentage = $totalSchedules > 0 ? round(($attendancesCount / $totalSchedules) * 100) : 0;
-            $totalKehadiranPercentage += $attendancePercentage;
-            
-            $latestAssessment = Assessment::where('registration_id', $reg->id)->latest()->first();
-            if ($latestAssessment) {
-                $totalNilai += $latestAssessment->final_score;
-                $countSiswaDinilai++;
-            }
-            
-            $reports[] = (object) [
-                'student' => $reg->student,
-                'extracurricular' => $reg->extracurricular,
-                'attendance_percentage' => $attendancePercentage,
-                'final_score' => $latestAssessment ? $latestAssessment->final_score : '-',
-                'predicate' => $latestAssessment ? $latestAssessment->predicate : '-',
-                'period' => $latestAssessment ? $latestAssessment->period_name : '-'
-            ];
-        }
-        
-        $rataRataKehadiran = count($reports) > 0 ? round($totalKehadiranPercentage / count($reports), 1) : 0;
-        $rataRataNilai = $countSiswaDinilai > 0 ? round($totalNilai / $countSiswaDinilai, 1) : 0;
-        $totalSiswaAktif = count($reports);
-            
-        return view('teacher.reports.index', compact(
-            'reports', 'ekskuls', 'rataRataKehadiran', 'rataRataNilai', 'totalSiswaAktif'
-        ));
     }
 
-    public function export()
+    public function index(Request $request)
     {
-        $teacher = Auth::user();
-        $ekskulIds = $teacher->taughtExtracurriculars()->pluck('id');
-        
-        $registrations = ExtracurricularRegistration::with(['student.studentProfile', 'extracurricular'])
-            ->whereIn('extracurricular_id', $ekskulIds)
-            ->where('status', 'approved')
-            ->get();
-            
-        $totalSchedules = Schedule::whereIn('extracurricular_id', $ekskulIds)->count();
-        
-        $filename = "rekap_nilai_absensi_" . date('Ymd_His') . ".csv";
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+        $ekskuls = Auth::user()->taughtExtracurriculars()->orderBy('name')->get();
+        $ekskul = $this->ekskulDipilih($request, $ekskuls);
+
+        $komponen = $ekskul ? $this->penilaian->komponen($ekskul) : collect();
+        $baris = $ekskul ? $this->penilaian->rekapEkskul($ekskul) : collect();
+        $totalBobot = $ekskul ? PenilaianService::totalBobot($ekskul, $komponen) : 0;
+
+        $ringkasan = [
+            'siswa' => $baris->count(),
+            'sudah_dinilai' => $baris->where('sudah_dinilai', true)->count(),
+            'lulus' => $baris->where('lulus', true)->count(),
+            'tidak_lulus' => $baris->where('lulus', false)->count(),
+            'rata_rata' => $baris->whereNotNull('nilai_akhir')->avg('nilai_akhir'),
+        ];
+
+        return view('teacher.reports.index', compact('ekskuls', 'ekskul', 'komponen', 'baris', 'totalBobot', 'ringkasan'));
+    }
+
+    /** Simpan pembagian persen: bobot kehadiran dan bobot tiap kolom nilai. Total tidak boleh lebih dari 100. */
+    public function updateWeights(Request $request)
+    {
+        $data = $request->validate([
+            'extracurricular_id' => 'required|integer|exists:extracurriculars,id',
+            'attendance_weight' => 'required|numeric|min:0|max:100',
+            'weights' => 'nullable|array',
+            'weights.*' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $ekskul = Extracurricular::findOrFail($data['extracurricular_id']);
+        abort_unless(Auth::user()->taughtExtracurriculars()->whereKey($ekskul->id)->exists(), 403);
+
+        $komponen = $this->penilaian->komponen($ekskul);
+        $bobotBaru = collect($data['weights'] ?? [])->map(fn ($nilai) => $nilai === null ? null : (float) $nilai);
+
+        $total = (float) $data['attendance_weight'] + $komponen->sum(
+            fn ($c) => (float) ($bobotBaru->get($c->id) ?? $c->weight)
         );
 
-        $callback = function() use($registrations, $totalSchedules, $ekskulIds) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, array('Nama Siswa', 'Kelas', 'Ekstrakurikuler', 'Kehadiran (%)', 'Periode', 'Nilai Angka', 'Predikat'));
+        if (round($total, 2) > 100) {
+            return back()
+                ->withErrors(['weights' => 'Total pembagian nilai ' . number_format($total, 2) . '% melebihi 100%.'])
+                ->withInput();
+        }
 
-            foreach ($registrations as $reg) {
-                $attendancesCount = \App\Models\Attendance::where('student_id', $reg->student_id)
-                    ->whereHas('attendanceSession.schedule', function($q) use ($ekskulIds) {
-                        $q->whereIn('extracurricular_id', $ekskulIds);
-                    })
-                    ->where('status', 'present')
-                    ->count();
-                    
-                $attendancePercentage = $totalSchedules > 0 ? round(($attendancesCount / $totalSchedules) * 100) : 0;
-                $latestAssessment = Assessment::where('registration_id', $reg->id)->latest()->first();
+        DB::transaction(function () use ($ekskul, $data, $komponen, $bobotBaru) {
+            $ekskul->update(['attendance_weight' => $data['attendance_weight']]);
 
-                fputcsv($file, array(
-                    $reg->student->name,
-                    $reg->student->studentProfile->class_name ?? '-',
-                    $reg->extracurricular->name,
-                    $attendancePercentage . '%',
-                    $latestAssessment ? $latestAssessment->period_name : '-',
-                    $latestAssessment ? $latestAssessment->final_score : '-',
-                    $latestAssessment ? $latestAssessment->predicate : '-'
-                ));
+            foreach ($komponen as $c) {
+                $nilai = $bobotBaru->get($c->id);
+                if ($nilai !== null) {
+                    $c->update(['weight' => $nilai]);
+                }
             }
+        });
+
+        return redirect()
+            ->route('teacher.reports.index', ['ekskul_id' => $ekskul->id])
+            ->with('success', 'Pembagian nilai disimpan.');
+    }
+
+    public function export(Request $request)
+    {
+        $ekskuls = Auth::user()->taughtExtracurriculars()->orderBy('name')->get();
+        $ekskul = $this->ekskulDipilih($request, $ekskuls);
+        abort_unless($ekskul, 404);
+
+        $komponen = $this->penilaian->komponen($ekskul);
+        $baris = $this->penilaian->rekapEkskul($ekskul);
+
+        $filename = 'rekap_nilai_' . str_replace(' ', '_', strtolower($ekskul->name)) . '_' . date('Ymd_His') . '.csv';
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($baris, $komponen) {
+            $file = fopen('php://output', 'w');
+
+            $judul = ['No', 'Nama', 'Kelas', 'Kehadiran (%)'];
+            foreach ($komponen as $c) {
+                $judul[] = $c->name . ' (bobot ' . rtrim(rtrim(number_format((float) $c->weight, 2, '.', ''), '0'), '.') . '%)';
+            }
+            $judul = array_merge($judul, ['Nilai Akhir', 'Predikat', 'Status']);
+            fputcsv($file, $judul);
+
+            foreach ($baris as $no => $row) {
+                $isi = [$no + 1, $row['nama'], $row['kelas'], $row['persen_hadir']];
+                foreach ($komponen as $c) {
+                    $isi[] = $row['nilai'][$c->id] ?? '';
+                }
+                $isi[] = $row['nilai_akhir'] ?? '';
+                $isi[] = $row['predikat'] ?? '';
+                $isi[] = $row['lulus'] === null ? 'Belum dinilai' : ($row['lulus'] ? 'Lulus' : 'Tidak lulus');
+                fputcsv($file, $isi);
+            }
+
             fclose($file);
         };
 
         return Response::stream($callback, 200, $headers);
+    }
+
+    private function ekskulDipilih(Request $request, $ekskuls): ?Extracurricular
+    {
+        if ($request->filled('ekskul_id')) {
+            return $ekskuls->firstWhere('id', (int) $request->ekskul_id) ?? $ekskuls->first();
+        }
+
+        return $ekskuls->first();
     }
 }

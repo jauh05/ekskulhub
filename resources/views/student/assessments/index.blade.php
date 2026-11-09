@@ -1,63 +1,104 @@
 <x-student-layout>
 <div class="flex w-full flex-col gap-6">
-    <x-student-page-header title="Data Penilaian" subtitle="Hasil penilaian kamu" />
+    <x-student-page-header title="Penilaian" subtitle="Hasil penilaian kamu" />
 
     @php
-        $penilaianTerbaru = $assessments->getCollection()->first();
+        $keteranganPredikat = collect(\App\Services\PenilaianService::BATAS_PREDIKAT)
+            ->map(fn ($batas, $huruf) => "{$huruf} ≥ {$batas}")
+            ->implode('  ·  ') . '  ·  E < ' . collect(\App\Services\PenilaianService::BATAS_PREDIKAT)->last();
     @endphp
 
-    @if($penilaianTerbaru)
-    <!-- Nilai terbaru -->
-    <section class="flex items-center justify-between gap-4 rounded-2xl bg-primary-container p-5 text-on-primary-container">
-        <div class="min-w-0">
-            <p class="text-label-md opacity-90">Nilai terbaru</p>
-            <p class="mt-1 text-display-md font-bold">{{ $penilaianTerbaru->final_score }}</p>
-            <p class="mt-1 truncate text-body-sm opacity-90">{{ $penilaianTerbaru->registration->extracurricular->name ?? '-' }} &middot; {{ $penilaianTerbaru->period_name }}</p>
-        </div>
-        <span class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-surface/20 text-headline-md font-bold">{{ $penilaianTerbaru->predicate ?? '-' }}</span>
-    </section>
-    @endif
-
-    <!-- Daftar penilaian -->
-    <section class="flex flex-col gap-3">
-        @forelse($assessments as $val)
+    @forelse($penilaian as $item)
         @php
-            $tanggalNilai = \Carbon\Carbon::parse($val->assessed_at);
-            if ($val->predicate == 'A' || $val->predicate == 'Sangat Baik') $color = 'bg-tertiary-container text-on-tertiary-container';
-            elseif ($val->predicate == 'B' || $val->predicate == 'Baik') $color = 'bg-primary-fixed text-on-primary-fixed';
-            elseif ($val->predicate == 'C' || $val->predicate == 'Cukup') $color = 'bg-warning-container text-on-warning-container';
-            else $color = 'bg-error-container text-on-error-container';
+            $ekskul = $item['ekskul'];
+            $baris = $item['baris'];
+            $komponen = $item['komponen'];
+            $nilaiAkhir = $baris['nilai_akhir'];
         @endphp
-        <article class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-3 pr-4">
-            <div class="flex w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-container py-2.5 text-on-primary-container">
-                <span class="text-label-xs uppercase">{{ $tanggalNilai->translatedFormat('M') }}</span>
-                <span class="text-title-md font-bold leading-tight">{{ $tanggalNilai->format('d') }}</span>
-            </div>
+        <article class="overflow-hidden rounded-2xl border border-outline-variant bg-surface shadow-sm">
+            <header class="bg-dark p-5 text-surface">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-label-xs uppercase tracking-wider text-surface/70">Ekstrakurikuler</p>
+                        <h3 class="mt-1 truncate text-title-lg font-bold">{{ $ekskul->name }}</h3>
+                    </div>
+                    @if($baris['predikat'])
+                        <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-headline-sm font-bold text-on-accent">{{ $baris['predikat'] }}</span>
+                    @endif
+                </div>
 
-            <div class="min-w-0 flex-1">
-                <p class="truncate text-title-sm font-bold text-on-surface">{{ $val->registration->extracurricular->name ?? '-' }}</p>
-                <p class="mt-0.5 truncate text-body-xs text-secondary">{{ $val->period_name }}</p>
-            </div>
+                <div class="mt-6 flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <p class="text-label-md text-surface/70">Nilai akhir</p>
+                        <p class="mt-1 text-display-md font-bold leading-none">
+                            {{ $nilaiAkhir !== null ? number_format($nilaiAkhir, 2, ',', '.') : '-' }}
+                        </p>
+                    </div>
+                    @if($baris['lulus'] === null)
+                        <span class="rounded-full bg-surface/15 px-3 py-1.5 text-label-md font-semibold text-surface">{{ $baris['sudah_dinilai'] ? 'Belum final' : 'Belum dinilai' }}</span>
+                    @elseif($baris['lulus'])
+                        <span class="rounded-full bg-tertiary-container px-3 py-1.5 text-label-md font-bold text-on-tertiary-container">Lulus</span>
+                    @else
+                        <span class="rounded-full bg-error-container px-3 py-1.5 text-label-md font-bold text-on-error-container">Tidak lulus</span>
+                    @endif
+                </div>
+            </header>
 
-            <div class="flex shrink-0 flex-col items-end gap-1.5">
-                <span class="text-headline-sm font-bold text-primary-container">{{ $val->final_score }}</span>
-                <span class="rounded-full px-2.5 py-0.5 text-label-xs font-bold {{ $color }}">{{ $val->predicate ?? '-' }}</span>
+            <!-- Rincian -->
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[28rem] text-left text-body-md">
+                    <thead>
+                        <tr class="bg-surface-container-low text-label-md text-secondary">
+                            <th class="px-5 py-3 font-semibold">Komponen</th>
+                            <th class="px-5 py-3 text-center font-semibold">Nilai</th>
+                            <th class="px-5 py-3 text-center font-semibold">Bobot</th>
+                            <th class="px-5 py-3 text-right font-semibold">Kontribusi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant">
+                        <tr>
+                            <td class="px-5 py-3 font-semibold text-on-surface">Kehadiran</td>
+                            <td class="px-5 py-3 text-center text-secondary">{{ rtrim(rtrim(number_format($baris['persen_hadir'], 1, ',', '.'), '0'), ',') }}%</td>
+                            <td class="px-5 py-3 text-center text-secondary">{{ rtrim(rtrim(number_format($baris['bobot_hadir'], 2, ',', '.'), '0'), ',') }}%</td>
+                            <td class="px-5 py-3 text-right font-semibold text-on-surface">{{ number_format($baris['kontribusi_hadir'], 2, ',', '.') }}</td>
+                        </tr>
+                        @foreach($komponen as $c)
+                            @php
+                                $nilaiSel = $baris['nilai'][$c->id] ?? null;
+                                $kontribusi = ($nilaiSel ?? 0) * (float) $c->weight / 100;
+                            @endphp
+                            <tr>
+                                <td class="px-5 py-3 font-semibold text-on-surface">{{ $c->name }}</td>
+                                <td class="px-5 py-3 text-center">
+                                    @if($nilaiSel === null)
+                                        <span class="text-outline">Belum diisi</span>
+                                    @else
+                                        <span class="font-semibold text-on-surface">{{ rtrim(rtrim(number_format($nilaiSel, 2, ',', '.'), '0'), ',') }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3 text-center text-secondary">{{ rtrim(rtrim(number_format((float) $c->weight, 2, ',', '.'), '0'), ',') }}%</td>
+                                <td class="px-5 py-3 text-right font-semibold text-on-surface">{{ number_format($kontribusi, 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </article>
-        @empty
-        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-outline-variant bg-surface p-8 text-center">
-            <span class="flex size-12 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed">
+    @empty
+        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-outline-variant bg-surface p-10 text-center">
+            <span class="flex size-12 items-center justify-center rounded-xl bg-primary-fixed text-primary">
                 <x-icon name="award" class="size-[22px]" />
             </span>
-            <p class="text-body-md text-secondary">Belum ada data penilaian</p>
+            <p class="text-title-sm font-bold text-on-surface">Belum ada penilaian</p>
+            <p class="text-body-sm text-secondary">Penilaian dari pembina akan tampil di sini setelah kamu bergabung ke ekstrakurikuler.</p>
         </div>
-        @endforelse
+    @endforelse
 
-        @if($assessments->hasPages())
-        <div class="pt-2">
-            {{ $assessments->links() }}
-        </div>
-        @endif
+    <!-- Keterangan predikat -->
+    <section class="rounded-2xl border border-outline-variant bg-surface p-5">
+        <p class="text-label-md font-semibold text-on-surface">Keterangan predikat</p>
+        <p class="mt-2 text-body-sm text-secondary">{{ $keteranganPredikat }}</p>
+        <p class="mt-2 text-body-sm text-secondary">Lulus untuk predikat A, B, dan C. Predikat D dan E dinyatakan tidak lulus.</p>
     </section>
 </div>
 </x-student-layout>

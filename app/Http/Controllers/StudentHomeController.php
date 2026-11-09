@@ -8,9 +8,14 @@ use App\Models\AttendanceSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\PenilaianService;
 
 class StudentHomeController extends Controller
 {
+    public function __construct(private PenilaianService $penilaian)
+    {
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -48,6 +53,14 @@ class StudentHomeController extends Controller
             ->take(5)
             ->get();
 
-        return view('student.dashboard', compact('user', 'totalEkskul', 'attendancePercentage', 'jadwalHariIni', 'ekskulTerdaftar', 'pengumuman'));
+        // Ringkasan nilai per ekskul yang sudah disetujui (sama dengan halaman penilaian)
+        $penilaianRingkas = ExtracurricularRegistration::with('extracurricular')
+            ->where('student_id', $user->id)
+            ->where('status', 'approved')
+            ->get()
+            ->map(fn ($reg) => $this->penilaian->rekapRegistrasi($reg))
+            ->values();
+
+        return view('student.dashboard', compact('user', 'totalEkskul', 'attendancePercentage', 'jadwalHariIni', 'ekskulTerdaftar', 'pengumuman', 'penilaianRingkas'));
     }
 }

@@ -127,6 +127,38 @@
         </ul>
     </section>
 
+    <!-- Nilai saya -->
+    <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3">
+            <h3 class="text-title-md font-bold text-on-surface">Nilai saya</h3>
+            <a href="{{ route('student.assessments.index') }}" class="shrink-0 text-label-md font-semibold text-primary-container hover:underline">Lihat detail</a>
+        </div>
+        <ul class="flex flex-col gap-3">
+            @forelse($penilaianRingkas as $nilai)
+            <li class="flex items-center gap-4 rounded-2xl border border-outline-variant bg-surface p-4">
+                <span class="flex size-12 shrink-0 items-center justify-center rounded-xl {{ $nilai['predikat'] ? 'bg-dark text-accent' : 'bg-surface-container text-on-surface-variant' }} text-title-md font-bold">
+                    {{ $nilai['predikat'] ?? '-' }}
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate text-title-sm font-bold text-on-surface">{{ $nilai['ekskul'] }}</p>
+                    <p class="truncate text-body-xs text-secondary">
+                        {{ $nilai['nilai_akhir'] !== null ? 'Nilai akhir ' . number_format($nilai['nilai_akhir'], 2, ',', '.') : 'Belum dinilai' }}
+                    </p>
+                </div>
+                @if($nilai['lulus'] === null)
+                    <span class="shrink-0 rounded-full bg-surface-container px-2.5 py-1 text-label-xs font-bold text-on-surface-variant">Belum dinilai</span>
+                @elseif($nilai['lulus'])
+                    <span class="shrink-0 rounded-full bg-tertiary-container px-2.5 py-1 text-label-xs font-bold text-on-tertiary-container">Lulus</span>
+                @else
+                    <span class="shrink-0 rounded-full bg-error-container px-2.5 py-1 text-label-xs font-bold text-on-error-container">Tidak lulus</span>
+                @endif
+            </li>
+            @empty
+            <li class="rounded-2xl border border-dashed border-outline-variant bg-surface p-5 text-center text-body-md text-secondary">Belum ada nilai.</li>
+            @endforelse
+        </ul>
+    </section>
+
     <!-- Status registrasi -->
     <section class="flex flex-col gap-3">
         <h3 class="text-title-md font-bold text-on-surface">Status registrasi</h3>

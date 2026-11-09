@@ -17,6 +17,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentScore;
 use App\Models\Announcement;
 use Carbon\Carbon;
+use App\Services\PenilaianService;
 
 class DatabaseSeeder extends Seeder
 {
@@ -193,18 +194,20 @@ class DatabaseSeeder extends Seeder
             'extracurricular_id' => $ekskulBasket->id,
             'name' => 'Disiplin',
             'weight' => 40,
+            'display_order' => 1,
         ]);
         $komponenSkill = AssessmentComponent::create([
             'extracurricular_id' => $ekskulBasket->id,
             'name' => 'Keterampilan',
             'weight' => 60,
+            'display_order' => 2,
         ]);
 
         $assessment = Assessment::create([
             'registration_id' => $regS3Basket->id,
-            'period_name' => 'Semester 1 2026',
+            'period_name' => PenilaianService::PERIODE,
             'final_score' => 88,
-            'predicate' => 'Baik',
+            'predicate' => 'A',
             'assessed_by' => $guru2->id,
         ]);
 
